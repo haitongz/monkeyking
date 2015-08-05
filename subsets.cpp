@@ -125,6 +125,35 @@ void printPowerSets(const uint32_t n) {
   }
 }
 
+/*
+Given two arrays: a1[0..m-1] and a2[0..n-1]. Find whether a2[] is a subset of a1[] or not. Both the arrays are not in sorted order.
+
+Time Complexity: O(mLogm + nLogn)
+ */
+bool isSubset(int32_t a1[], int32_t a2[], const uint32_t m, const uint32_t n) {
+  if (m < n)
+    return 0;
+
+  quickSort(a1, 0, m-1);
+  quickSort(a2, 0, n-1);
+
+  uint32_t i, j;
+  while (i < n && j < m) {
+    if (a1[j] < a2[i])
+      ++j;
+    else if (a1[j] == a2[i]) {
+      ++j;
+      ++i;
+    } else if (a1[j] > a2[i])
+      return 0;
+  }
+
+  if (i < n)
+    return 0;
+  else
+    return 1;
+}
+
 int main(int argc, char** argv) {
   vector<int32_t> v = {1,2,2};
   vector<vector<int32_t>> res = subsetsWithDup_iter(v);
