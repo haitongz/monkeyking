@@ -1,5 +1,6 @@
 /*
-Given n activities with their start and finish times. Select the maximum number of activities that can be performed by a single person, assuming that a person can only work on a single activity at a time.
+Given n activities with their start and finish times. Select the maximum number of activities that can be performed
+by a single person, assuming that a person can only work on a single activity at a time.
 
 Consider the following 6 activities.
      start[]  =  {1, 3, 0, 5, 8, 5};
