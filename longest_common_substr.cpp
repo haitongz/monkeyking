@@ -33,20 +33,20 @@ uint32_t longestCommonSubstrLen(const string& s1, const string& s2) {
     return 0;
 
   vector<vector<uint32_t>> dp(len1+1, vector<uint32_t>(len2+1, 0));
-  uint32_t res = 0;
+  uint32_t ret = 0;
 
   for (uint32_t i = 1; i < len1+1; ++i) {
     for (uint32_t j = 1; j < len2+1; ++j) {
       if (s1[i-1] == s2[j-1]) { // grow in both strings
         dp[i][j] = dp[i-1][j-1]+1;
-        res = max(res, dp[i][j]);
+        ret = max(ret, dp[i][j]);
       } else {
         dp[i][j] = 0; // start over as there can't be any gaps in common substrings
       }
     }
   }
 
-  return res;
+  return ret;
 }
 
 int main(int argc, char** argv) {
