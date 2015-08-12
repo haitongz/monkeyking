@@ -17,15 +17,15 @@ Clearly the first parenthesization requires less number of operations.
  */
 #include <iostream>
 #include <vector>
+#include <functional>
 #include <limits>
 
 using namespace std;
 
-static const uint32_t MAX_LMT = numeric_limits<int32_t>::max();
+static const int32_t MAX_LMT = numeric_limits<int32_t>::max();
 
 // Matrix Ai has dimension p[i-1] x p[i] for i = 1...n
-uint32_t matrixChainOrder(const vector<int32_t>& nums) {
-  const uint32_t n = nums.size();
+int32_t matrixChainOrder(const int32_t a[], const uint32_t n) {
   if (!n)
     return 0;
 
@@ -36,14 +36,13 @@ uint32_t matrixChainOrder(const vector<int32_t>& nums) {
 
   // L is chain length.
   for (uint32_t L = 2; L < n; ++L) {
-    for (uint32_t i = 1; i <= n-L+1; ++i) {
+    for (uint32_t i = 1; i < n-L+1; ++i) {
       uint32_t j = i+L-1;
-      dp[i][j] = max_lmt;
-      for (uint32_t k = i; k <= j-1; ++k) {
+      dp[i][j] = MAX_LMT;
+      for (uint32_t k = i; k < j; ++k) {
         // q = cost/scalar multiplications
-        const int32_t q = dp[i][k] + dp[k+1][j] + nums[i-1]*nums[k]*nums[j];
-        if (q < dp[i][j])
-          dp[i][j] = q;
+        const int32_t q = dp[i][k]+dp[k+1][j]+a[i-1]*a[k]*a[j];
+        dp[i][j] = min(q, dp[i][j]);
       }
     }
   }
@@ -52,28 +51,30 @@ uint32_t matrixChainOrder(const vector<int32_t>& nums) {
 }
 
 /* A naive recursive implementation that simply follows the above optimal substructure property */
-// Matrix Ai has dimension p[i-1] x p[i] for i = 1..n
-int32_t MatrixChainOrder2(int32_t p[], const uint32_t i, const uint32_t j) {
-  if (i == j)
-    return 0;
+int32_t matrixChainOrder2(const int32_t a[], const uint32_t n) {
+  function<int32_t(const uint32_t,const uint32_t)> solve =
+    [&](const uint32_t i, const uint32_t j) {
+    if (i == j)
+      return 0;
 
-  int32_t min = INT_MAX;
-  uint32_t count;
-     
-  // place parenthesis at different places between first and last matrix, recursively calculate count of multiplcations
-  // for each parenthesis placement and return the minimum count
-  for (uint32_t k = i; k < j; ++k) {
-    count = MatrixChainOrder(p, i, k) + MatrixChainOrder(p, k+1, j) + p[i-1]*p[k]*p[j];
-    if (count < min)
-      min = count;
-  }
+    int32_t ret = MAX_LMT;
+    // place parenthesis at different places between first and last matrix,
+    // recursively calculate count of multiplcations for each parenthesis placement
+    // and return the minimum count
+    for (uint32_t k = i; k < j; ++k) {
+      int32_t count = solve(i, k)+solve(k+1, j)+a[i-1]*a[k]*a[j];
+      ret = min(ret, count);
+    }
 
-  // Return minimum count
-  return min;
+    return ret;
+  };
+
+  return solve(1, n-1);
 }
 
 int main(int argc, char** argv) {
-  vector<int32_t> nums = {1, 2, 3, 4};
-  cout << "Minimum number of multiplications is " << matrixChainOrder(nums) << endl;
+  int32_t a[] = {1, 2, 3, 4};
+  cout << "Minimum number of multiplications is " << matrixChainOrder(a, 4) << endl;
+  cout << "Minimum number of multiplications is " << matrixChainOrder2(a, 4) << endl;
   return 0;
 }
