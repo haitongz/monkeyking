@@ -5,14 +5,16 @@
 using namespace std;
 
 /*
-Given a string, recursively remove adjacent duplicate characters from string. The output string should not have any adjacent duplicates.
+Given a string, recursively remove adjacent duplicate characters from string. The output string should not have any
+adjacent duplicates.
 
 O(n):
 1) Start from the leftmost character and remove duplicates at left corner if there are any.
 2) The first character must be different from its adjacent now. Recur for string of length n-1 (string without first character).
 3) Let the string obtained after reducing right substring of length n-1 be rem_str. There are three possible cases
   a) If first character of rem_str matches with the first character of original string, remove the first character from rem_str.
-  b) Else if the last removed character in recursive calls is same as the first character of the original string. Ignore the first character of original string and return rem_str.
+  b) Else if the last removed character in recursive calls is same as the first character of the original string. Ignore the
+     first character of original string and return rem_str.
   c) Else, preppend the first character of the original string at the beginning of rem_str.
 4) Return rem_str.
  */
@@ -56,7 +58,10 @@ const char* removeAdjDups_recur(char* str) {
 }
 
 /*
-Given a string and a positive integer d. Some characters may be repeated in the given string. Rearrange characters of the given string such that the same characters become d distance away from each other. Note that there can be many possible rearrangements, the output should be one of the possible rearrangements. If no such arrangement is possible, that should also be reported.
+Given a string and a positive integer d. Some characters may be repeated in the given string. Rearrange characters of the
+given string such that the same characters become d distance away from each other. Note that there can be many possible
+rearrangements, the output should be one of the possible rearrangements. If no such arrangement is possible, that should
+also be reported.
 Expected time complexity is O(n) where n is length of input string.
  */
 string rearrange(string& s, const uint32_t d) {
