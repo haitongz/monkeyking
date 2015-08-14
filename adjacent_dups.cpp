@@ -18,7 +18,7 @@ O(n):
   c) Else, preppend the first character of the original string at the beginning of rem_str.
 4) Return rem_str.
  */
-const char* removeAdjDups_recur(char* str) {
+const char* rmAdjDups_recur(char* str) {
   char last_removed = '\0';
 
   function<char*(char*)> solve = [&](char* s) {
@@ -35,7 +35,8 @@ const char* removeAdjDups_recur(char* str) {
       return solve(s+1);
     }
 
-    // At this point, the first character is definitely different from its adjacent. Ignore first character and recursively remove characters from remaining string
+    // At this point, the first character is definitely different from its adjacent. Ignore first character and
+    // recursively remove characters from remaining string
     char* rem_str = solve(s+1);
 
     // Check if the first character of the rem_string matches with the first character of the original string
@@ -44,11 +45,13 @@ const char* removeAdjDups_recur(char* str) {
       return (rem_str+1); // Remove first character
     }
 
-    // If remaining string becomes empty and last removed character is same as first character of original string.  This is needed for a string like "acbbcddc"
+    // If remaining string becomes empty and last removed character is same as first character of original string.
+    // This is needed for a string like "acbbcddc"
     if (rem_str[0] == '\0' && last_removed == s[0])
       return rem_str;
 
-    // If the two first characters of str and rem_str don't match, append first character of str before the first character of rem_str.
+    // If the two first characters of str and rem_str don't match, append first character of str before the first character
+    // of rem_str.
     --rem_str;
     rem_str[0] = s[0];
     return rem_str;
@@ -111,23 +114,23 @@ string rearrange(string& s, const uint32_t d) {
 
 int main(int argc, char** argv) {
   char str1[] = "geeksforgeeg";
-  cout << removeAdjDups_recur(str1) << endl;
+  cout << rmAdjDups_recur(str1) << endl;
   char str2[] = "azxxxzy";
-  cout << removeAdjDups_recur(str2) << endl;
+  cout << rmAdjDups_recur(str2) << endl;
   char str3[] = "caaabbbaac";
-  cout << removeAdjDups_recur(str3) << endl;
+  cout << rmAdjDups_recur(str3) << endl;
   char str4[] = "gghhg";
-  cout << removeAdjDups_recur(str4) << endl;
+  cout << rmAdjDups_recur(str4) << endl;
   char str5[] = "aaaacddddcappp";
-  cout << removeAdjDups_recur(str5) << endl;
+  cout << rmAdjDups_recur(str5) << endl;
   char str6[] = "aaaaaaaaaa";
-  cout << removeAdjDups_recur(str6) << endl;
+  cout << rmAdjDups_recur(str6) << endl;
   char str7[] = "qpaaaaadaaaaadprq";
-  cout << removeAdjDups_recur(str7) << endl;
+  cout << rmAdjDups_recur(str7) << endl;
   char str8[] = "acaaabbbacdddd";
-  cout << removeAdjDups_recur(str8) << endl;
+  cout << rmAdjDups_recur(str8) << endl;
   char str9[] = "acbbcddc";
-  cout << removeAdjDups_recur(str9) << endl;
+  cout << rmAdjDups_recur(str9) << endl;
 
   return 0;
 }
