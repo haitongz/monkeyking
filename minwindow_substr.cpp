@@ -18,7 +18,7 @@ If there are multiple such windows, you are guaranteed that there will always be
 
 using namespace std;
 
-static const uint32_t MAX_LIMIT = numeric_limits<uint32_t>::max();
+static const uint32_t MAX_LMT = numeric_limits<uint32_t>::max();
 
 string minWindowSubstr(const string& S, const string& T) {
   const uint32_t s_len = S.length();
@@ -51,7 +51,7 @@ string minWindowSubstr(const string& S, const string& T) {
     return idx;
   };
 
-  uint32_t start = 0, min_len = MAX_LIMIT;
+  uint32_t start = 0, min_len = MAX_LMT;
   uint32_t match_num = 0;
 
   for (uint32_t i = s_idx; i < s_len; ++i) { // start from first index in S that has a char in T
@@ -72,7 +72,7 @@ string minWindowSubstr(const string& S, const string& T) {
     }
   }
 
-  return (min_len == MAX_LIMIT) ? "" : S.substr(start, min_len); // when T.length() > S.length()
+  return (min_len == MAX_LMT) ? "" : S.substr(start, min_len); // when T.length() > S.length()
 }
 
 string minWindow2(const string& S, const string& T) {
