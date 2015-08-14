@@ -39,7 +39,10 @@ bool isInterleaving_dp(const string& s1, const string& s2, const string& s3) {
   if (len1+len2 != len3)
     return false;
 
-  vector<vector<bool>> dp(len1+1, vector<bool>(len2+1, false));
+  bool dp[len1+1][len2+1];
+  for (auto& i : dp)
+    for (auto& j : i)
+      j = false;
   dp[0][0] = true;
 
   for (uint32_t i = 1; i < len2+1; ++i) {
@@ -104,9 +107,11 @@ int main(int argc, char** argv) {
   string s2 = "dbbca";
 
   string s3 = "aadbbcbcac";
-  cout << (isInterleaving(s1, s2, s3) ? "true" : "false") << endl;
+  cout << (isInterleaving_recur(s1, s2, s3) ? "true" : "false") << endl;
+  cout << (isInterleaving_dp(s1, s2, s3) ? "true" : "false") << endl;
   s3 = "aadbbbaccc";
-  cout << (isInterleaving(s1, s2, s3) ? "true" : "false") << endl;
+  cout << (isInterleaving_recur(s1, s2, s3) ? "true" : "false") << endl;
+  cout << (isInterleaving_dp(s1, s2, s3) ? "true" : "false") << endl;
 
   s1 = "AB";
   s2 = "CD";
