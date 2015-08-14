@@ -2,46 +2,48 @@
 #define _ATOI_H_
 
 #include <limits>
+#include <ctype.h>
 
 using namespace std;
 
-int atoi(const char* str) {
-  char c = *str;
-  bool sign_set = false;
-  int64_t res = 0;
-  int sign = 1;
+static const int32_t MAX_LMT = numeric_limits<int32_t>::max();
+static const int32_t MIN_LMT = numeric_limits<int32_t>::min();
 
+int64_t atoi(const char* s) {
   // skip the leading spaces
-  while (c == ' ') {
-    ++str;
-    c = *str;
+  while (*s == ' ') {
+    ++s;
   }
 
-  while (*str) {
-    c = *str;
+  int8_t sign = 1;
+  if (*s == '+') {
+    ++s;
+  else if (*s == '-') {
+    sign = -1;
+    ++s;
+  }
+
+  int64_t ret = 0;
+
+  while (*s) {
+    char c = *s;
 
     // only the first occurence of sign, before any digits, is legal
-    if (c == '+' || c == '-') {
-      if (!sign_set) {
-        sign = (c == '+') ? 1 : -1;
-        sign_set = true;
-      } else {
-        return sign*res;
-      }
+    if (!isdigit(c)) {
+      return sign*ret;
     } else if (c-'0' >= 0 && c-'9' <= 0) {
-      sign_set = true;
-      res *= 10;
-      res += (c-'0');
+      ret *= 10;
+      ret += (c-'0');
       // detect overflow by "cheating" using long long
-      if ((res*sign > numeric_limits<int>::max()) || (res*sign < numeric_limits<int>::min()))
-        return (sign == 1) ? numeric_limits<int>::max() : numeric_limits<int>::min();
-    } else { // return if encounter "other" characters
-      return sign*res;
+      if (ret*sign > MAX_LMT || ret*sign < MIN_LMT)
+        return (sign == 1) ? MAX_LMT : MIN_LMT;
     }
-    ++str;
+
+    ++s;
   }
 
-  return sign*res;
+  ret *= sign;
+  return ret;
 }
 /*
 int atoi(const char* str) {
