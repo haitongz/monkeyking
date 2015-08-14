@@ -6,7 +6,6 @@ Note: All inputs will be in lower-case.
 #include <vector>
 #include <map>
 #include <algorithm>
-//#include <cstring> // for bzero
 #include "../linked_lists/list_node.h"
 
 using namespace std;
@@ -17,13 +16,13 @@ bool areAnagrams(const string& s1, const string& s2) {
 
   map<char,size_t> m;
 
-  for (auto& c : s1) {
+  for (const auto& c : s1) {
     ++m[/*toupper*/(c)];
   }
-  for (auto& c : s2) {
+  for (const auto& c : s2) {
     --m[/*toupper*/(c)];
   }
-  for (auto& c : s2) {
+  for (const auto& c : s2) {
     if (m[/*toupper*/(c)] != 0)
       return false;
   }
@@ -37,7 +36,7 @@ bool areAnagrams2(string s1, string s2) {
   return s1 == s2;
 }
 /*
-bool isAnagram(const string& s1, const string& s2) {
+bool areAnagrams(const string& s1, const string& s2) {
   if (s1.length() != s2.length())
     return false;
 
@@ -78,17 +77,16 @@ vector<string> anagrams(vector<string>& strs) {
     recs[s].push_back(strs[i]);
   }
 
-  vector<string> res;
-  for (map<string,vector<string>>::const_iterator iter = recs.begin();
-       iter != recs.end(); ++iter) {
-    if (iter->second.size() > 1) {
-      for (uint32_t i = 0; i < iter->second.size(); ++i) {
-        res.push_back(iter->second[i]);
+  vector<string> ret;
+  for (const auto& i : recs) {
+    if (i.second.size() > 1) {
+      for (const auto& j : i.second)
+        ret.push_back(j);
       }
     }
   }
 
-  return res;
+  return ret;
 }
 
 // sort an array of strings so that anagrams are next to each other
