@@ -32,7 +32,8 @@ uint32_t count(const BinTreeNode* root) {
 /*
 Two trees are identical when they have same data and arrangement of data is also same.
 
-To identify if two trees are identical, we need to traverse both trees simultaneously, and while traversing we need to compare data and children of the trees.
+To identify if two trees are identical, we need to traverse both trees simultaneously,
+and while traversing we need to compare data and children of the trees.
  */
 bool areIdentical(const BinTreeNode* root1, const BinTreeNode* root2) {
   function<bool(const BinTreeNode*,const BinTreeNode*)> solve =
@@ -52,7 +53,8 @@ bool areIdentical(const BinTreeNode* root1, const BinTreeNode* root2) {
 }
 
 /*
-Given a binary tree, find its minimum/maximum depth. The minimum depth is the number of nodes along the shortest path from the root node down to the nearest leaf node.
+Given a binary tree, find its minimum/maximum depth. The minimum depth is the number of nodes along
+the shortest path from the root node down to the nearest leaf node.
  */
 uint32_t minDepth_recur(const BinTreeNode* root) {
   function<int32_t(const BinTreeNode*)> solve =
@@ -60,9 +62,9 @@ uint32_t minDepth_recur(const BinTreeNode* root) {
     if (!curr_root)
       return 0;
 
-    int32_t lheight = curr_root->left ? solve(curr_root->left) : MAX_LMT;
-    int32_t rheight = curr_root->right ? solve(curr_root->right) : MAX_LMT;
-    return min(lheight, rheight)+1;
+    int32_t ldepth = curr_root->left ? solve(curr_root->left) : MAX_LMT;
+    int32_t rdepth = curr_root->right ? solve(curr_root->right) : MAX_LMT;
+    return min(ldepth, rdepth)+1;
   };
 
   return solve(root);
@@ -74,9 +76,9 @@ uint32_t maxDepth_recur(const BinTreeNode* root) {
     if (!curr_root)
       return 0;
 
-    int32_t lheight = curr_root->left ? solve(curr_root->left) : MIN_LMT;
-    int32_t rheight = curr_root->right ? solve(curr_root->right) : MIN_LMT;
-    return max(lheight, rheight)+1;
+    int32_t ldepth = curr_root->left ? solve(curr_root->left) : MIN_LMT;
+    int32_t rdepth = curr_root->right ? solve(curr_root->right) : MIN_LMT;
+    return max(ldepth, rdepth)+1;
   };
 
   return solve(root);
@@ -120,7 +122,8 @@ uint32_t leafCount(const BinTreeNode* root) {
 }
 
 /*
-Given a binary tree (not a binary search tree) and two values say n1 and n2, write a program to find the least common ancestor.
+Given a binary tree (not a binary search tree) and two values say n1 and n2, write a program to
+find the least common ancestor.
  */
 const BinTreeNode* LCA(const BinTreeNode* root, const int32_t n1, const int32_t n2) {
   vector<const BinTreeNode*> to_ext;
@@ -314,8 +317,9 @@ uint32_t diameter(const BinTreeNode* root) { // O(n)
 }
 
 /*
-Given a binary tree where all the right nodes are either leaf nodes with a sibling (a left node that shares the same parent node) or empty, flip it upside down and turn it into a tree where the original right nodes turned into left leaf nodes. Return the new root.
-For example:
+Given a binary tree where all the right nodes are either leaf nodes with a sibling (a left node that
+shares the same parent node) or empty, flip it upside down and turn it into a tree where the original
+right nodes turned into left leaf nodes. Return the new root.
 Given a binary tree [1,2,3,4,5],
     1
    / \
@@ -370,18 +374,18 @@ bool isHeightBalanced(const BinTreeNode* root) {
     if (!curr_root)
       return 0;
 
-    int32_t left = solve(curr_root->left);
-    if (left == -1)
+    int32_t lheight = solve(curr_root->left);
+    if (lheight == -1)
       return -1;
 
-    int32_t right = solve(curr_root->right);
-    if (right == -1)
+    int32_t rheight = solve(curr_root->right);
+    if (rheight == -1)
       return -1;
 
-    if (abs(left-right) > 1) {
+    if (abs(lheight-rheight) > 1) {
       return -1;
     } else {
-      return 1+max(left, right);
+      return 1+max(lheight, rheight);
     }
   };
 
@@ -467,27 +471,7 @@ bool isSymmetric2(const BinTreeNode* root) {
 }
 
 /*
-Check whether 2 binary trees are equal
- */
-bool areBTsEqual(const BinTreeNode* root1, const BinTreeNode* root2) {
-  function<bool(const BinTreeNode*,const BinTreeNode*)> solve =
-    [&](const BinTreeNode* curr_root1, const BinTreeNode* curr_root2) -> bool {
-    if (!curr_root1 && !curr_root2)
-      return true; // ?
-    else if (!curr_root1 || !curr_root2 || curr_root1->value != curr_root2->value)
-      return false;
-
-    return solve(curr_root1->left, curr_root2->left) &&
-           solve(curr_root1->right, curr_root2->right);
-  };
-
-  return solve(root1, root2);
-}
-
-/*
 Given a Binary Tree, find the deepest leaf node that is left child of its parent.
-For example:
-
      _______1______
     /              \
  ___2__             3
@@ -560,7 +544,8 @@ bool isSumTree(const BinTreeNode* root) { // O(n)
 }
 
 /*
-Given an arbitrary binary tree, convert it to a binary tree that holds Children Sum Property. You can only increment data values in any node (You cannot change structure of tree and cannot decrement value of any node).
+Given an arbitrary binary tree, convert it to a binary tree that holds Children Sum Property.
+You can only increment data values in any node (You cannot change structure of tree and cannot decrement value of any node).
  */
 void convert2SumTree(BinTreeNode* root) {
   /* This function is used to increment subtree by diff */
@@ -610,7 +595,8 @@ void convert2SumTree(BinTreeNode* root) {
 }
 
 /*
-Given a binary tree, write a function to get the maximum width of the given tree. Width of a tree is maximum of widths of all levels.
+Given a binary tree, write a function to get the maximum width of the given tree. Width of a tree
+is maximum of widths of all levels.
  */
 // A function that fills count array with count of nodes at every level of given binary tree
 uint32_t maxWidth(const BinTreeNode* root) { // preorder traversal, O(n)
@@ -636,7 +622,8 @@ uint32_t maxWidth(const BinTreeNode* root) { // preorder traversal, O(n)
 }
 
 /*
-Write a program that converts a given tree to its Double Tree. To create Double Tree of the given tree, create a new duplicate for each node, and insert the duplicate as the left child of the original node.
+Write a program that converts a given tree to its Double Tree. To create Double Tree of the given tree,
+create a new duplicate for each node, and insert the duplicate as the left child of the original node.
  */
 void doubleTree(BinTreeNode* root) {
   function<void(BinTreeNode*)> solve =
@@ -659,7 +646,8 @@ void doubleTree(BinTreeNode* root) {
 /*
 Question: Given a binary tree, find out if the tree can be folded or not.
 
-A tree can be folded if left and right subtrees of the tree are structure wise mirror image of each other. An empty tree is considered as foldable.
+A tree can be folded if left and right subtrees of the tree are structure wise mirror image of each other.
+An empty tree is considered as foldable.
 Consider the below trees:
 (a) and (b) can be folded.
 (c) and (d) cannot be folded.
@@ -711,7 +699,8 @@ bool isFoldable(const BinTreeNode* root) {
     return false;
   };
 
-  /* Change a tree so that the roles of the left and right pointers are swapped at every node. See http://geeksforgeeks.org/?p=662 for details */
+  /* Change a tree so that the roles of the left and right pointers are swapped at every node.
+     See http://geeksforgeeks.org/?p=662 for details */
   function<void(BinTreeNode*)> mirror =
     [&](BinTreeNode* curr_root) {
     if (!curr_root)
@@ -945,7 +934,9 @@ void ancestors_iter(const BinTreeNode* root, const int32_t target) {
       root = ancestors.top();
       ancestors.pop();
 
-      // If the popped node is right child of top, then remove the top as well. Left child of the top must have processed before. Consider the following tree for example and key = 3. If we remove the following loop, the program will go in an infinite loop after reaching 5.
+      // If the popped node is right child of top, then remove the top as well. Left child of the top must
+      // have processed before. Consider the following tree for example and key = 3. If we remove the following loop,
+      // the program will go in an infinite loop after reaching 5.
       //          1
       //        /   \
       //       2     3
@@ -969,7 +960,8 @@ void ancestors_iter(const BinTreeNode* root, const int32_t target) {
 }
 
 /*
-Given a Binary Tree, find vertical sum of the nodes that are in same vertical line. Print all sums through different vertical lines.
+Given a Binary Tree, find vertical sum of the nodes that are in same vertical line. Print all sums through different
+vertical lines.
  */
 void verticalSums(const BinTreeNode* root) { // inorder, O(n)
   map<int32_t,int32_t> hM;
@@ -997,7 +989,8 @@ void verticalSums(const BinTreeNode* root) { // inorder, O(n)
 /*
 Given a Binary Tree, write a function to check whether the given Binary Tree is Complete Binary Tree or not.
 
-A complete binary tree is a binary tree in which every level, except possibly the last, is completely filled, and all nodes are as far left as possible. See following examples.
+A complete binary tree is a binary tree in which every level, except possibly the last, is completely filled,
+and all nodes are as far left as possible. See following examples.
  */
 bool isComplete_iter(const BinTreeNode* root) {
   if (!root)
@@ -1058,7 +1051,8 @@ bool isComplete_recur(const BinTreeNode* root) {
 }
 
 /*
-A full binary tree is defined as a binary tree in which all nodes have either zero or two child nodes. Conversely, there is no node in a full binary tree, which has one child node.
+A full binary tree is defined as a binary tree in which all nodes have either zero or two child nodes.
+Conversely, there is no node in a full binary tree, which has one child node.
  */
 bool isFull_recur(const BinTreeNode* root) {
   function<bool(const BinTreeNode*)> solve =
@@ -1082,7 +1076,8 @@ bool isFull_recur(const BinTreeNode* root) {
 }
 
 /*
-Given a binary tree, print boundary nodes of the binary tree Anti-Clockwise starting from the root. For example, boundary traversal of the following tree is "20 8 4 10 14 25 22"
+Given a binary tree, print boundary nodes of the binary tree Anti-Clockwise starting from the root.
+For example, boundary traversal of the following tree is "20 8 4 10 14 25 22"
  */
 void boundaryTraversal(const BinTreeNode* root) {
   if (!root)
@@ -1145,7 +1140,8 @@ void boundaryTraversal(const BinTreeNode* root) {
 }
 
 /*
-In case of binary search trees (BST), Inorder traversal gives nodes in non-decreasing order. To get nodes of BST in non-increasing order, a variation of Inorder traversal where Inorder itraversal s reversed, can be used.
+In case of binary search trees (BST), Inorder traversal gives nodes in non-decreasing order.
+To get nodes of BST in non-increasing order, a variation of Inorder traversal where Inorder itraversal s reversed, can be used.
  */
 vector<int32_t> inorder_recur(const BinTreeNode* root) {
   vector<int32_t> ret;
@@ -1189,7 +1185,9 @@ vector<int32_t> inorder_iter(BinTreeNode* root) {
 }
 
 /*
-Preorder traversal is used to create a copy of the tree. Preorder traversal is also used to get prefix expression on of an expression tree. Please see http://en.wikipedia.org/wiki/Polish_notation to know why prefix expressions are useful.
+Preorder traversal is used to create a copy of the tree. Preorder traversal is also used to get prefix
+expression on of an expression tree. Please see http://en.wikipedia.org/wiki/Polish_notation to know why
+prefix expressions are useful.
  */
 vector<int32_t> preorder_recur(const BinTreeNode* root) {
   vector<int32_t> ret;
@@ -1231,7 +1229,9 @@ vector<int32_t> preorder_iter(const BinTreeNode* root) {
 }
 
 /*
-Postorder traversal is used to delete the tree. Please see the question for deletion of tree for details. Postorder traversal is also useful to get the postfix expression of an expression tree. Please see http://en.wikipedia.org/wiki/Reverse_Polish_notation to for the usage of postfix expression.
+Postorder traversal is used to delete the tree. Please see the question for deletion of tree for details.
+Postorder traversal is also useful to get the postfix expression of an expression tree.
+Please see http://en.wikipedia.org/wiki/Reverse_Polish_notation to for the usage of postfix expression.
  */
 vector<int32_t> postorder_recur(const BinTreeNode* root) {
   vector<int32_t> ret;
@@ -1377,7 +1377,8 @@ Postorder and Level-order.
  */
 
 /*
-Given Inorder Traversal of a Special Binary Tree in which key of every node is greater than keys in left and right children, construct the Binary Tree and return root.
+Given Inorder Traversal of a Special Binary Tree in which key of every node is greater than keys in left and
+right children, construct the Binary Tree and return root.
  */
 BinTreeNode* spec_in(const int32_t inorder[], const uint32_t n) {
   if (!n)
@@ -1424,7 +1425,10 @@ BinTreeNode* spec_in(const int32_t inorder[], const uint32_t n) {
 }
 
 /*
-Given an array 'pre[]' that represents Preorder traversal of a spacial binary tree where every node has either 0 or 2 children. One more array 'preLN[]' is given which has only two possible values 'L' and 'N'. The value 'L' in 'preLN[]' indicates that the corresponding node in Binary Tree is a leaf node and value 'N' indicates that the corresponding node is non-leaf node. Write a function to construct the tree from the given two arrays.
+Given an array 'pre[]' that represents Preorder traversal of a spacial binary tree where every node
+has either 0 or 2 children. One more array 'preLN[]' is given which has only two possible values 'L' and 'N'.
+The value 'L' in 'preLN[]' indicates that the corresponding node in Binary Tree is a leaf node and value 'N'
+indicates that the corresponding node is non-leaf node. Write a function to construct the tree from the given two arrays.
  */
 BinTreeNode* spec_pre(const int32_t pre[], char preLN[], const uint32_t n) {
   if (!n)
@@ -1576,7 +1580,8 @@ BinTreeNode* pre_post_recur(const int32_t pre[], const int32_t post[], const uin
 }
 
 /*
-Given a binary tree, return the zigzag level order traversal of its nodes' values. (ie, from left to right, then right to left for the next level and alternate between).
+Given a binary tree, return the zigzag level order traversal of its nodes' values. (ie, from left to right,
+then right to left for the next level and alternate between).
 
 For example:
 Given binary tree {3,9,20,#,#,15,7},
@@ -1703,7 +1708,8 @@ vector<vector<int32_t>> vertical_recur(const BinTreeNode* root) {
 }
 
 /*
-Given a Binary Tree, print left view of it. Left view of a Binary Tree is set of nodes visible when tree is visited from left side. Left view of following tree is 12, 10, 25.
+Given a Binary Tree, print left view of it. Left view of a Binary Tree is set of nodes visible when tree is
+visited from left side. Left view of following tree is 12, 10, 25.
           12
        /     \
      10       30
@@ -1732,7 +1738,8 @@ void leftView(const BinTreeNode* root) {
 }
 
 /*
-Given a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.
+Given a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you
+can see ordered from top to bottom.
 
 For example:
 Given the following binary tree,
@@ -1763,7 +1770,9 @@ vector<int32_t> rightView(const BinTreeNode* root) {
 }
 
 /*
-Given a binary tree, we need to print the bottom view from left to right. A node x is there in output if x is the bottommost node at its horizontal distance. Horizontal distance of left child of a node x is equal to horizontal distance of x minus 1, and that of right child is horizontal distance of x plus 1.
+Given a binary tree, we need to print the bottom view from left to right. A node x is there in output if x
+is the bottommost node at its horizontal distance. Horizontal distance of left child of a node x is equal to
+horizontal distance of x minus 1, and that of right child is horizontal distance of x plus 1.
                       20
                     /    \
                   8       22
@@ -1796,7 +1805,8 @@ void bottomView(HDBinTreeNode* root) {
     q.pop_front();
     hd = tmp->hd;
 
-    // Put the dequeued tree node to TreeMap having key as horizontal distance. Every time we find a node having same horizontal distance we need to replace the data in the map.
+    // Put the dequeued tree node to TreeMap having key as horizontal distance. Every time we find a node having
+    // same horizontal distance we need to replace the data in the map.
     recs[hd] = tmp->value;
 
     // If the dequeued node has a left child add it to the queue with a horizontal distance hd-1.
@@ -1814,7 +1824,8 @@ void bottomView(HDBinTreeNode* root) {
 }
 
 /*
-Top view of a binary tree is the set of nodes visible when the tree is viewed from the top. Given a binary tree, print the top view of it. The output nodes can be printed in any order. Expected time complexity is O(n)
+Top view of a binary tree is the set of nodes visible when the tree is viewed from the top. Given a binary tree,
+print the top view of it. The output nodes can be printed in any order. Expected time complexity is O(n)
        1
     /     \
    2       3
@@ -1867,11 +1878,14 @@ void topView(HDBinTreeNode* root) {
 }
 
 /*
-Using Morris Traversal, we can traverse the tree without using stack and recursion. The algorithm for Preorder is almost similar to Morris traversal for Inorder.
+Using Morris Traversal, we can traverse the tree without using stack and recursion. The algorithm for Preorder
+is almost similar to Morris traversal for Inorder.
 
 1. If left child is null, print the current node data. Move to right child.
    Else, make the right child of the inorder predecessor point to the current node.
-   Two cases arise: a) The right child of the inorder predecessor already points to the current node. Set right child to NULL. Move to right child of current node. b) The right child is NULL. Set it to current node. Print current node's data and move to left child of current node.
+   Two cases arise: a) The right child of the inorder predecessor already points to the current node.
+   Set right child to NULL. Move to right child of current node. b) The right child is NULL. Set it to current node.
+   Print current node's data and move to left child of current node.
 2. Iterate until current node is not NULL.
  */
 void morrisTraversalPreorder(BinTreeNode* root) {
@@ -1900,7 +1914,8 @@ void morrisTraversalPreorder(BinTreeNode* root) {
 }
 
 /*
-Given a Binary Tree, find size of the Largest Independent Set(LIS) in it. A subset of all tree nodes is an independent set if there is no edge between any two nodes of the subset.
+Given a Binary Tree, find size of the Largest Independent Set(LIS) in it. A subset of all tree nodes is an independent
+set if there is no edge between any two nodes of the subset.
  */
 uint32_t LISSize(const BinTreeNode* root) { // O(n*n)
   function<uint32_t(const BinTreeNode*)> solve =
@@ -1985,7 +2000,9 @@ uint32_t LISSize_dp(MemoBinTreeNode* root) { // O(n)
 /*
 Wirte a function which extracts all leaves from given Binary Tree.
  */
-// The function returns new root of Binary Tree (Note that root may change if Binary Tree has only one node).  The function also sets head_ref as head of doubly linked list. left pointer of tree is used as prev in DLL and right pointer is used as next
+// The function returns new root of Binary Tree (Note that root may change if Binary Tree has only one node).
+// The function also sets head_ref as head of doubly linked list. left pointer of tree is used as prev in DLL and
+// right pointer is used as next
 const BinTreeNode* extractLeafList(BinTreeNode* root) {
   BinTreeNode* head_ref = root;
 
@@ -2051,7 +2068,9 @@ BinTreeNode* bt2CDList(BinTreeNode* root) { // O(n)
 }
 
 /*
-Write a function to detect if two trees are isomorphic. Two trees are called isomorphic if one of them can be obtained from other by a series of flips, i.e. by swapping left and right children of a number of nodes. Any number of nodes at any level can have their children swapped. Two empty trees are isomorphic.
+Write a function to detect if two trees are isomorphic. Two trees are called isomorphic if one of them can be
+obtained from other by a series of flips, i.e. by swapping left and right children of a number of nodes.
+Any number of nodes at any level can have their children swapped. Two empty trees are isomorphic.
  */
 bool isIsomorphic(const BinTreeNode* r1, const BinTreeNode* r2) {
   function<bool(const BinTreeNode*,const BinTreeNode*)> solve =
@@ -2078,7 +2097,8 @@ bool isIsomorphic(const BinTreeNode* r1, const BinTreeNode* r2) {
 }
 
 /*
-Given a a Binary Tree, find the difference between the sum of nodes at odd level and the sum of nodes at even level. Consider root as level 1, left and right children of root as level 2 and so on.
+Given a a Binary Tree, find the difference between the sum of nodes at odd level and the sum of nodes at even level.
+Consider root as level 1, left and right children of root as level 2 and so on.
  */
 int32_t levelDiff(const BinTreeNode* root) {
   function<int32_t(const BinTreeNode*)> solve =
@@ -2094,7 +2114,8 @@ int32_t levelDiff(const BinTreeNode* root) {
 }
 
 /*
-Write a C code to get the depth of the deepest odd level leaf node in a binary tree. Consider that level starts with 1. Depth of a leaf node is number of nodes on the path from root to leaf (including both leaf and root).
+Write a C code to get the depth of the deepest odd level leaf node in a binary tree. Consider that level starts with 1.
+Depth of a leaf node is number of nodes on the path from root to leaf (including both leaf and root).
  */
 uint32_t deepestOddLevelLeafDepth(const BinTreeNode* root) {
   function<uint32_t(const BinTreeNode*,const uint32_t)> solve =
@@ -2223,7 +2244,8 @@ vector<vector<const BinTreeNode*>> allR2LPaths_iter(const BinTreeNode* root) {
 }
 
 /*
-Given a binary tree, how do you remove all the half nodes (which has only one child)? Note leaves should not be touched as they have both children as NULL.
+Given a binary tree, how do you remove all the half nodes (which has only one child)? Note leaves should not be touched
+as they have both children as NULL.
  */
 const BinTreeNode* removeHalfNodes(BinTreeNode* root) {
   function<BinTreeNode*(BinTreeNode*)> solve =
@@ -2409,11 +2431,13 @@ A simple solution is to do following steps.
 3) Reverse the array and store elements back in tree.
 
 A tricky solution is to do two inorder traversals. Following are steps to be followed.
-1) Traverse the given tree in inorder fashion and store all odd level nodes in an auxiliary array. For the above example given tree, contents of array become {h, i, b, j, k, l, m, c, n, o}
+1) Traverse the given tree in inorder fashion and store all odd level nodes in an auxiliary array. For the above
+example given tree, contents of array become {h, i, b, j, k, l, m, c, n, o}
 
 2) Reverse the array. The array now becomes {o, n, c, m, l, k, j, b, i, h}
 
-3) Traverse the tree again inorder fashion. While traversing the tree, one by one take elements from array and store elements from array to every odd level traversed node.
+3) Traverse the tree again inorder fashion. While traversing the tree, one by one take elements from array and store
+elements from array to every odd level traversed node.
  */
 // The main function to reverse alternate nodes of a binary tree
 #define MAX 500
@@ -2563,7 +2587,8 @@ bool areCousins(const BinTreeNode* root, const BinTreeNode* a, const BinTreeNode
 }
 
 /*
-Given two binary trees, check if the first tree is subtree of the second one. A subtree of a tree T is a tree S consisting of a node in T and all of its descendants in T.
+Given two binary trees, check if the first tree is subtree of the second one. A subtree of a tree T is a tree S
+consisting of a node in T and all of its descendants in T.
  */
 bool isSubtree(const BinTreeNode* T, const BinTreeNode* S) { // O(n2)
   function<bool(const BinTreeNode*,const BinTreeNode*)> solve =
@@ -2585,7 +2610,9 @@ bool isSubtree(const BinTreeNode* T, const BinTreeNode* S) { // O(n2)
 }
 
 /*
-This is an O(n) solution. The idea is based on the fact that inorder and preorder/postorder uniquely identify a binary tree. Tree S is a subtree of T if both inorder and preorder traversals of S are substrings of inorder and preorder traversals of T respectively.
+This is an O(n) solution. The idea is based on the fact that inorder and preorder/postorder uniquely identify a binary tree.
+Tree S is a subtree of T if both inorder and preorder traversals of S are substrings of inorder and preorder
+traversals of T respectively.
  */
 bool isSubtree_2(const BinTreeNode* T, const BinTreeNode* S) {
   if (!S)
@@ -2639,7 +2666,8 @@ bool isSubtree_2(const BinTreeNode* T, const BinTreeNode* S) {
 }
 
 /*
-Given a Binary Tree, print all nodes that don't have a sibling (a sibling is a node that has same parent. In a Binary Tree, there can be at most one sibling). Root should not be printed as root cannot have a sibling.
+Given a Binary Tree, print all nodes that don't have a sibling (a sibling is a node that has same parent.
+In a Binary Tree, there can be at most one sibling). Root should not be printed as root cannot have a sibling.
  */
 void allSingles(const BinTreeNode* root) {
   function<void(const BinTreeNode*)> solve =
@@ -2720,7 +2748,9 @@ int32_t maxR2LPathSum(const BinTreeNode* root) {
 }
 
 /*
-Given a binary tree, a complete path is defined as a path from root to a leaf. The sum of all nodes on that path is defined as the sum of that path. Given a number k, you have to remove (prune the tree) all nodes which don't lie in any path with sum >= k.
+Given a binary tree, a complete path is defined as a path from root to a leaf. The sum of all nodes on that path is
+defined as the sum of that path. Given a number k, you have to remove (prune the tree) all nodes which don't lie in
+any path with sum >= k.
  */
 BinTreeNode* prune(BinTreeNode* root, const int32_t k) {
   function<BinTreeNode*(BinTreeNode*,int32_t&)> solve =
@@ -2805,7 +2835,8 @@ uint32_t r2LNumsSum_recur(const BinTreeNode1* root) {
 }
 
 /*
-Given a binary tree and a sum, determine if the tree has a root-to-leaf path such that adding up all the values along the path equals the given sum.
+Given a binary tree and a sum, determine if the tree has a root-to-leaf path such that adding up all the values
+along the path equals the given sum.
               5
              / \
             4   8
@@ -2956,7 +2987,8 @@ void deserialize_recur(BinTreeNode*& root, ifstream& fin) {
 }
 */
 /*
-Consider lines of slope -1 passing between nodes (dotted lines in below diagram). Diagonal sum in a binary tree is sum of all node's data lying between these lines. Given a Binary Tree, print all diagonal sums.
+Consider lines of slope -1 passing between nodes (dotted lines in below diagram). Diagonal sum in a binary tree
+is sum of all node's data lying between these lines. Given a Binary Tree, print all diagonal sums.
  */
 struct VDBinTreeNode {
   int32_t value;
@@ -3005,8 +3037,10 @@ int32_t diagonalSum(VDBinTreeNode* root) {
 }
 
 /*
-Left-Right representation of a binary tree is standard representation where every node has a pointer to left child and another pointer to right child.
-Down-Right representation is an alternate representation where every node has a pointer to left (or first) child and another pointer to next sibling. So siblings at every level are connected from left to right.
+Left-Right representation of a binary tree is standard representation where every node has a pointer to left child
+and another pointer to right child.
+Down-Right representation is an alternate representation where every node has a pointer to left (or first) child and
+another pointer to next sibling. So siblings at every level are connected from left to right.
 Given a binary tree in left-right representation as below
                                A
 		            /    \
@@ -3023,7 +3057,8 @@ Convert the structure of the tree to down-right representation like the below tr
 			D - E
 			|
 			F - G - H
-The conversion should happen in-place, i.e., left child pointer should be used as down pointer and right child pointer should be used as right sibling pointer.
+The conversion should happen in-place, i.e., left child pointer should be used as down pointer and right child
+pointer should be used as right sibling pointer.
  */
 void convert2DownRight(BinTreeNode* root) {
   if (!root)
