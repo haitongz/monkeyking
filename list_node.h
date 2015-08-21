@@ -17,6 +17,16 @@ struct ListNodeT {
 typedef ListNodeT<int32_t> ListNode;
 
 template <typename T>
+inline ListNodeT<T>* getTail(const ListNodeT<T>* curr) {
+  auto ret = curr;
+
+  while (ret && ret->next)
+    ret = ret->next;
+
+  return curr;
+}
+
+template <typename T>
 struct DListNodeT {
   T value;
   DListNodeT<T>* prev;
