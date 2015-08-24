@@ -7,7 +7,8 @@ using namespace std;
 /*
 Say you have an array for which the ith element is the price of a given stock on day i.
 
-If you were only permitted to complete at most one transaction (ie, buy one and sell one share of the stock), design an algorithm to find the maximum profit.
+If you were only permitted to complete at most one transaction (ie, buy one and sell one share of the stock),
+design an algorithm to find the maximum profit.
  */
 double maxProfit(const vector<double>& prices) {
   const uint32_t n = prices.size();
@@ -36,7 +37,9 @@ double maxProfit(const vector<double>& prices) {
 /*
 Say you have an array for which the ith element is the price of a given stock on day i.
 
-Design an algorithm to find the maximum profit. You may complete as many transactions as you like (ie, buy one and sell one share of the stock multiple times). However, you may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
+Design an algorithm to find the maximum profit. You may complete as many transactions as you like
+(ie, buy one and sell one share of the stock multiple times). However, you may not engage in multiple transactions
+at the same time (ie, you must sell the stock before you buy again).
  */
 double maxProfit2(const vector<double>& prices) {
   const uint32_t n = prices.size();
@@ -131,7 +134,9 @@ double maxProfit4(const vector<double>& prices, uint32_t k) {
     const double diff = prices[i]-prices[i-1];
 
     for (uint32_t j = 1; j <= k; ++j) {
-      local[i][j] = max(global[i-1][j-1]+max(diff, 0.0), local[i-1][j]+diff); // There are total j transactions made till day i. Two different senarios: 1. jth transaction (buy and sell) takes place on day i; 2. a position was bought earlier but sold on day i. the profit is equal to profit on day i-1 plus stock value change on day i.
+      local[i][j] = max(global[i-1][j-1]+max(diff, 0.0), local[i-1][j]+diff); // There are total j transactions made till day
+      // i. Two different senarios: 1. jth transaction (buy and sell) takes place on day i; 2. a position was bought earlier
+      // but sold on day i. the profit is equal to profit on day i-1 plus stock value change on day i.
 
       global[i][j] = max(local[i][j], global[i-1][j]);
     }
