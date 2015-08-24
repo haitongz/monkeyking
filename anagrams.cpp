@@ -1,7 +1,3 @@
-/*
-Given an array of strings, return all groups of strings that are anagrams.
-Note: All inputs will be in lower-case.
-*/
 #include <iostream>
 #include <vector>
 #include <map>
@@ -68,6 +64,10 @@ bool areAnagrams(const string& s1, const string& s2) {
   return true;
 }
 */
+/*
+Given an array of strings, return all groups of strings that are anagrams.
+Note: All inputs will be in lower-case.
+ */
 vector<string> anagrams(vector<string>& strs) {
   map<string,vector<string>> recs;
 
