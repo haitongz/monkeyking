@@ -1,15 +1,22 @@
 /*
-Given an array of size n, find all elements in array that appear more than n/k times. For example, if the input arrays is {3, 1, 2, 2, 1, 2, 3, 3} and k is 4, then the output should be [2, 3]. Note that size of array is 8 (or n = 8), so we need to find all elements that appear more than 2 (or 8/4) times. There are two elements that appear more than two times, 2 and 3.
+Given an array of size n, find all elements in array that appear more than n/k times. For example, 
+if the input arrays is {3, 1, 2, 2, 1, 2, 3, 3} and k is 4, then the output should be [2, 3]. Note that
+size of array is 8 (or n = 8), so we need to find all elements that appear more than 2 (or 8/4) times.
+There are two elements that appear more than two times, 2 and 3.
  */
 #include <iostream>
 
 /*
 O(nk) solution:
-We can solve the above problem in O(nk) time using O(k-1) extra space. Note that there can never be more than k-1 elements in output (Why?). There are mainly three steps in this algorithm.
+We can solve the above problem in O(nk) time using O(k-1) extra space. Note that there can never be more than
+k-1 elements in output (Why?). There are mainly three steps in this algorithm.
 
-1) Create a temporary array of size (k-1) to store elements and their counts (The output elements are going to be among these k-1 elements).
-2) Traverse through the input array and update temp[] (add/remove an element or increase/decrease count) for every traversed element. The array temp[] stores potential (k-1) candidates at every step. This step takes O(nk) time.
-3) Iterate through final (k-1) potential candidates (stored in temp[]). or every element, check if it actually has count more than n/k. This step takes O(nk) time.
+1) Create a temporary array of size (k-1) to store elements and their counts (The output elements are going to be
+among these k-1 elements).
+2) Traverse through the input array and update temp[] (add/remove an element or increase/decrease count) for every
+traversed element. The array temp[] stores potential (k-1) candidates at every step. This step takes O(nk) time.
+3) Iterate through final (k-1) potential candidates (stored in temp[]). or every element, check if it actually has
+count more than n/k. This step takes O(nk) time.
  */
 void moreThanNdK(const int32_t a[], const uint32_t n, const uint32_t k) {
     // k must be greater than 1 to get some output
