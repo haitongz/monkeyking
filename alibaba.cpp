@@ -1,5 +1,6 @@
 /*
-Given an array of rooms with size n, thief Alibaba changes his room everyday but he can only move by 1 either left or right. Use a strategy array to guess Alibaba's position, call it works when there's at least one bingo.
+Given an array of rooms with size n, thief Alibaba changes his room everyday but he can only move by 1 either left or right.
+Use a strategy array to guess Alibaba's position, call it works when there's at least one bingo.
  */
 #include <iostream>
 
