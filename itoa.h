@@ -1,7 +1,7 @@
 #ifndef _ITOA_H_
 #define _ITOA_H_
 
-char* itoa(int32_t value, char* result, const uint32_t base) {
+char* itoa(int32_t value, char* result, const uint32_t base = 10) {
   if (base < 2 || base > 36) {
     *result = '\0';
     return result;
