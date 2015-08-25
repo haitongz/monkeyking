@@ -19,21 +19,21 @@ string countAndSay(const uint32_t n) {
   string prev = "1";
   for (uint32_t i = 2; i <= n; ++i) { // need to generate all previous numbers to get Nth
     char curr = prev[0];
-    uint16_t cntr = 1;
+    uint16_t cnt = 1;
     string tmp;
     prev.push_back('#');
     const uint32_t len = prev.length();
 
     for (uint32_t j = 1; j < len; ++j) {
       if (prev[j] == curr) {
-        ++cntr;
+        ++cnt;
       } else {
-        char buf[10];
-        itoa(buf, cntr, 10);
+        char buf[8]; // enough for uint16_t
+        itoa(buf, cnt);
         tmp += string(buf);
         tmp.push_back(curr);
         curr = prev[j];
-        cntr = 1;
+        cnt = 1;
       }
     }
 
