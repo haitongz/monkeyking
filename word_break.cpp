@@ -8,13 +8,13 @@ dict = ["leet", "code"].
 Return true because "leetcode" can be segmented as "leet code".
  */
 #include <iostream>
-#include <unordered_set>
+#include <set>
 
 using namespace std;
 
-bool wordbreak(const string& s, const unordered_set<string>& dict) {
+bool wordbreak(const string& s, const set<string>& dict) {
   const uint32_t len = s.length();
-  if (len <= 1) {
+  if (len < 2) {
     return dict.count(s) ? true : false;
   }
 
@@ -22,7 +22,7 @@ bool wordbreak(const string& s, const unordered_set<string>& dict) {
   dp[0] = true;
 
   for (uint32_t i = 0; i < len; ++i) {
-    for (int32_t j = i, k = 1; j >= 0; ++k, --j) {
+    for (int32_t j = i, k = 1; j > -1; ++k, --j) {
       string j_sub = s.substr(j, k);
       if (dp[j] && dict.count(j_sub)) {
         dp[i+1] = true;
@@ -34,10 +34,12 @@ bool wordbreak(const string& s, const unordered_set<string>& dict) {
   return dp[len];
 }
 
-int main() {
-  unordered_set<string> dict;
+int main(int argc, char** argv) {
+  set<string> dict;
   dict.insert("leet");
   dict.insert("code");
 
   cout << "String 'leetcode' can " << (wordbreak("leetcode", dict) ? "" : "not ") << "be segmented!" << endl;
+
+  return 0;
 }
