@@ -1,5 +1,6 @@
 /*
-Write a function which, given two integers (a numerator and a denominator), prints the decimal representation of the rational number "numerator/denominator".
+Write a function which, given two integers (a numerator and a denominator), prints the decimal representation of
+the rational number "numerator/denominator".
 Since all rational numbers end with a repeating section, print the repeating section of digits inside parentheses.
 Example:
 1 , 3 = 0.(3)
@@ -19,33 +20,33 @@ string fraction2Decimal(const int32_t n, const int32_t d) {
     return "0";
 
   int32_t num = n, den = d;
-  string res = (num*den < 0) ? "-" : "";
+  string ret = (num*den < 0) ? "-" : "";
 
   num = abs(num);
   den = abs(den);
   char buf[10];
-  res += itoa(num/den, buf, 10);
+  ret += itoa(num/den, buf);
 
   num %= den;
   if (!num)
-    return res;
+    return ret;
 
-  res.push_back('.');
+  ret.push_back('.');
   map<int32_t,uint32_t> rems;
 
   while (num && !rems.count(num)) {
-    rems[num] = res.size();
+    rems[num] = ret.size();
     num *= 10;
-    res += string(itoa(num/den, buf, 10));
+    ret += string(itoa(num/den, buf));
     num %= den;
   }
 
   if (num) {
-    res.insert(res.begin()+rems[num], '(');
-    res += ")";
+    ret.insert(ret.begin()+rems[num], '(');
+    ret += ")";
   }
 
-  return res;
+  return ret;
 }
 
 int main(int argc, char** argv) {
