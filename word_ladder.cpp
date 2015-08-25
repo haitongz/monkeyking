@@ -1,6 +1,6 @@
 #include <iostream>
-#include <unordered_set>
-#include <unordered_map>
+#include <set>
+#include <map>
 #include <functional>
 #include <queue>
 #include <algorithm>
@@ -8,8 +8,7 @@
 using namespace std;
 
 /*
-Given two words (start and end), and a dictionary, find the length of shortest transformation sequence from start to end,
-such that:
+Given two words (start and end), and a dictionary, find the length of shortest transformation sequence from start to end, such that:
 Only one letter can be changed at a time
 Each intermediate word must exist in the dictionary
 
@@ -24,31 +23,31 @@ Return 0 if there is no such transformation sequence.
 All words have the same length.
 All words contain only lowercase alphabetic characters.
  */
-uint32_t minLadderLen_dp(const string& start, const string& end, unordered_set<string>& dict) {
-  uint32_t res = 1;
+uint32_t minLadderLen_dp(const string& start, const string& end, set<string>& dict) {
   dict.erase(start);
   dict.erase(end);
 
-  deque<string> qs[2];
-  qs[0].push_back(start);
-  uint8_t idx = 0;
+  deque<string> q[2];
+  q[0].push_back(start);
+  bool idx = 0;
+  uint32_t ret = 1;
 
-  while (!qs[idx].empty()) {
-    ++res;
+  while (!q[idx].empty()) {
+    ++ret;
 
-    while (!qs[idx].empty()) {
-      string s = qs[idx].front();
-      qs[idx].pop_front();
+    while (!q[idx].empty()) {
+      string s = q[idx].front();
+      q[idx].pop_front();
 
       for (uint32_t i = 0; i < s.length(); ++i) {
         char a = s[i];
-        for (char az = 'a'; az <= 'z'; ++az) {
-          s[i] = az;
+        for (char c = 'a'; c <= 'z'; ++c) {
+          s[i] = c;
           if (s == end)
-            return res;
+            return ret;
           if (dict.count(s)) {
             dict.erase(s);
-            qs[!idx].push_back(s);
+            q[!idx].push_back(s);
           }
         }
         s[i] = a;
@@ -62,13 +61,13 @@ uint32_t minLadderLen_dp(const string& start, const string& end, unordered_set<s
 }
 
 // double BFS, speed up
-uint32_t minLadderLen_2bfs(const string& start, const string& end, const unordered_set<string>& dict) {
+uint32_t minLadderLen_2bfs(const string& start, const string& end, const set<string>& dict) { // has issues
   deque<string> q0 = {start}, q1 = {end};
-  unordered_map<string,uint32_t> dis0 = {{start,1}}, dis1 = {{end,1}};
+  map<string,uint32_t> dis0 = {{start,1}}, dis1 = {{end,1}};
 
   while (!q0.empty() || !q1.empty()) {
     deque<string>* curr_q = &q0, *other_q = &q1;
-    unordered_map<string,uint32_t> *curr_dis = &dis0, *other_dis = &dis1;
+    map<string,uint32_t>* curr_dis = &dis0, *other_dis = &dis1;
 
     if (!q1.empty() && (q0.empty() || q0.size() >= q1.size())) {
       swap(curr_q, other_q);
@@ -100,32 +99,31 @@ uint32_t minLadderLen_2bfs(const string& start, const string& end, const unorder
 
   return 0;
 }
-#if 0
+
 /*
 Follow up:
 How about output all results?
- */
-vector<vector<string>> allLadders(const string& start, const string& end, unordered_set<string>& dict) {
-  vector<vector<string>> res;
-  unordered_map<string,vector<string>> prev;
-  unordered_set<string> visited;
-  unordered_map<string,uint32_t> distance;
-  deque<string> q;
-  q.push_back(start);
-  distance[start] = 1;
+
+another implementation of shortedTransSeqs
+
+vector<vector<string>> allLadders(const string& start, const string& end, set<string>& dict) {
+  map<string,vector<string>> prev;
+  deque<string> q = {start};
   dict.insert(start);
   dict.insert(end);
+  vector<vector<string>> ret;
 
-  function<void(const string&,vector<string>&)> getPath = [&](const string& word, vector<string>& curr_path) {
+  function<void(const string&,vector<string>&)> getPath =
+    [&](const string& word, vector<string>& curr_path) {
     if (!prev.count(word)){
       vector<string> sln;
       sln.push_back(word);
       sln.insert(sln.end(), curr_path.begin(), curr_path.end());
       if (!curr_path.empty())
         reverse(sln.begin()+1, sln.end());
-      res.push_back(sln);
+      ret.push_back(sln);
     } else {
-      for (string& s : prev[word]){
+      for (const auto& s : prev[word]){
         curr_path.push_back(word);
         getPath(s, curr_path);
         curr_path.pop_back();
@@ -133,6 +131,9 @@ vector<vector<string>> allLadders(const string& start, const string& end, unorde
     }
   };
 
+  map<string,uint32_t> distance;
+  distance[start] = 1;
+  set<string> visited;
   while (!q.empty()){
     string word = q.front();
     q.pop_front();
@@ -155,7 +156,7 @@ vector<vector<string>> allLadders(const string& start, const string& end, unorde
       word[i] = old;
     }
 
-    for (string& w : adj) {
+    for (auto& w : adj) {
       if (distance[w] == 0) {
         prev[w].push_back(word);
         distance[w] = dist;
@@ -171,9 +172,10 @@ vector<vector<string>> allLadders(const string& start, const string& end, unorde
     getPath(end, curr_path);
   }
 
-  return res;
+  return ret;
 }
-#endif
+*/
+
 /*
 Given two words (start and end), and a dictionary, find all shortest transformation sequence(s) from start to end, such that:
 Only one letter can be changed at a time
@@ -194,53 +196,56 @@ All words contain only lowercase alphabetic characters.
  */
 vector<vector<string>> shortestTransSeqs(const string& start,
                                          const string& end,
-                                         unordered_set<string>& dict) {
-  vector<vector<string>> res;
-  unordered_map<string,vector<string>> recs;
+                                         set<string>& dict) {
   dict.erase(start);
   dict.erase(end);
+
+  vector<vector<string>> ret;
+  map<string,vector<string>> recs;
   vector<string> to_ext(1, end);
 
-  function<void(const string&)> backtrack =
+  function<void(const string&)> solve = // backtracking
     [&](const string& curr) {
     if (curr == start) {
-      res.push_back(to_ext);
-      reverse(res.back().begin(), res.back().end());
+      ret.push_back(to_ext);
+      reverse(ret.back().begin(), ret.back().end());
       return;
     }
 
     vector<string> v = recs[curr];
     for (uint32_t i = 0; i < v.size(); ++i) {
       to_ext.push_back(v[i]);
-      backtrack(v[i]);
+      solve(v[i]);
       to_ext.pop_back();
     }
   };
 
-  vector<string> qs[2];
-  unordered_set<string> sst;
-  qs[0].push_back(start);
-  uint8_t idx = 0;
+  vector<string> q[2];
+  set<string> sst;
+  q[0].push_back(start);
+  bool idx = 0;
   bool done = false;
 
-  while (!qs[idx].empty()) {
-    while (!qs[idx].empty()) {
-      string s = qs[idx].back();
+  while (!q[idx].empty()) {
+
+    while (!q[idx].empty()) {
+      string s = q[idx].back();
       for (uint32_t i = 0; i < s.length(); ++i) {
         char a = s[i];
-        for (char az = 'a'; az <= 'z'; ++az) {
-          s[i] = az;
+        for (char c = 'a'; c <= 'z'; ++c) {
+          s[i] = c;
           if (s == end) {
             done = true;
-            recs[s].push_back(qs[idx].back());
+            recs[s].push_back(q[idx].back());
           } else if (dict.count(s)) {
-            recs[s].push_back(qs[idx].back());
-            qs[!idx].push_back(s);
+            recs[s].push_back(q[idx].back());
+            q[!idx].push_back(s);
           }
         }
         s[i] = a;
       } //for
-      qs[idx].pop_back();
+
+      q[idx].pop_back();
     } //while
 
     if (done)
@@ -248,31 +253,38 @@ vector<vector<string>> shortestTransSeqs(const string& start,
 
     idx = !idx;
     sst.clear();
-    sst.insert(qs[idx].begin(), qs[idx].end());
-    qs[idx].assign(sst.begin(), sst.end());
+    sst.insert(q[idx].begin(), q[idx].end());
+    q[idx].assign(sst.begin(), sst.end());
 
-    for (uint32_t i = 0; i < qs[idx].size(); ++i)
-      dict.erase(qs[idx][i]);
+    for (uint32_t i = 0; i < q[idx].size(); ++i)
+      dict.erase(q[idx][i]);
   } //while
 
   if (!recs.count(end))
-    return res;
+    return ret;
 
-  backtrack(end);
-  return res;
+  solve(end);
+  return ret;
 }
 
 int main(int argc, char** argv) {
   const string start = "hit";
   const string end = "cog";
-  unordered_set<string> dict;
+  set<string> dict;
   dict.insert("hot");
   dict.insert("dot");
   dict.insert("dog");
   dict.insert("lot");
   dict.insert("log");
   cout << "Minimum length of word ladder: " << minLadderLen_dp(start, end, dict) << endl;
- // cout << "Minimum length of word ladder: " << minLadderLen_2bfs(start, end, dict) << endl;
+
+  /*
+  dict.insert("hot");
+  dict.insert("dot");
+  dict.insert("dog");
+  dict.insert("lot");
+  dict.insert("log");
+  cout << "Minimum length of word ladder: " << minLadderLen_2bfs(start, end, dict) << endl; */
 
   dict.clear();
   dict.insert("hot");
@@ -281,19 +293,19 @@ int main(int argc, char** argv) {
   dict.insert("lot");
   dict.insert("log");
   vector<vector<string>> res = /*allLadders(start, end, dict);
-  for (uint32_t i = 0; i < res.size(); ++i) {
+  for (const auto& i : res) {
     cout << "[";
-    for (uint32_t j = 0; j < res[i].size(); ++j)
-      cout << "\"" << res[i][j] << "\",";
+    for (const auto& j : i)
+      cout << "\"" << j << "\",";
     cout << "]," << endl;
   }
 
   res = */shortestTransSeqs(start, end, dict);
-  for (uint32_t i = 0; i < res.size(); ++i) {
+  cout << "Shortest transform sequences:" << endl;
+  for (const auto& i : res) {
     cout << "[";
-    for (uint32_t j = 0; j < res[i].size(); ++j) {
-      cout << "\"" << res[i][j] << "\",";
-    }
+    for (const auto& j : i)
+      cout << "\"" << j << "\",";
     cout << "]," << endl;
   }
 
