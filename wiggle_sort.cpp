@@ -1,13 +1,11 @@
 /*
 Sort an array so that a1 <= a2 >= a3 <= a4 >=...
-*/
+ */
 #include <iostream>
-#include <vector>
 
 using namespace std;
 
-void wiggleSort(vector<int32_t>& a){
-  const uint32_t n = a.size();
+void wiggleSort(int32_t a[], const uint32_t n) {
   if (!n)
     return;
 
@@ -25,14 +23,15 @@ void wiggleSort(vector<int32_t>& a){
   }
 
   a[n-1] = curr;
+
+  for (uint32_t i = 0; i < n; ++i)
+    cout << a[i] << ",";
+  cout << endl;
 }
 
 int main(int argc, char** argv) {
-  vector<int32_t> a = {23, -10, 293, 95, 93, -84, -100, 94, -32};
-  wiggleSort(a);
-  for (uint32_t i = 0; i < a.size(); ++i) {
-    cout << a[i] << ",";
-  }
-  cout << endl;
+  int32_t a[10] = {23, -10, 293, 95, 93, -84, -100, 94, -32};
+  wiggleSort(a, 10);
+
   return 0;
 }
