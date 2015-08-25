@@ -1,5 +1,15 @@
+#include <iostream>
+#include <unordered_set>
+#include <unordered_map>
+#include <functional>
+#include <queue>
+#include <algorithm>
+
+using namespace std;
+
 /*
-Given two words (start and end), and a dictionary, find the length of shortest transformation sequence from start to end, such that:
+Given two words (start and end), and a dictionary, find the length of shortest transformation sequence from start to end,
+such that:
 Only one letter can be changed at a time
 Each intermediate word must exist in the dictionary
 
@@ -14,15 +24,6 @@ Return 0 if there is no such transformation sequence.
 All words have the same length.
 All words contain only lowercase alphabetic characters.
  */
-#include <iostream>
-#include <unordered_set>
-#include <unordered_map>
-#include <functional>
-#include <queue>
-#include <algorithm>
-
-using namespace std;
-
 uint32_t minLadderLen_dp(const string& start, const string& end, unordered_set<string>& dict) {
   uint32_t res = 1;
   dict.erase(start);
@@ -175,7 +176,6 @@ vector<vector<string>> allLadders(const string& start, const string& end, unorde
 #endif
 /*
 Given two words (start and end), and a dictionary, find all shortest transformation sequence(s) from start to end, such that:
-
 Only one letter can be changed at a time
 Each intermediate word must exist in the dictionary
 
