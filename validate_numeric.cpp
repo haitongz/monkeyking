@@ -7,7 +7,7 @@ Some examples:
 "abc" => false
 "1 a" => false
 "2e10" => true
-*/
+ */
 #include <iostream>
 
 using namespace std;
@@ -66,14 +66,14 @@ bool validateNumberic(const char* s) {
 }
 
 int main(int argc, char** argv) {
-  std::string s = "0";
-  std::cout << s << " is" << (validateNumberic(s.c_str()) ? " " : " not ") << "numberic!" << std::endl;
+  string s = "0";
+  cout << s << " is" << (validateNumberic(s.c_str()) ? " " : " not ") << "numberic!" << endl;
   s = " 0.1 ";
-  std::cout << s << " is" << (validateNumberic(s.c_str()) ? " " : " not ") << "numberic!" << std::endl;
+  cout << s << " is" << (validateNumberic(s.c_str()) ? " " : " not ") << "numberic!" << endl;
   s = "abc";
-  std::cout << s << " is" << (validateNumberic(s.c_str()) ? " " : " not ") << "numberic!" << std::endl;
+  cout << s << " is" << (validateNumberic(s.c_str()) ? " " : " not ") << "numberic!" << endl;
   s = "1 a";
-  std::cout << s << " is" << (validateNumberic(s.c_str()) ? " " : " not ") << "numberic!" << std::endl;
+  cout << s << " is" << (validateNumberic(s.c_str()) ? " " : " not ") << "numberic!" << endl;
   s = "2e10";
-  std::cout << s << " is" << (validateNumberic(s.c_str()) ? " " : " not ") << "numberic!" << std::endl;
+  cout << s << " is" << (validateNumberic(s.c_str()) ? " " : " not ") << "numberic!" << endl;
 }
