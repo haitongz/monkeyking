@@ -1,15 +1,18 @@
 /*
-The problem can be solved in O(nLogn + mLogn) time. The trick here is, if y > x then x^y > y^x with some exceptions. Following are simple steps based on this trick.
+The problem can be solved in O(nLogn + mLogn) time. The trick here is, if y > x then x^y > y^x with some exceptions.
+Following are simple steps based on this trick.
 
 1) Sort array Y[].
-2) For every x in X[], find the index idx of smallest number greater than x (also called ceil of x) in Y[] using binary search or we can use the inbuilt function upper_bound() in algorithm library.
+2) For every x in X[], find the index idx of smallest number greater than x (also called ceil of x) in Y[] using binary
+search or we can use the inbuilt function upper_bound() in algorithm library.
 3) All the numbers after idx satisfy the relation so just add (n-idx) to the count.
 
 Base Cases and Exceptions:
 Following are exceptions for x from X[] and y from Y[]
 If x = 0, then the count of pairs for this x is 0.
 If x = 1, then the count of pairs for this x is equal to count of 0s in Y[].
-The following cases must be handled separately as they don¿t follow the general rule that x smaller than y means x^y is greater than y^x.
+The following cases must be handled separately as they don¿t follow the general rule that x smaller than y means x^y is
+greater than y^x.
 a) x = 2, y = 3 or 4
 b) x = 3, y = 2
 Note that the case where x = 4 and y = 2 is not there
@@ -121,9 +124,7 @@ int maxPathSum(int ar1[], int ar2[], int m, int n)
     return result;
 }
 
-// Driver program to test above functions
-int main()
-{
+int main() {
     int X[] = {2, 1, 6};
     int Y[] = {1, 5};
 
