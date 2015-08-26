@@ -70,21 +70,21 @@ vector<string> newStrings(const string& s) { // O(n*(2^n))
   vector<string> ret;
 
   function<void(const uint32_t,const uint32_t)> solve =
-    [&](const uint32_t idx1, const uint32_t idx2) {
-    if (idx1 == len) {
-      buf[idx2] = '\0';
+    [&](const uint32_t s_idx, const uint32_t new_idx) {
+    if (s_idx == len) {
+      buf[new_idx] = '\0';
       ret.push_back(buf);
       return;
     }
 
     // Either put the character
-    buf[idx2] = s[idx1];
-    solve(idx1+1, idx2+1);
+    buf[new_idx] = s[s_idx];
+    solve(s_idx+1, new_idx+1);
 
     // Or put a space followed by next character
-    buf[idx2] = ' ';
-    buf[idx2+1] = s[idx1];
-    solve(idx1+1, idx2+2);
+    buf[new_idx] = ' ';
+    buf[new_idx+1] = s[s_idx];
+    solve(s_idx1+1, new_idx+2);
   };
 
   solve(1, 1);
