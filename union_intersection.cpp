@@ -1,5 +1,6 @@
 /*
-Given two unsorted arrays that represent two sets (elements in every array are distinct), find union and intersection of two arrays.
+Given two unsorted arrays that represent two sets (elements in every array are distinct), find union and intersection
+of two arrays.
 
 Using sorting and searching
 
@@ -18,7 +19,8 @@ Intersection:
 ...b) Binary Search x in smaller array. If x is present, then copy it to I.
 4) Return I.
 
-Time complexity of this method is min(mLogm + nLogm, mLogn + nLogn) which can also be written as O((m+n)Logm, (m+n)Logn). This approach works much better than the previous approach when difference between sizes of two arrays is significant.
+Time complexity of this method is min(mLogm + nLogm, mLogn + nLogn) which can also be written as O((m+n)Logm, (m+n)Logn).
+This approach works much better than the previous approach when difference between sizes of two arrays is significant.
  */
 
 vector<int32_t> Union(int32_t a1[], int32_t a2[], const uint32_t m, const uint32_t n) {
@@ -94,16 +96,14 @@ int binarySearch(int arr[], int l, int r, int x)
     return -1;
 }
 
-/* Driver program to test above function */
-int main()
-{
-    int arr1[] = {7, 1, 5, 2, 3, 6};
-    int arr2[] = {3, 8, 6, 20, 7};
-    int m = sizeof(arr1)/sizeof(arr1[0]);
-    int n = sizeof(arr2)/sizeof(arr2[0]);
+int main(int argc, char** argv) {
+    int32_t a1[] = {7, 1, 5, 2, 3, 6};
+    int32_t a2[] = {3, 8, 6, 20, 7};
+    const uint32_t m = sizeof(a1)/sizeof(a1[0]);
+    const uint32_t n = sizeof(a2)/sizeof(a2[0]);
     cout << "Union of two arrays is \n";
-    printUnion(arr1, arr2, m, n);
+    printUnion(a1, a2, m, n);
     cout << "\nIntersection of two arrays is \n";
-    printIntersection(arr1, arr2, m, n);
+    printIntersection(a1, a2, m, n);
     return 0;
 }
