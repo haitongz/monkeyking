@@ -5,13 +5,16 @@ Write a program to find and print the 150th ugly number.
 
 Algorithm:
 
-Because every number can only be divided by 2, 3, 5, one way to look at the sequence is to split the sequence to three groups as below:
+Because every number can only be divided by 2, 3, 5, one way to look at the sequence is to split the sequence to
+three groups as below:
      (1) 1×2, 2×2, 3×2, 4×2, 5×2, ...
      (2) 1×3, 2×3, 3×3, 4×3, 5×3, ...
      (3) 1×5, 2×5, 3×5, 4×5, 5×5, ...
 
-We can find that every subsequence is the ugly-sequence itself (1, 2, 3, 4, 5, ...) multiply 2, 3, 5. Then we use similar merge method as merge sort, to get every ugly number from the three subsequence. Every step we choose the smallest one, and move one step after.
-Loop for all positive integers until ugly number count is smaller than n, if an integer is ugly than increment ugly number count.
+We can find that every subsequence is the ugly-sequence itself (1, 2, 3, 4, 5, ...) multiply 2, 3, 5. Then we use
+similar merge method as merge sort, to get every ugly number from the three subsequence. Every step we choose the
+smallest one, and move one step after. Loop for all positive integers until ugly number count is smaller than n,
+if an integer is ugly than increment ugly number count.
  */
 #include <iostream>
 
