@@ -14,15 +14,14 @@ to worry about odd positioned element. Following are simple steps.
 ...a) If current element is smaller than previous odd element, swap previous and current.
 ...b) If current element is smaller than next odd element, swap next and current.
  */
-void waveSort(vector<int32_t>& a) {
-  const uint32_t n = a.size();
+void waveSort(int32_t a[], const uint32_t n) {
   if (n < 2)
     return;
 
   for (uint32_t i = 0; i < n; i += 2) {
     // If current even element is smaller than previous
     if (i > 0 && a[i-1] > a[i])
-      swap(a[i], a[i-1]);
+      swap(a[i-1], a[i]);
     // If current even element is smaller than next
     if (i < n-1 && a[i] < a[i+1])
       swap(a[i], a[i+1]);
