@@ -41,7 +41,9 @@ int largestPairSum(const int32_t a[], const uint32_t n) {
 }
 
 /*
-Given an array of integers, find two numbers such that they add up to a specific target number. The function twoSum should return indices of the two numbers such that they add up to the target, where index1 must be less than index2. Please note that your returned answers (both index1 and index2) are not zero-based.
+Given an array of integers, find two numbers such that they add up to a specific target number. The function twoSum
+should return indices of the two numbers such that they add up to the target, where index1 must be less than index2.
+Please note that your returned answers (both index1 and index2) are not zero-based.
 
 You may assume that each input would have exactly one solution.
 
@@ -71,7 +73,8 @@ pair<int32_t,int32_t> twoSum(const vector<int32_t>& a, const int32_t target) {
 }
 
 /*
-Given an array S of n integers, are there elements a, b, c in S such that a+b+c = 0? Find all unique triplets in the array which gives the sum of zero. The solution set must not contain duplicate triplets.
+Given an array S of n integers, are there elements a, b, c in S such that a+b+c = 0? Find all unique triplets in the array
+which gives the sum of zero. The solution set must not contain duplicate triplets.
 
 Note:
 Elements in a triplet (a,b,c) must be in non-descending order. (ie, a <= b <= c)
@@ -186,9 +189,14 @@ vector<vector<int32_t>> fourSum(vector<int32_t>& a, const int32_t target) {
 }
 
 /*
-1) Create an auxiliary array aux[] and store sum of all possible pairs in aux[]. The size of aux[] will be n*(n-1)/2 where n is the size of A[].
+1) Create an auxiliary array aux[] and store sum of all possible pairs in aux[]. The size of aux[] will be n*(n-1)/2
+where n is the size of A[].
 2) Sort the auxiliary array aux[].
-3) Now the problem reduces to find two elements in aux[] with sum equal to X. We can use method 1 of this post to find the two elements efficiently. There is following important point to note though. An element of aux[] represents a pair from A[]. While picking two elements from aux[], we must check whether the two elements have an element of A[] in common. For example, if first element sum of A[1] and A[2], and second element is sum of A[2] and A[4], then these two elements of aux[] don¿t represent four distinct elements of input array A[].
+3) Now the problem reduces to find two elements in aux[] with sum equal to X. We can use method 1 of this post to find
+the two elements efficiently. There is following important point to note though. An element of aux[] represents a pair
+from A[]. While picking two elements from aux[], we must check whether the two elements have an element of A[] in common.
+For example, if first element sum of A[1] and A[2], and second element is sum of A[2] and A[4], then these two elements of
+aux[] don't represent four distinct elements of input array A[].
  */
 struct PairSum {
   uint32_t first, second; // index (int A[]) of first element in pair
@@ -269,7 +277,9 @@ pair<uint32_t,uint32_t> twoSumClosest(const vector<int32_t>& a, const int32_t x)
 }
 
 /*
-Given an array S of n integers, find three integers in S such that the sum is closest to a given number, target. Return the sum of the three integers. You may assume that each input would have exactly one solution.
+Given an array S of n integers, find three integers in S such that the sum is closest to a given number, target.
+Return the sum of the three integers. You may assume that each input would have exactly one solution.
+
 Given array S = {-1 2 1 -4}, and target = 1.
 The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
  */
@@ -434,8 +444,10 @@ int32_t maxSizeKSubarraySum(const vector<int32_t>& a) {
 
 /*
 Given a pair-sum array and size of the original array (n), construct the original array.
-A pair-sum array for an array is the array that contains sum of all pairs in ordered form. For example pair-sum array for arr[] = {6, 8, 3, 4} is {14, 9, 10, 11, 12, 7}.
-In general, pair-sum array for arr[0..n-1] is {arr[0]+arr[1], arr[0]+arr[2], ..., arr[1]+arr[2], arr[1]+arr[3], ..., arr[2]+arr[3], arr[2]+arr[4], ..., arr[n-2]+arr[n-1}.
+A pair-sum array for an array is the array that contains sum of all pairs in ordered form. For example pair-sum array
+for a[] = {6, 8, 3, 4} is {14, 9, 10, 11, 12, 7}.
+In general, pair-sum array for a[0..n-1] is {a[0]+a[1], a[0]+a[2], ..., a[1]+a[2], a[1]+a[3], ..., a[2]+a[3], a[2]+a[4], ...,
+a[n-2]+a[n-1}.
  */
 void construct(int32_t a[], const int32_t pair[], const uint32_t n) {
   if (!n)
@@ -501,10 +513,19 @@ vector<int32_t> fourSum(vector<int32_t>& a, const int32_t target) {
 }
 */
 /*
-Given a sorted array (sorted in non-decreasing order) of positive numbers, find the smallest positive integer value that cannot be represented as sum of elements of any subset of given set.
+Given a sorted array (sorted in non-decreasing order) of positive numbers, find the smallest positive integer value that
+cannot be represented as sum of elements of any subset of given set.
+
 Expected time complexity is O(n).
 
-If the current number is bigger than the smallest number you can't make so far, then you know the smallest number you can't make - it's the one you've got recorded, and you're done. Otherwise, the current number is smaller than the smallest number you can't make. The claim is that you can indeed make this number. Right now, you know the smallest number you can't make with the first k elements of the array (call it candidate) and are now looking at value A[k]. The number candidate-A[k] therefore must be some number that you can indeed make with the first k elements of the array, since otherwise candidate-A[k] would be a smaller number than the smallest number you allegedly can't make with the first k numbers in the array. Moreover, you can make any number in the range candidate to candidate+A[k], inclusive, because you can start with any number in the range from 1 to A[k], inclusive, and then add candidate-1 to it. Therefore, set candidate to candidate+A[k] and increment k.
+If the current number is bigger than the smallest number you can't make so far, then you know the smallest number you
+can't make - it's the one you've got recorded, and you're done. Otherwise, the current number is smaller than the smallest
+number you can't make. The claim is that you can indeed make this number. Right now, you know the smallest number you can't
+make with the first k elements of the array (call it candidate) and are now looking at value A[k]. The number candidate-A[k]
+therefore must be some number that you can indeed make with the first k elements of the array, since otherwise candidate-A[k]
+would be a smaller number than the smallest number you allegedly can't make with the first k numbers in the array. Moreover,
+you can make any number in the range candidate to candidate+A[k], inclusive, because you can start with any number in the
+range from 1 to A[k], inclusive, and then add candidate-1 to it. Therefore, set candidate to candidate+A[k] and increment k.
  */
 uint32_t smallestUnrepresentable(const vector<uint32_t>& a) {
   const uint32_t n = a.size();
@@ -559,6 +580,53 @@ bool partition(const int32_t a[], const uint32_t n) {
   return part[sum/2][n];
 }
 
+/*
+Given two sorted arrays such the arrays may have some common elements. Find the sum of the maximum sum path
+to reach from beginning of any array to end of any of the two arrays. We can switch from one array to
+another array only at common elements.
+
+Expected time complexity is O(m+n) where m is the number of elements in a1[] and n is the number of
+elements in a2[].
+ */
+int32_t maxPathSum(int32_t a1[], int32_t a2[], const uint32_t m, const uint32_t n) {
+  int32_t ret = 0, sum1 = 0, sum2 = 0;
+  uint32_t i = 0, j = 0;
+
+  // Below 3 loops are similar to merge in merge sort
+  while (i < m && j < n) {
+    // Add elements of ar1[] to sum1
+    if (a1[i] < a2[j])
+      sum1 += a1[i++];
+    else if (a1[i] > a2[j]) // Add elements of ar2[] to sum2
+      sum2 += a2[j++];
+    else { // we reached a common point
+      // Take the maximum of two sums and add to result
+      ret += max(sum1, sum2);
+
+      // Update sum1 and sum2 for elements after this intersection point
+      sum1 = 0, sum2 = 0;
+
+      // Keep updating result while there are more common elements
+      while (i < m && j < n && a1[i] == a2[j]) {
+        ret += a1[i];
+        ++i;
+        ++j;
+      }
+    }
+  }
+
+  // Add remaining elements of a1[]
+  while (i < m)
+    sum1 += a1[i++];
+  // Add remaining elements of ar2[]
+  while (j < n)
+    sum2 += a2[j++];
+  // Add maximum of two sums of remaining elements
+  ret += max(sum1, sum2);
+
+  return ret;
+}
+
 int main(int argc, char** argv) {
   vector<int32_t> a = {2,7,1,5};
   pair<uint32_t,uint32_t> indices = twoSum(a, 9);
@@ -599,5 +667,9 @@ int main(int argc, char** argv) {
  // vector<int32_t> b = {-2, -3, -4, -1, -2, -1, -5, -3};
 //  subarrayMaxSum(b); //, n); // indices don't work
 
+  int32_t a3[10] = {-10,-9,-3,0,2,3,6,7,8,9};
+  int32_t a4[6] = {-8,-2,0,2,10,11};
+
+  cout << maxPathSum(a3, a4, 10, 6) << endl;
   return 0;
 }
