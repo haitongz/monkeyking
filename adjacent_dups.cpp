@@ -1,12 +1,14 @@
 /*
-Given a string, recursively remove adjacent duplicate characters from string. The output string should not have any adjacent duplicates.
+Given a string, recursively remove adjacent duplicate characters from string. The output string should not have any adjacent
+duplicates.
 
 O(n):
 1) Start from the leftmost character and remove duplicates at left corner if there are any.
 2) The first character must be different from its adjacent now. Recur for string of length n-1 (string without first character).
 3) Let the string obtained after reducing right substring of length n-1 be rem_str. There are three possible cases
   a) If first character of rem_str matches with the first character of original string, remove the first character from rem_str.
-  b) Else if the last removed character in recursive calls is same as the first character of the original string. Ignore the first character of original string and return rem_str.
+  b) Else if the last removed character in recursive calls is same as the first character of the original string. Ignore 
+  the first character of original string and return rem_str.
   c) Else, preppend the first character of the original string at the beginning of rem_str.
 4) Return rem_str.
  */
@@ -33,7 +35,8 @@ const char* rmAdjDups_recur(char* str) {
       return solve(s+1);
     }
 
-    // At this point, the first character is definitely different from its adjacent. Ignore first character and recursively remove characters from remaining string
+    // At this point, the first character is definitely different from its adjacent. Ignore first character and recursively
+    // remove characters from remaining string
     char* rem_str = solve(s+1);
 
     // Check if the first character of the rem_str matches with the first character of the original string
@@ -42,11 +45,13 @@ const char* rmAdjDups_recur(char* str) {
       return (rem_str+1); // Remove first character
     }
 
-    // If remaining string becomes empty and last removed character is same as first character of original string.  This is needed for a string like "acbbcddc"
+    // If remaining string becomes empty and last removed character is same as first character of original string.
+    // This is needed for a string like "acbbcddc"
     if (rem_str[0] == '\0' && last_removed == s[0])
       return rem_str;
 
-    // If the two first characters of str and rem_str don't match, append first character of str before the first character of rem_str.
+    // If the two first characters of str and rem_str don't match, append first character of str before the first character
+    // of rem_str.
     --rem_str;
     rem_str[0] = s[0];
     return rem_str;
