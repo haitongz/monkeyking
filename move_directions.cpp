@@ -8,6 +8,41 @@ using namespace std;
 static const uint32_t MAX_LMT = numeric_limits<uint32_t>::max();
 
 /*
+Given a sequence of moves for a robot, check if the sequence is circular or not. A sequence of moves is circular
+if first and last positions of robot are same. A move can be on of the following:
+  G - Go one unit
+  L - Turn left
+  R - Turn right
+ */
+bool isCircularMoves(const char seq[], const uint32_t N) {
+  // Initialize starting point for robot as (0, 0) and starting direction as N North
+  uint32_t x = 0, y = 0;
+  uint32_t dir = N;
+
+  for (uint32_t i = 0; seq[i]; ++i) {
+    char move = seq[i];
+    if (move == 'R') // If move is left or right, then change direction
+      dir = (dir+1)%4;
+    else if (move == 'L')
+      dir = (4+dir-1)%4;
+    else { // if (move == 'G')
+      // If move is Go, then change x or y according to current direction
+      if (dir == N)
+        ++y;
+      else if (dir == E)
+        ++x;
+      else if (dir == S)
+        --y;
+      else // dir == W
+        --x;
+    }
+  }
+
+  // If robot comes back to (0, 0), then path is cyclic
+  return (x == 0 && y == 0);
+}
+
+/*
 Given a two dimensional array, obstacles are marked as '1', points are marked as 'P', empty cells are marked as '0'.
 Given k points, find the cell with smallest distance sum to all points.
  */
@@ -84,8 +119,8 @@ Point closest2AllPts(const vector<vector<char>>& mat) {
 }
 
 /*
-Given NxN matrix, -1 represent a closed room, MAX_LIMIT represents an open room, 0 represents a policeman. Return a NxN
-matrix with each element representing shortest distance of nearest policeman.
+Given NxN matrix, -1 represent a closed room, MAX_LMT represents an open room, 0 represents a policeman.
+Return a NxN matrix with each element representing shortest distance of nearest policeman.
  */
 void policeRooms(vector<vector<int32_t>>& rooms) {
   const uint32_t n = rooms.size();
