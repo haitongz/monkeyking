@@ -13,8 +13,7 @@ if first and last positions of robot are same. A move can be on of the following
   L - Turn left
   R - Turn right
  */
-bool isCircularMoves(const char seq[], const uint32_t N) {
-  // Initialize starting point for robot as (0, 0) and starting direction as N North
+bool areCircularMoves(const char seq[]) { // Initialize starting point for robot as (0, 0) and starting direction as N North
   uint32_t x = 0, y = 0;
   uint32_t dir = N;
 
@@ -309,5 +308,11 @@ int main(int argc, char** argv) {
      {'O', 'O', 'O', 'O', 'X', 'X'}};
   cout << islandNum2(grid2) << endl;
 
+  char path[] = "GLGLGLG";
+  if (areCircularMoves(path))
+    cout << "Given sequence of moves is circular!" << endl;
+  else
+    cout << "Given sequence of moves is NOT circular!" << endl;
+  
   return 0;
 }
