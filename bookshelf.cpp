@@ -29,10 +29,10 @@ Sample Output
 
 using namespace std;
 
-static const uint8_t MAX_COW = 21;
+static const uint8_t MAX_COW = 20;
 static const uint32_t MAX_HEIGHT = 1000000;
-static const uint32_t max_lmt = numeric_limits<uint32_t>::max();
-uint32_t heights[MAX_COW];
+static const uint32_t MAX_LMT = numeric_limits<uint32_t>::max();
+uint32_t heights[MAX_COW+1];
 bool flags[MAX_COW*MAX_HEIGHT];
 
 uint32_t dfs(const uint32_t N, const uint32_t B, const uint32_t S) {
@@ -46,16 +46,16 @@ uint32_t dfs(const uint32_t N, const uint32_t B, const uint32_t S) {
     }
   }
 
-  uint32_t res = B;
-  for (; res <= S && !flags[res]; ++res) {
+  uint32_t ret = B;
+  for (; ret < S+1 && !flags[ret]; ++ret) {
   }
 
-  return res;
+  return ret;
 }
 
 uint32_t bfs(const uint32_t N, const uint32_t B) { // needs more memory but runs faster
   vector<uint32_t> stk = {0}; // add 0 to include every single height
-  uint32_t res = max_lmt;
+  uint32_t ret = MAX_LMT;
 
   for (uint8_t i = 0; i < N; ++i) {
     for (int32_t j = stk.size()-1; j >= 0; --j) { // stk.size() changes
@@ -65,11 +65,11 @@ uint32_t bfs(const uint32_t N, const uint32_t B) { // needs more memory but runs
 
       stk.push_back(new_h); // records all sum combinations, 0, 0+heights[0], heights[0]+heights[1], 0+heights[1]...
       if (new_h > B)
-        res = min(res, new_h-B);
+        ret = min(ret, new_h-B);
     }
   }
 
-  return res;
+  return ret;
 }
 
 int main(int argc, char** argv) {
