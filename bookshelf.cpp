@@ -33,15 +33,16 @@ static const uint8_t MAX_COW = 20;
 static const uint32_t MAX_HEIGHT = 1000000;
 static const uint32_t MAX_LMT = numeric_limits<uint32_t>::max();
 uint32_t heights[MAX_COW+1];
-bool flags[MAX_COW*MAX_HEIGHT];
+bool flags[(MAX_COW+1)*MAX_HEIGHT];
 
 uint32_t dfs(const uint32_t N, const uint32_t B, const uint32_t S) {
   fill(flags, flags+S+1, false);
   flags[0] = true;
 
   for (uint32_t i = 0; i < N; ++i) {
-    for (uint32_t j = S; j >= heights[i]; --j) {
-      if (flags[j-heights[i]])
+    uint32_t h = heights[i];
+    for (uint32_t j = S; j >= h; --j) {
+      if (flags[j-h])
         flags[j] = true;
     }
   }
@@ -58,8 +59,9 @@ uint32_t bfs(const uint32_t N, const uint32_t B) { // needs more memory but runs
   uint32_t ret = MAX_LMT;
 
   for (uint8_t i = 0; i < N; ++i) {
+    uint32_t h = heights[i];
     for (int32_t j = stk.size()-1; j >= 0; --j) { // stk.size() changes
-      uint32_t new_h = stk[j]+heights[i];
+      uint32_t new_h = stk[j]+h;
       if (new_h == B)
         return 0;
 
