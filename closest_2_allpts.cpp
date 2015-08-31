@@ -1,6 +1,3 @@
-/*
-Given a two dimensional array, obstacles are marked as '1', points are marked as 'P', empty cells are marked as '0'. Given k points, find the cell with smallest distance sum to all points.
- */
 #include <iostream>
 #include <vector>
 #include <queue>
@@ -8,8 +5,12 @@ Given a two dimensional array, obstacles are marked as '1', points are marked as
 
 using namespace std;
 
-static const uint32_t MAX_LIMIT = numeric_limits<uint32_t>::max();
+static const uint32_t MAX_LMT = numeric_limits<uint32_t>::max();
 
+/*
+Given a two dimensional array, obstacles are marked as '1', points are marked as 'P', empty cells are marked as '0'.
+Given k points, find the cell with smallest distance sum to all points.
+ */
 typedef pair<uint32_t,uint32_t> Point;
 
 Point closest2AllPts(const vector<vector<char>>& mat) {
@@ -30,7 +31,7 @@ Point closest2AllPts(const vector<vector<char>>& mat) {
     bool visited {false};
   };
 
-  const vector<pair<const int8_t,const int8_t>> dirs = {{1,0}, {-1,0}, {0,1}, {0,-1}};
+  static const vector<pair<const int8_t,const int8_t>> dirs = {{1,0}, {-1,0}, {0,1}, {0,-1}};
   vector<vector<Node>> nodes(m, vector<Node>(n));
   const uint32_t k = pts.size();
 
@@ -66,7 +67,7 @@ Point closest2AllPts(const vector<vector<char>>& mat) {
     }
   }
 
-  uint32_t min_sum = MAX_LIMIT;
+  uint32_t min_sum = MAX_LMT;
   Point ret;
   for (uint32_t i = 0; i < m; ++i) {
     for (uint32_t j = 0; j < n; ++j) {
@@ -83,14 +84,15 @@ Point closest2AllPts(const vector<vector<char>>& mat) {
 }
 
 /*
-Given NxN matrix, -1 represent a closed room, MAX_LIMIT represents an open room, 0 represents a policeman. Return a NxN matrix with each element representing shortest distance of nearest policeman.
+Given NxN matrix, -1 represent a closed room, MAX_LIMIT represents an open room, 0 represents a policeman. Return a NxN
+matrix with each element representing shortest distance of nearest policeman.
  */
 void policeRooms(vector<vector<int32_t>>& rooms) {
   const uint32_t n = rooms.size();
   if (!n)
     return;
 
-  const vector<pair<const int8_t,const int8_t>> dirs = {{0,1}, {0,-1}, {1,0}, {-1,0}};
+  static const vector<pair<const int8_t,const int8_t>> dirs = {{0,1}, {0,-1}, {1,0}, {-1,0}};
   set<Point> visited;
   deque<Point> q;
   deque<uint32_t> dists;
@@ -135,6 +137,5 @@ void policeRooms(vector<vector<int32_t>>& rooms) {
 }
 
 int main(int argc, char** argv) {
-
   return 0;
 }
