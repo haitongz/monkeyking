@@ -5,10 +5,11 @@
 using namespace std;
 
 /*
-Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. An island is surrounded by water and is
+formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are
+all surrounded by water.
 
 Example 1:
-
 11110
 11010
 11000
@@ -16,7 +17,6 @@ Example 1:
 Answer: 1
 
 Example 2:
-
 11000
 11000
 00100
@@ -50,7 +50,7 @@ Final grid:
 
 Number of islands is 4
  */
-uint32_t numOfIslands(vector<vector<uint32_t>>& mat) {
+uint32_t islandNum(vector<vector<uint32_t>>& mat) {
   const uint32_t m = mat.size(), n = mat[0].size();
   if (!m || !n)
     return 0;
@@ -87,7 +87,9 @@ uint32_t numOfIslands(vector<vector<uint32_t>>& mat) {
 }
 
 /*
-Given a rectangular matrix which has only two possible values 'X' and 'O'. The values 'X' always appear in form of rectangular islands and these islands are always row-wise and column-wise separated by at least one line of 'O's. Note that islands can only be diagonally adjacent. Count the number of islands in the given matrix.
+Given a rectangular matrix which has only two possible values 'X' and 'O'. The values 'X' always appear in form of
+rectangular islands and these islands are always row-wise and column-wise separated by at least one line of 'O's.
+Note that islands can only be diagonally adjacent. Count the number of islands in the given matrix.
 
 mat[M][N] =  {{'X', 'O', 'O', 'O', 'O', 'O'},
               {'X', 'O', 'X', 'X', 'X', 'X'},
@@ -98,7 +100,7 @@ mat[M][N] =  {{'X', 'O', 'O', 'O', 'O', 'O'},
              };
 Output: Number of islands is 4
  */
-uint32_t numOfIslands2(const vector<vector<char>>& mat) {
+uint32_t islandNum2(const vector<vector<char>>& mat) {
   const uint32_t M = mat.size(), N = mat[0].size();
   if (!M || !N)
     return 0;
@@ -124,13 +126,13 @@ int main(int argc, char** argv) {
                                    {1,1,0,1,0},
                                    {1,1,0,0,0},
                                    {0,0,0,0,0}};
-  cout << numOfIslands(grid) << endl;
+  cout << islandNum(grid) << endl;
 
   grid = {{1,1,0,0,0},
           {1,1,0,0,0},
           {0,0,1,0,0},
           {0,0,0,1,1}};
-  cout << numOfIslands(grid) << endl;
+  cout << islandNum(grid) << endl;
 
   vector<vector<char>> grid2 =
     {{'X', 'O', 'O', 'O', 'O', 'O'},
@@ -139,7 +141,7 @@ int main(int argc, char** argv) {
      {'X', 'X', 'X', 'O', 'X', 'X'},
      {'X', 'X', 'X', 'O', 'X', 'X'},
      {'O', 'O', 'O', 'O', 'X', 'X'}};
-  cout << numOfIslands2(grid2) << endl;
+  cout << islandNum2(grid2) << endl;
 
   return 0;
 }
