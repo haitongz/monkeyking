@@ -4,7 +4,7 @@
 
 using namespace std;
 
-static const uint32_t MAX_LMT = numeric_limits<int32_t>::max();
+static const uint32_t MAX_LMT = numeric_limits<uint32_t>::max();
 
 /*
 Harry Porter starts from up left corner, can only move right or down. If he steps in a cell with positive number his strength increases by that amount, otherwise decreases. Game will be over once his strength becomes zero. Find minimum initial strength Harry needs to reach right bottom corner?
