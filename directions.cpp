@@ -286,6 +286,87 @@ uint32_t islandNum2(const vector<vector<char>>& mat) {
   return ret;
 }
 
+/*
+Given a matrix of characters. Find length of the longest path from a given character,
+such that all characters in the path are consecutive to each other, i.e., every character in path
+is next to previous in alphabetical order. It is allowed to move in all 8 directions from a cell.
+
+Input: mat[][] = { {a, c, d},
+                   {h, b, e},
+                   {i, g, f}}
+      Starting Point = 'e'
+
+Output: 5
+
+If starting point is 'e', then longest path with consecutive characters is "e f g h i".
+
+Input: mat[R][C] = { {b, e, f},
+                     {h, d, a},
+                     {i, c, a}};
+      Starting Point = 'b'
+
+Output: 1
+'c' is not present in all adjacent cells of 'b'
+ */
+#define R 3
+#define C 3
+
+uint32_t minConsecPathLen(const char mat[R][C], char s) {
+  // dp[i][j] stores length of longest consecutive path starting at arr[i][j].
+  uint32_t dp[R][C];
+  for (auto& i : dp)
+    for (auto& j : i)
+      j = -1;
+
+  function<bool(const uint32_t,const uint32_t)> isvalid =
+    [&](const uint32_t i, const uint32_t j) {
+    return !(i < 0 || j < 0 || i >= R || j >= C);
+  };
+
+  function<bool(const char,const char)> isadjacent =
+    [&](const char prev, const char curr) {
+    return ((curr - prev) == 1);
+  };
+
+  static const pair<int8_t,int8_t> dirs[8] =
+    {{0,1},{1,0},{1,1},{-1,1},{1,-1},{0,-1},{-1,0},{-1,-1}};
+
+  function<uint32_t(const uint32_t,const uint32_t,const char)> solve =
+    [&](const uint32_t i, const uint32_t j, const char prev) -> uint32_t {
+    // If this cell is not valid or current character is not
+    // adjacent to previous one (e.g. d is not adjacent to b )
+    // or if this cell is already included in the path than return 0.
+    if (!isvalid(i, j) || !isadjacent(prev, mat[i][j]))
+      return 0;
+
+    // If this subproblem is already solved, return the answer
+    if (dp[i][j] != -1)
+      return (uint32_t)dp[i][j];
+
+    uint32_t ret = 0;
+    // recur for paths with differnt adjacent cells and store the length of longest path.
+    for (uint8_t k = 0; k < 8; ++k)
+      ret = max(ret, 1+solve(i+dirs[k].first, j+dirs[k].second, mat[i][j]));
+
+    dp[i][j] = ret;
+    return ret;
+  };
+
+  uint32_t ret = 0;
+  for (uint32_t i = 0; i < R; ++i) {
+    for (uint32_t j = 0; j < C; ++j) {
+      // check for each possible starting point
+      if (mat[i][j] == s) {
+        // recur for all eight adjacent cells
+        for (uint8_t k = 0; k < 8; ++k)
+          ret = max(ret, 1+solve(i+dirs[k].first, j+dirs[k].second, s));
+      }
+    }
+  }
+
+  return ret;
+}
+
 int main(int argc, char** argv) {
   vector<vector<uint32_t>> grid = {{1,1,1,1,0},
                                    {1,1,0,1,0},
@@ -313,6 +394,15 @@ int main(int argc, char** argv) {
     cout << "Given sequence of moves is circular!" << endl;
   else
     cout << "Given sequence of moves is NOT circular!" << endl;
+
+  char matt[R][C] = {{'a','c','d'},
+                     {'h','b','a'},
+                     {'i','g','f'}};
+
+  cout << minConsecPathLen(matt, 'a') << endl;
+  cout << minConsecPathLen(matt, 'e') << endl;
+  cout << minConsecPathLen(matt, 'b') << endl;
+  cout << minConsecPathLen(matt, 'f') << endl;
   
   return 0;
 }
