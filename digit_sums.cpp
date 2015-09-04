@@ -119,11 +119,47 @@ uint32_t digitSumCnt2(const uint32_t n) {
   return ret;
 }
 
+/*
+A number is non-decreasing if every digit (except the first one) is greater than or equal to previous digit. For example, 223, 4455567, 899, are non-decreasing numbers.
+
+So, given the number of digits n, you are required to find the count of total non-decreasing numbers with n digits.
+ */
+uint32_t nonDecreasingCnt(const uint32_t n) {
+  // dp[i][j] contains total count of non decreasing numbers ending with digit i and of length j
+  int32_t dp[10][n+1];
+  for (auto& i : dp)
+    for (auto& j : i)
+      j = 0;
+
+  // Fill table for non decreasing numbers of length 1
+  // base cases 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+  for (uint8_t i = 0; i < 10; ++i)
+    dp[i][1] = 1;
+
+  // Fill the table in bottom-up manner
+  for (uint8_t i = 0; i < 10; ++i) {
+    // Compute total numbers of non decreasing numbers of length 'len'
+    for (uint32_t len = 2; len < n+1; ++len) {
+      // sum of all numbers of length of len-1 in which last digit x is <= 'digit'
+      for (uint32_t j = 0; j < i+1; ++j)
+        dp[i][len] += dp[j][len-1];
+    }
+  }
+
+  uint32_t ret = 0;
+  // There total nondecreasing numbers of length n is dp[0][n]+dp[1][n]+...+dp[9][n]
+  for (uint8_t i = 0; i < 10; ++i)
+    ret += dp[i][n];
+
+  return ret;
+}
+
 int main(int argc, char** argv) {
   uint32_t n = 3;
   uint32_t sum = 5;
   cout << digitSumCnt(n, sum) << endl;
   cout << digitSumCnt2(n) << endl;
+  cout << nonDecreasingCnt(n) << endl;
 
   return 0;
 }
