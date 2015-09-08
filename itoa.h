@@ -24,8 +24,8 @@ char* itoa(int32_t value, char* buffer, const uint32_t base = 10) {
 
   while (cp < ptr) {
     char tmp = *ptr;
-    *ptr--   = *cp;
-    *cp++  = tmp;
+    *ptr-- = *cp;
+    *cp++ = tmp;
   }
 
   return buffer;
