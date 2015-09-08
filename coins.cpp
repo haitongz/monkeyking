@@ -5,111 +5,118 @@
 
 using namespace std;
 
-static const uint32_t max_lmt = numeric_limits<uint32_t>::max();
+static const uint32_t MAX_LMT = numeric_limits<uint32_t>::max();
 
 /*
-Given a value N, if we want to make change for N cents, and we have infinite supply of each of S = {S1,S2,...,Sm} valued coins, how many ways can we make the change? The order of coins doesn't matter.
+Given a value N, if we want to make change for N cents,
+and we have infinite supply of each of S = {S1,S2,...,Sm} valued coins,
+how many ways can we make the change? The order of coins doesn't matter.
 
-For example, for N = 4 and S = {1,2,3}, there are four solutions: {1,1,1,1},{1,1,2},{2,2},{1,3}. So output should be 4. For N = 10 and S = {2,5,3,6}, there are five solutions: {2,2,2,2,2}, {2,2,3,3}, {2,2,6}, {2,3,5} and {5,5}. So the output should be 5.
+For example, for N = 4 and S = {1,2,3}, there are four solutions: {1,1,1,1},{1,1,2},{2,2},{1,3}.
+So output should be 4. For N = 10 and S = {2,5,3,6}, there are five solutions:
+{2,2,2,2,2}, {2,2,3,3}, {2,2,6}, {2,3,5} and {5,5}. So the output should be 5.
  */
-uint32_t makeChange_recur(const uint32_t N, const vector<uint8_t>& S) {
-  const uint32_t m = S.size();
-  if (!N || !m)
+uint32_t makeChange_recur(const uint8_t coins[], const uint32_t n, const uint32_t V) {
+  if (!n || !V)
     return 0;
 
-  function<uint32_t(const uint32_t,const uint32_t)> dfs =
-    [&](const uint32_t remaining, const uint32_t coin_num) -> uint32_t {
-    if (!remaining) {
+  function<uint32_t(const uint32_t,const uint32_t)> solve =
+    [&](const uint32_t remain, const uint32_t coin_num) -> uint32_t {
+    if (!remain) {
       return 1;
     }
     if (!coin_num) // && remaining >= 1)
       return 0;
 
     // count is sum of solutions (i) including S[m-1] (ii) excluding S[m-1]
-    return dfs(remaining, coin_num-1) + dfs(remaining-S[coin_num-1], coin_num);
+    return solve(remain, coin_num-1) +
+           solve(remain-coins[coin_num-1], coin_num);
   };
 
-  return dfs(N, m);
+  return solve(V, n);
 }
 
-uint32_t makeChange_dp2(const uint32_t N, const vector<uint8_t>& S) {
-  const uint32_t m = S.size();
-  if (!N || !m)
+uint32_t makeChange_dp2(const uint8_t coins[], const uint32_t n, const uint32_t V) {
+  if (!V || !n)
     return 0;
 
-  vector<uint32_t> dp(N+1, 0);
+  uint32_t dp[V+1];
+  for (auto& i : dp)
+    i = 0;
   dp[0] = 1;
 
   // Pick all coins one by one and update dp values after index >= the value of the picked coin
-  for (uint32_t i = 0; i < m; ++i) {
-    const uint8_t i_value = S[i];
-
-    for (uint32_t j = i_value; j < N+1; ++j)
+  for (uint32_t i = 0; i < V; ++i) {
+    const uint8_t i_value = coins[i];
+    for (uint32_t j = i_value; j < n+1; ++j)
       dp[j] += dp[j-i_value];
   }
 
-  return dp[N];
+  return dp[n];
 }
 
-uint32_t makeChange_dp(const uint32_t N, const vector<uint8_t>& S) {
-  const uint32_t m = S.size();
-  if (!N || !m)
+uint32_t makeChange_dp(const uint8_t coins[], const uint32_t n, const uint32_t V) {
+  if (!V || !n)
     return 0;
 
-  // We need N+1 rows as the table is consturcted in bottom up manner using the
-  // base case 0 value case (n = 0)
-  uint32_t dp[N+1][m];
-  for (uint32_t i = 0; i < m; ++i)
+  // We need V+1 rows as the table is consturcted in bottom up manner using the
+  // base case 0 value case (V = 0)
+  uint32_t dp[V+1][n];
+  for (uint32_t i = 0; i < n; ++i)
     dp[0][i] = 1;
 
-  for (uint32_t i = 1; i < N+1; ++i) {
-    for (uint32_t j = 0; j < m; ++j) {
+  for (uint32_t i = 1; i < V+1; ++i) {
+    for (uint32_t j = 0; j < n; ++j) {
       // Count of solutions excluding coin S[j]
       const uint32_t s1 = (j >= 1) ? dp[i][j-1] : 0;
-
       // Count of solutions including S[j]
-      const int32_t left = i-S[j];
-      const uint32_t s2 = (left >= 0) ? dp[diff][j] : 0;
-
+      const int32_t left = i-coins[j];
+      const uint32_t s2 = (left >= 0) ? dp[left][j] : 0;
       dp[i][j] = s1+s2;
     }
   }
 
-  return dp[N][m-1];
+  return dp[V][n-1];
 }
 
 /*
-Given a set of denominations and an amount, how do we minimize the number of coins to make up the given amount?
+Given a value V, if we want to make change for V cents, and we have infinite
+supply of each of S = {S1,S2,...,Sm} valued coins, what is the minimum number
+of coins to make the change?
+
+Input: coins[] = {25, 10, 5}, V = 30
+Output: Minimum 2 coins required
+We can use one coin of 25 cents and one of 5 cents
  */
-uint32_t minCoinsNum(const uint32_t N, const vector<uint8_t>& S) {
-  const uint32_t m = S.size();
-  if (!N || !m)
+uint32_t minCoinNum(const uint8_t coins[], const uint32_t n, const uint32_t V) { // O(nV)
+  if (!V || !n)
     return 0;
 
-  uint32_t dp[N+1];
+  uint32_t dp[V+1];
   dp[0] = 0;
 
-  for (uint32_t i = 1; i < N+1; ++i) {
-    uint32_t v = max_lmt;
+  for (uint32_t i = 1; i < V+1; ++i) {
+    uint32_t v = MAX_LMT; // cannot use -1 here, why?
 
-    for (uint32_t j = 0; j < m; ++j) {
-      const int32_t left = i-S[j];
+    for (uint32_t j = 0; j < n; ++j) {
+      const int32_t left = i-coins[j];
       if (left >= 0) { // coin value should not exceed the amount itself
         v = min(v, dp[left]);
       }
     }
 
-    if (v < max_lmt)
+    if (v != MAX_LMT)
       dp[i] = v+1;
     else
-      dp[i] = max_lmt;
+      dp[i] = MAX_LMT;
   }
 
-  return dp[N];
+  return dp[V];
 }
 
 /*
-Given a list of numbers, you and another player pick a number in turn. Both of players can only pick left most or right most number and you get to pick first, how should you max your sum?
+Given a list of numbers, you and another player pick a number in turn. Both of players
+can only pick left most or right most number and you get to pick first, how should you max your sum?
 
 Example:
 {5, 3, 7, 10} return 15
@@ -139,14 +146,21 @@ uint32_t coinsInALine(const vector<uint32_t>& nums) {
 }
 
 int main(int argc, char** argv) {
-  vector<uint8_t> S = {2, 3, 5, 6};
-  const uint32_t N = 25;
+  const uint8_t coins[] = {2, 3, 5, 6};
+  uint32_t n = sizeof(coins)/sizeof(coins[0]);
+  uint32_t V = 25;
 
   //cout << "There are " << makeChange_recur(N, S) << " ways to represent " << N << " cents!" << endl;
-  cout << "There are " << makeChange_dp(N, S) << " ways for changes!" << endl;
+  cout << "There are " << makeChange_dp(coins, n, V) << " ways for changes!" << endl;
 
-  S = {1, 5, 10, 25};
-  cout << "There are " << makeChange_dp(N, S) << " ways to represent " << N << " cents!" << endl;
+  const uint8_t coins2[] = {1, 5, 10, 25};
+  n = sizeof(coins2)/sizeof(coins2[0]);
+  cout << "There are " << makeChange_dp(coins2, n, V) << " ways to represent " << V << " cents!" << endl;
+
+  const uint8_t coins3[] =  {9, 6, 5, 1};
+  n = sizeof(coins3)/sizeof(coins3[0]);
+  V = 11;
+  cout << "Minimum coins required is " << minCoinNum(coins3, n, V) << endl;
 
   vector<uint32_t> nums = {5, 3, 7, 10};
   cout << "Max sum: " << coinsInALine(nums) << endl;
