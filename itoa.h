@@ -1,13 +1,13 @@
 #ifndef _ITOA_H_
 #define _ITOA_H_
 
-char* itoa(int32_t value, char* buffer, const uint32_t base = 10) {
+char* itoa(int32_t value, char* buff, const uint32_t base = 10) {
   if (base < 2 || base > 36) {
-    *buffer = '\0';
-    return buffer;
+    *buff = '\0';
+    return buff;
   }
 
-  char* ptr = buffer;
+  char* ptr = buff;
   char* cp = ptr;
   int32_t tmp_v;
 
@@ -17,8 +17,7 @@ char* itoa(int32_t value, char* buffer, const uint32_t base = 10) {
     *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35+(tmp_v-value*base)];
   } while (value);
 
-  // apply negative sign
-  if (tmp_v < 0)
+  if (tmp_v < 0) // apply negative sign
     *ptr++ = '-';
   *ptr-- = '\0';
 
@@ -28,7 +27,7 @@ char* itoa(int32_t value, char* buffer, const uint32_t base = 10) {
     *cp++ = tmp;
   }
 
-  return buffer;
+  return buff;
 }
 
 #endif // _ITOA_H_
