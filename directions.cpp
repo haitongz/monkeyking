@@ -1,10 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <functional>
+#include <limits>
 
 using namespace std;
 
 static const uint32_t MAX_LMT = numeric_limits<uint32_t>::max();
+static const int32_t MIN_LMT = numeric_limits<int32_t>::min();
 
 /*
 Given a sequence of moves for a robot, check if the sequence is circular or not. A sequence of moves is circular
@@ -291,7 +293,7 @@ Given a matrix of characters. Find length of the longest path from a given chara
 such that all characters in the path are consecutive to each other, i.e., every character in path
 is next to previous in alphabetical order. It is allowed to move in all 8 directions from a cell.
 
-Input: mat[][] = { {a, c, d},
+Input: matt[][] = {{a, c, d},
                    {h, b, e},
                    {i, g, f}}
       Starting Point = 'e'
@@ -300,7 +302,7 @@ Output: 5
 
 If starting point is 'e', then longest path with consecutive characters is "e f g h i".
 
-Input: mat[R][C] = { {b, e, f},
+Input: matt[R][C] = {{b, e, f},
                      {h, d, a},
                      {i, c, a}};
       Starting Point = 'b'
@@ -367,6 +369,71 @@ uint32_t minConsecPathLen(const char mat[R][C], char s) {
   return ret;
 }
 
+/*
+Given a matrix where every cell represents points. How to collect maximum points using two traversals under following conditions?
+
+Let the dimensions of given grid be RxC.
+1) The first traversal starts from top left corner, i.e., (0, 0) and should reach left bottom corner, i.e., (R-1, 0). The second traversal starts from top right corner, i.e., (0, C-1) and should reach bottom right corner, i.e., (R-1, C-1)/
+2) From a point (i, j), we can move to (i+1, j+1) or (i+1, j+1) or (i+1, j)
+3) A traversal gets all points of a particular cell through which it passes. If one traversal has already collected points of a cell, then the other traversal gets no points if goes through that cell again.
+ */
+#define R 5
+#define C 4
+
+struct Direction {
+  int8_t x, y1, y2;
+};
+
+/*
+The idea is to do both traversals concurrently. We start first from (0, 0) and second traversal from (0, C-1) simultaneously. At any particular step both traversals will be in same row as in all possible three moves, row number is increased. Let (x1, y1) and (x2, y2) denote current positions of first and second traversals respectively. Thus at any time x1 will be equal to x2 as both of them move forward but variation is possible along y. Since variation in y could occur in 3 ways no change (y), go left (y-1), go right (y+1). So in total 9 combinations among y1, y2 are possible.
+ */
+uint32_t maxCollection(const uint32_t a[R][C]) {
+  int32_t mem[R][C][C];
+  for (auto& i : mem)
+    for (auto& j : i)
+      for (auto& k : j)
+        k = -1;
+
+  static const vector<Direction> dirs = {{1,0,-1},{1,0,1},{1,0,0},
+                                         {1,-1,0},{1,-1,-1},{1,-1,1},
+                                         {1,1,0},{1,1,-1},{1,1,1}};
+
+  function<bool(const uint32_t,const uint32_t,const uint32_t)> isValid =
+    [&](const uint32_t x, const uint32_t y1, const uint32_t y2) {
+    return (x >= 0 && x < R && y1 >=0 && y1 < C && y2 >=0 && y2 < C);
+  };
+
+  function<int32_t(const uint32_t,const uint32_t,const uint32_t)> solve =
+    [&](const uint32_t x, const uint32_t y1, const uint32_t y2) {
+    // if P1 or P2 is at an invalid cell
+    if (!isValid(x, y1, y2))
+      return MIN_LMT;
+
+    // if both traversals reach their destinations
+    if (x == R-1 && y1 == 0 && y2 == C-1)
+      return (int32_t)(a[x][y1]+a[x][y2]);
+    // If both traversals are at last row but not at their destination
+    if (x == R-1)
+      return MIN_LMT;
+    // If subproblem is already solved
+    if (mem[x][y1][y2] != -1)
+      return mem[x][y1][y2];
+
+    // Initialize answer for this subproblem
+    int32_t ret = MIN_LMT;
+    // this variable is used to store gain of current cell(s)
+    int32_t tmp = (y1 == y2) ? a[x][y1] : a[x][y1]+a[x][y2];
+    /* Recur for all possible cases, then store and return the one with max value */
+    for (uint8_t i = 0; i < dirs.size(); ++i)
+      ret = max(ret, tmp+solve(x+dirs[i].x, y1+dirs[i].y1, y2+dirs[i].y2));
+
+    mem[x][y1][y2] = ret;
+    return ret;
+  };
+
+  return solve(0, 0, C-1);
+}
+
 int main(int argc, char** argv) {
   vector<vector<uint32_t>> grid = {{1,1,1,1,0},
                                    {1,1,0,1,0},
@@ -403,6 +470,13 @@ int main(int argc, char** argv) {
   cout << minConsecPathLen(matt, 'e') << endl;
   cout << minConsecPathLen(matt, 'b') << endl;
   cout << minConsecPathLen(matt, 'f') << endl;
-  
+
+  uint32_t a[R][C] = {{3, 6, 8, 2},
+                      {5, 2, 4, 3},
+                      {1, 1, 20, 10},
+                      {1, 1, 20, 10},
+                      {1, 1, 20, 10}};
+
+  cout << "Maximum collection is " << maxCollection(a) << endl;
   return 0;
 }
