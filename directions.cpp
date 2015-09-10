@@ -370,12 +370,15 @@ uint32_t minConsecPathLen(const char mat[R][C], char s) {
 }
 
 /*
-Given a matrix where every cell represents points. How to collect maximum points using two traversals under following conditions?
+Given a matrix where every cell represents points. How to collect maximum points using two traversals
+under following conditions?
 
 Let the dimensions of given grid be RxC.
-1) The first traversal starts from top left corner, i.e., (0, 0) and should reach left bottom corner, i.e., (R-1, 0). The second traversal starts from top right corner, i.e., (0, C-1) and should reach bottom right corner, i.e., (R-1, C-1)/
+1) The first traversal starts from top left corner, i.e., (0, 0) and should reach left bottom corner, i.e., (R-1, 0).
+The second traversal starts from top right corner, i.e., (0, C-1) and should reach bottom right corner, i.e., (R-1, C-1)/
 2) From a point (i, j), we can move to (i+1, j+1) or (i+1, j+1) or (i+1, j)
-3) A traversal gets all points of a particular cell through which it passes. If one traversal has already collected points of a cell, then the other traversal gets no points if goes through that cell again.
+3) A traversal gets all points of a particular cell through which it passes. If one traversal has already collected
+points of a cell, then the other traversal gets no points if goes through that cell again.
  */
 #define R 5
 #define C 4
@@ -385,7 +388,12 @@ struct Direction {
 };
 
 /*
-The idea is to do both traversals concurrently. We start first from (0, 0) and second traversal from (0, C-1) simultaneously. At any particular step both traversals will be in same row as in all possible three moves, row number is increased. Let (x1, y1) and (x2, y2) denote current positions of first and second traversals respectively. Thus at any time x1 will be equal to x2 as both of them move forward but variation is possible along y. Since variation in y could occur in 3 ways no change (y), go left (y-1), go right (y+1). So in total 9 combinations among y1, y2 are possible.
+The idea is to do both traversals concurrently. We start first from (0, 0) and second traversal from (0, C-1) simultaneously.
+At any particular step both traversals will be in same row as in all possible three moves, row number is increased.
+Let (x1, y1) and (x2, y2) denote current positions of first and second traversals respectively.
+Thus at any time x1 will be equal to x2 as both of them move forward but variation is possible along y.
+Since variation in y could occur in 3 ways no change (y), go left (y-1), go right (y+1).
+So in total 9 combinations among y1,y2 are possible.
  */
 uint32_t maxCollection(const uint32_t a[R][C]) {
   int32_t mem[R][C][C];
