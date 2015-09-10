@@ -135,6 +135,48 @@ double maxProfit4(const double prices[], const uint32_t n, uint32_t k) {
 }
 
 /*
+If a trader is allowed to make at most 2 transactions a day, whereas second transaction
+can only start after first one is complete (sell->buy->sell->buy).
+Given stock prices throughout day, find out maximum profit that a share trader could have made.
+Input:  px[] = {10, 22, 5, 75, 65, 80}
+Output: 87
+Trader earns 87 as sum of 12 and 75
+Buy at price 10, sell at 22, buy at 5 and sell at 80
+  */
+double maxProfit5(const double px[], const uint32_t n) {
+  double profit[n];
+  for (auto& i : profit)
+    i = 0;
+
+  /* Get the maximum profit with only one transaction allowed.
+     After this loop, profit[i] contains maximum profit from price[i...n-1]
+     using at most one trans. */
+  double max_px = px[n-1];
+  for (int32_t i = n-2; i >= 0; --i) {
+    // max_price has maximum of price[i..n-1]
+    max_px = max(px[i], max_px);
+    // we can get profit[i] by taking maximum of:
+    // a) previous maximum, i.e., profit[i+1]
+    // b) profit by buying at price[i] and selling at max_px
+    profit[i] = max(profit[i+1], max_px-px[i]);
+  }
+
+  /* Get the maximum profit with two transactions allowed
+     After this loop, profit[n-1] contains the result */
+  double min_px = px[0];
+  for (uint32_t i = 1; i < n; ++i) {
+    // min_px is minimum price in price[0...i]
+    min_px = min(px[i], min_px);
+    // Maximum profit is maximum of:
+    // a) previous maximum, i.e., profit[i-1]
+    // b) (Buy, Sell) at (min_px, px[i]) and add profit of other trans. stored in profit[i]
+    profit[i] = max(profit[i-1], profit[i]+(px[i]-min_px));
+  }
+
+  return profit[n-1];
+}
+
+/*
 The advice to "buy low" is half the formula to success in the bovine stock market. To be considered a great investor you must also follow this problems' advice: "Buy low; buy lower"
 
 Each time you buy a stock, you must purchase it at a lower price than the previous time you bought it. The more times you buy at a lower price than before, the better! Your goal is to see how many times you can continue purchasing at ever lower prices.
@@ -211,48 +253,6 @@ pair<int32_t,int32_t> buylowBuylower(const uint32_t N) {
   }
 
   return {len, cnt};
-}
-
-/*
-If a trader is allowed to make at most 2 transactions a day, whereas second transaction
-can only start after first one is complete (sell->buy->sell->buy).
-Given stock prices throughout day, find out maximum profit that a share trader could have made.
-Input:  px[] = {10, 22, 5, 75, 65, 80}
-Output: 87
-Trader earns 87 as sum of 12 and 75
-Buy at price 10, sell at 22, buy at 5 and sell at 80
-  */
-double maxProfit5(const double px[], const uint32_t n) {
-  double profit[n];
-  for (auto& i : profit)
-    i = 0;
-
-  /* Get the maximum profit with only one transaction allowed.
-     After this loop, profit[i] contains maximum profit from price[i...n-1]
-     using at most one trans. */
-  double max_px = px[n-1];
-  for (int32_t i = n-2; i >= 0; --i) {
-    // max_price has maximum of price[i..n-1]
-    max_px = max(px[i], max_px);
-    // we can get profit[i] by taking maximum of:
-    // a) previous maximum, i.e., profit[i+1]
-    // b) profit by buying at price[i] and selling at max_px
-    profit[i] = max(profit[i+1], max_px-px[i]);
-  }
-
-  /* Get the maximum profit with two transactions allowed
-     After this loop, profit[n-1] contains the result */
-  double min_px = px[0];
-  for (uint32_t i = 1; i < n; ++i) {
-    // min_px is minimum price in price[0...i]
-    min_px = min(px[i], min_px);
-    // Maximum profit is maximum of:
-    // a) previous maximum, i.e., profit[i-1]
-    // b) (Buy, Sell) at (min_px, px[i]) and add profit of other trans. stored in profit[i]
-    profit[i] = max(profit[i-1], profit[i]+(px[i]-min_px));
-  }
-
-  return profit[n-1];
 }
 
 int main(int argc, char** argv) {
