@@ -145,6 +145,36 @@ uint32_t coinsInALine(const vector<uint32_t>& nums) {
   return dp[0][n-1];
 }
 
+/*
+Consider a game where a player can score 3 or 5 or 10 points in a move.
+Given a total score n, find number of ways to reach the given score.
+
+Input: n = 20
+Output: 4
+There are following 4 ways to reach 20
+(10, 10)
+(5, 5, 10)
+(5, 5, 5, 5)
+(3, 3, 3, 3, 3, 5)
+ */
+uint32_t count(const uint32_t n) {
+  uint32_t dp[n+1];
+  for (auto& i : dp)
+    i = 0;
+  dp[0] = 1; // if n is 0
+
+  // One by one consider given 3 moves and update the table[]
+  // values after the index greater than or equal to the value of the picked move
+  for (uint32_t i = 3; i < n+1; ++i)
+    dp[i] += dp[i-3];
+  for (uint32_t i = 5; i < n+1; ++i)
+    dp[i] += dp[i-5];
+  for (uint32_t i = 10; i< n+1; ++i)
+    dp[i] += dp[i-10];
+
+  return dp[n];
+}
+
 int main(int argc, char** argv) {
   const uint8_t coins[] = {2, 3, 5, 6};
   uint32_t n = sizeof(coins)/sizeof(coins[0]);
@@ -167,5 +197,8 @@ int main(int argc, char** argv) {
   nums = {8, 15, 3, 7};
   cout << "Max sum: " << coinsInALine(nums) << endl;
 
+  n = 20;
+  cout << "There are " << count(n) << " ways to reach " << n << endl;
+  
   return 0;
 }
