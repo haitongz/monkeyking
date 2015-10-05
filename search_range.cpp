@@ -15,31 +15,31 @@ pair<int32_t,int32_t> searchRange(const vector<int32_t>& nums, const int32_t tar
   if (!n)
     return {-1, -1};
 
-  pair<int32_t,int32_t> res = {-1,-1};
-  uint32_t low = 0, high = n-1;
+  pair<int32_t,int32_t> ret = {-1,-1};
+  uint32_t start = 0, end = n-1;
 
-  while (low <= high) {
-    const uint32_t mid = low + ((high-low)>>1);
+  while (start <= end) {
+    const uint32_t mid = start+(end-start)/2;
     if (nums[mid] >= target)
-      high = mid-1;
+      end = mid-1;
     else
-      low = mid+1;
+      start = mid+1;
   }
 
-  if (low >= n || nums[low] != target)
-    return res;
+  if (start >= n || nums[start] != target)
+    return ret;
 
-  res.first = low;
-  for (low = 0, high = n-1; low <= high;) {
-    const uint32_t mid = low + ((high-low)>>1);
+  ret.first = start;
+  for (start = 0, end = n-1; start <= end;) {
+    const uint32_t mid = start+(end-start)/2;
     if (nums[mid] <= target)
-      low = mid+1;
+      start = mid+1;
     else
-      high = mid-1;
+      end = mid-1;
   }
 
-  res.second = high;
-  return res;
+  ret.second = end;
+  return ret;
 }
 
 int main(int argc, char** argv) {
