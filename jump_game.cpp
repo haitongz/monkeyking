@@ -41,29 +41,29 @@ uint32_t minJumps_recur(const vector<uint32_t>& A) {
   if (!n)
     return max_lmt;
 
-  function<uint32_t(const uint32_t,const uint32_t)> dfs =
-    [&](const uint32_t low, const uint32_t high) -> uint32_t {
+  function<uint32_t(const uint32_t,const uint32_t)> solve = // DFS
+    [&](const uint32_t start, const uint32_t end) -> uint32_t {
     // when source and destination are same
-    if (high == low)
+    if (start == end)
       return 0;
 
     // When nothing is reachable from the given source
-    if (!A[low])
+    if (!A[start])
       return max_lmt;
 
     // Traverse through all the points reachable from A[l]. Recursively get the minimum number of jumps needed to reach arr[h] from these reachable points.
-    uint32_t res = max_lmt;
+    uint32_t ret = max_lmt;
 
-    for (uint32_t i = low+1; i <= high && i <= low+A[low]; ++i) {
-      uint32_t jumps = dfs(i, high);
+    for (uint32_t i = start+1; i < end+1 && i < start+A[start]+1; ++i) {
+      uint32_t jumps = solve(i, end);
       if (jumps != max_lmt)
-        res = min(res, jumps+1);
+        ret = min(ret, jumps+1);
     }
 
-    return res;
+    return ret;
   };
 
-  return dfs(0, n-1);
+  return solve(0, n-1);
 }
 
 uint32_t minJumps_dp(const vector<uint32_t>& A) {
@@ -96,7 +96,7 @@ uint32_t minRiverJumps_recur(const vector<uint8_t>& R) {
 
   map<pair<uint32_t,uint32_t>,int32_t> recs;
 
-  function<int32_t(const uint32_t, const uint32_t)> dfs =
+  function<int32_t(const uint32_t, const uint32_t)> solve = // DFS
     [&](const uint32_t speed, const uint32_t idx) -> int32_t {
     if (idx >= R.size())
       return 0;
@@ -104,25 +104,25 @@ uint32_t minRiverJumps_recur(const vector<uint8_t>& R) {
     if (recs.count({idx,speed}))
       return recs[{idx,speed}];
 
-    int32_t res = -1;
+    int32_t ret = -1;
     if (R[idx]) {
-      int32_t res0 = dfs(speed, idx+speed);
-      int32_t res1 = dfs(speed+1, idx+speed+1);
+      int32_t res0 = solve(speed, idx+speed);
+      int32_t res1 = solve(speed+1, idx+speed+1);
 
       if (res0 >= 0 && res1 >= 0) {
-        res = min(res0, res1) + 1;
+        ret = min(res0, res1) + 1;
       } else if (res0 < 0 && res1 < 0) {
-        res = -1;
+        ret = -1;
       } else {
-        res = max(res0, res1) + 1;
+        ret = max(res0, res1) + 1;
       }
     }
 
-    recs[{idx,speed}] = res;
-    return res;
+    recs[{idx,speed}] = ret;
+    return ret;
   };
 
-  return dfs(1, 0);
+  return solve(1, 0);
 }
 
 int32_t minRiverJumps_dp(const vector<uint8_t>& R) {
@@ -133,7 +133,7 @@ int32_t minRiverJumps_dp(const vector<uint8_t>& R) {
   vector<vector<pair<uint32_t,uint32_t>>> dp(n);
   dp[0].emplace_back(1, 1);
 
-  uint32_t res = max_lmt;
+  uint32_t ret = max_lmt;
 
   for (auto i = 0; i < n; ++i) {
     if (!R[i])
@@ -141,19 +141,19 @@ int32_t minRiverJumps_dp(const vector<uint8_t>& R) {
 
     for (auto pr : dp[i]) {
       if (i+pr.first >= n) {
-        res = min(pr.second, res);
+        ret = min(pr.second, ret);
       } else if (R[i+pr.first]) {
         dp[i+pr.first].emplace_back(pr.first, pr.second+1);
       }
       if (i+pr.first+1 >= n) {
-        res = min(pr.second, res);
+        ret = min(pr.second, ret);
       } else if (R[i+pr.first+1]) {
         dp[i+pr.first+1].emplace_back(pr.first+1, pr.second+1);
       }
     }
   }
 
-  return (res == max_lmt) ? -1 : (int32_t)res;
+  return (ret == max_lmt) ? -1 : (int32_t)ret;
 }
 
 int main(int argc, char** argv) {
