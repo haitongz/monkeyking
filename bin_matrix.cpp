@@ -24,17 +24,17 @@ The time complexity is O(m+n) because we can possibly go as far left as we came 
  */
 int32_t first(const vector<uint8_t>& A) {
   function<int32_t(const uint32_t,const uint32_t)> solve =
-    [&](const uint32_t low, const uint32_t hi) -> int32_t {
-    if (hi >= low) {
-      uint32_t mid = low+(hi-low)/2;
+    [&](const uint32_t start, const uint32_t end) -> int32_t {
+    if (end >= start) {
+      uint32_t mid = start+(end-start)/2;
 
       // check if the element at middle index is first 1
       if ((!mid || !A[mid-1]) && A[mid] == 1)
         return mid;
       else if (!A[mid]) // if the element is 0, recur for right side
-        return solve(mid+1, hi);
+        return solve(mid+1, end);
       else // If element is not first 1, recur for left side
-        return solve(low, mid-1);
+        return solve(start, mid-1);
     }
 
     return -1;
