@@ -15,20 +15,20 @@ int32_t find_h_s(const vector<int>& nums) {
   if (!n)
     return -1;
 
-  int32_t res = 0;
+  int32_t ret = 0;
 
-  for (uint32_t low = 0, high = n-1; low < high;) {
-    const uint32_t mid = low+(high-low)/2;
-    nth_element(nums.begin()+low, nums.begin()+mid, nums.begin()+high, greater<int32_t>());
+  for (uint32_t start = 0, end = n-1; start < end;) {
+    const uint32_t mid = start+(end-start)/2;
+    nth_element(nums.begin()+start, nums.begin()+mid, nums.begin()+end, greater<int32_t>());
     if (nums[mid] >= mid+1){
-      res = max(res, mid+1);
-      low = mid+1;
+      ret = max(ret, mid+1);
+      start = mid+1;
     } else {
-      high = mid;
+      end = mid;
     }
   }
 
-  return res;
+  return ret;
 }
 
 int32_t find_h_c(const vector<int32_t>& nums) {
