@@ -1,6 +1,6 @@
 /*
 Given an array of words and a length L, format the text such that each line has exactly L characters and
-is fully (left and right) justified. You should pack your words in a greedy approach; that is, pack as many words
+is fully (left and right) justified. You should pack your words in a greedy approach: pack as many words
 as you can in each line. Pad extra spaces ' ' when necessary so that each line has exactly L characters.
 Extra spaces between words should be distributed as evenly as possible. If the number of spaces on a line do not divide
 evenly between words, the empty slots on the left will be assigned more spaces than the slots on the right. For the last
@@ -27,12 +27,11 @@ In this case, that line should be left-justified.
 
 using namespace std;
 
-vector<string> justify(const vector<string>& words, const uint32_t L) {
-  const uint32_t n = words.size();
+vector<string> justify_iter(const string words[], const uint32_t n, const uint32_t L) {
   if (!n || !L)
     return {};
 
-  vector<string> res;
+  vector<string> ret;
 
   for (uint32_t i = 0; i < n;) {
     uint32_t i_len = words[i].length();
@@ -46,12 +45,13 @@ vector<string> justify(const vector<string>& words, const uint32_t L) {
           s += " "+words[i];
         while (s.length() < L)
           s.push_back(' ');
-        res.push_back(s);
-        return res;
+
+        ret.push_back(s);
+        return ret;
       }
       if (j-i == 1) {
-        res.push_back(words[i++]);
-        res.back().append(L-res.back().length(), ' ');
+        ret.push_back(words[i++]);
+        ret.back().append(L-ret.back().length(), ' ');
         continue;
       }
 
@@ -64,82 +64,78 @@ vector<string> justify(const vector<string>& words, const uint32_t L) {
           s.push_back(' ');
         s.append(words[i]);
       }
-      res.push_back(s);
+      ret.push_back(s);
   }
 
-  return res;
+  return ret;
 }
 
-vector<string> fullJustify(const vector<string>& words, const uint32_t L) {
-  const uint32_t n = words.size();
-  if (!n)
+vector<string> justify_recur(const string words[], const uint32_t n, const uint32_t L) {
+  if (!n || !L)
     return {};
 
-  uint32_t len = 0, nums = 0, first = 0;
+  uint32_t curr_len = 0, word_no = 0, first = 0;
   bool lastline = false;
-  vector<string> res;
+  vector<string> ret;
 
-  auto justify = [&]() {
-    string str;
-    if (lastline || nums == 1) {
-      for (uint32_t i = first; i < first+nums; ++i) {
-        str += words[i];
-        if (i < first+nums-1)
-          str += " ";
+  auto solve/*justify*/ = [&]() {
+    string s;
+    if (lastline || word_no == 1) {
+      for (uint32_t i = first; i < first+word_no; ++i) {
+        s += words[i];
+        if (i < first+word_no-1)
+          s += " ";
       }
 
-      str += string(L-str.size(), ' ');
-      res.push_back(str);
+      s += string(L-s.size(), ' ');
+      ret.push_back(s);
       return;
     }
 
-    int spaces = L-len;
-    int fix = spaces / (nums-1);
-    int spare = spaces % (nums-1);
+    uint32_t spaces = L-curr_len;
+    uint32_t fix = spaces/(word_no-1);
+    uint32_t spare = spaces%(word_no-1);
 
-    for (uint32_t i = first; i < first+nums; ++i) {
-      str += words[i];
-      if (i < first+nums-1) {
-        str += string(fix, ' ');
+    for (uint32_t i = first; i < first+word_no; ++i) {
+      s += words[i];
+      if (i < first+word_no-1) {
+        s += string(fix, ' ');
         if (spare-- > 0)
-          str += " ";
+          s += " ";
       }
     }
 
-    res.push_back(str);
+    ret.push_back(s);
   };
 
-  for (uint32_t i = 0; i <= n; ++i) {
-    if (i < n && len+words[i].length() <= L-nums) {
-      len += words[i].length();
-      ++nums;
+  for (uint32_t i = 0; i < n+1; ++i) {
+    if (i < n && curr_len+words[i].length() < L-word_no+1) {
+      curr_len += words[i].length();
+      ++word_no;
     } else {
       if (i == n)
         lastline = true;
 
-      justify();
-      nums = 1;
+      solve();
+      word_no = 1;
       if (!lastline)
-        len = words[i].length();
+        curr_len = words[i].length();
       first = i;
     }
   }
 
-  return res;
+  return ret;
 }
 
 int main(int argc, char** argv) {
-  vector<string> v;
-  v.push_back("This");
-  v.push_back("is");
-  v.push_back("an");
-  v.push_back("example");
-  v.push_back("of");
-  v.push_back("text");
-  v.push_back("justification.");
-
-  vector<string> words = justify(v, 16);
-  for (auto& i : words) {
+  string words[] = {"This", "is", "an", "example", "of", "text", "justification."};
+  vector<string> res = justify_iter(words, 7, 16);
+  for (const auto& i : res)
     cout << "'" << i << "'" << endl;
-  }
+
+  res = justify_recur(words, 7, 16);
+  for (const auto& i : res)
+    cout << "'" << i << "'" << endl;
+
+  return 0;
 }
