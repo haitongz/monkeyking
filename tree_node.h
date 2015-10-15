@@ -20,20 +20,22 @@ struct BinTreeNodeT { // binary tree node
 
 typedef BinTreeNodeT<int32_t> BinTreeNode;
 
-template <typename T>
-struct TreeNodeT : public BinTreeNodeT<T> {
-  TreeNodeT* parent;
+#define Node BinTreeNodeT<T>
 
-  TreeNodeT(const T& v)
-      : BinTreeNodeT<T>(v), parent(nullptr) {
+template <typename T>
+struct TreeNodeWParentT : public Node {
+  TreeNodeWParentT* parent;
+
+  TreeNodeWParentT(const T& v)
+      : Node(v), parent(nullptr) {
   }
 };
 
-typedef TreeNodeT<uint32_t> TreeNode;
-typedef TreeNodeT<int32_t>  TreeNode1;
+typedef TreeNodeWParentT<uint32_t> TreeNodeWParent;
+typedef TreeNodeWParentT<int32_t>  TreeNodeWParent1;
 
 template <typename T>
-inline void bfsPrint(const BinTreeNodeT<T>* root) {
+inline void bfsPrint(const Node* root) {
   if (!root) {
 #ifdef _DEBUG_
     cerr << "Null root!" << endl;
@@ -41,7 +43,7 @@ inline void bfsPrint(const BinTreeNodeT<T>* root) {
     return;
   }
 
-  deque<const BinTreeNodeT<T>*> nodes;
+  deque<const Node*> nodes;
   nodes.push_back(root);
   uint32_t lvl = 0;
 
@@ -49,7 +51,7 @@ inline void bfsPrint(const BinTreeNodeT<T>* root) {
     cout << "Level " << ++lvl << ": ";
     const uint32_t cp = nodes.size();
     for (uint32_t i = 0; i < cp; ++i) {
-      const BinTreeNodeT<T>* nd = nodes.front();
+      const Node* nd = nodes.front();
       nodes.pop_front();
       cout << "key=" << nd->value << "; ";
       if (nd->left)
@@ -62,7 +64,30 @@ inline void bfsPrint(const BinTreeNodeT<T>* root) {
 }
 
 template <typename T>
-inline void delTree_iter(BinTreeNodeT<T>** root) {
+bool bstInsert_recur(Node** root, const T& key) {
+  if (!root)
+    return false;
+
+  function<bool(Node**)> solve =
+    [&](Node** curr_root) {
+    Node*& ptr = *curr_root;
+    if (!ptr) {
+      ptr = new Node(key);
+      return true;
+    } else if (ptr->value == key) {
+      return false;
+    } else if (ptr->value > key) {
+      return solve(&(ptr->left));
+    } else {
+      return solve(&(ptr->right));
+    }
+  };
+
+  return solve(root);
+}
+
+template <typename T>
+inline void delTree_iter(Node** root) {
   if (!root) {
 #ifdef _DEBUG_
     cerr << "Null root!" << endl;
@@ -70,12 +95,12 @@ inline void delTree_iter(BinTreeNodeT<T>** root) {
     return;
   }
 
-  deque<const BinTreeNodeT<T>*> nodes;
+  deque<const Node*> nodes;
   nodes.push_back(*root);
   while (!nodes.empty()) {
     const uint32_t cp = nodes.size();
     for (uint32_t i = 0; i < cp; ++i) {
-      const BinTreeNodeT<T>* nd = nodes.front();
+      const Node* nd = nodes.front();
       nodes.pop_front();
       if (nd->left)
         nodes.push_back(nd->left);
@@ -90,12 +115,12 @@ inline void delTree_iter(BinTreeNodeT<T>** root) {
 }
 
 template <typename T>
-inline void delTree_recur(BinTreeNodeT<T>** root) {
-  function<void(BinTreeNodeT<T>**)> solve = [&](BinTreeNodeT<T>** ndp) { // DFS, postorder
+inline void delTree_recur(Node** root) {
+  function<void(Node**)> solve = [&](Node** ndp) { // DFS, postorder
     if (!ndp)
       throw exception();
     else if (*ndp) {
-      BinTreeNodeT<T>* nd = *ndp;
+      Node* nd = *ndp;
       solve(&(nd->left));
       solve(&(nd->right));
       delete nd;
@@ -107,14 +132,14 @@ inline void delTree_recur(BinTreeNodeT<T>** root) {
 }
 
 template <typename T>
-inline bool isLeaf(const BinTreeNodeT<T>* node) {
+inline bool isLeaf(const Node* node) {
   return (node && !node->left && !node->right);
 }
 
 template <typename T>
-inline uint32_t height(const BinTreeNodeT<T>* root) {
-  function<uint32_t(const BinTreeNodeT<T>*)> solve =
-    [&](const BinTreeNodeT<T>* curr_root) -> uint32_t {
+inline uint32_t height(const Node* root) {
+  function<uint32_t(const Node*)> solve =
+    [&](const Node* curr_root) -> uint32_t {
     if (!curr_root)
       return 0;
     else {
@@ -131,12 +156,12 @@ inline uint32_t height(const BinTreeNodeT<T>* root) {
 }
 
 template <typename T>
-inline uint32_t height_iter(const BinTreeNodeT<T>* root) {
+inline uint32_t height_iter(const Node* root) {
   if (!root)
     return 0;
 
   // Create an empty queue for level order tarversal
-  deque<const BinTreeNodeT<T>*> q = {root};
+  deque<const Node*> q = {root};
   uint32_t ret = 0;
 
   while (1) {
@@ -149,7 +174,7 @@ inline uint32_t height_iter(const BinTreeNodeT<T>* root) {
 
     // Dequeue all nodes of current level and Enqueue all nodes of next level
     while (node_cnt > 0) {
-      const BinTreeNodeT<T>* node = q.front();
+      const Node* node = q.front();
       q.pop_front();
       if (node->left)
         q.push_back(node->left);
@@ -159,6 +184,24 @@ inline uint32_t height_iter(const BinTreeNodeT<T>* root) {
       --node_cnt;
     }
   }
+}
+
+/*
+Find size of binary tree
+ */
+template <typename T>
+uint32_t count_recur(const Node* root) {
+  function<uint32_t(const Node*)> solve =
+    [&](const Node* curr_root) -> uint32_t {
+    if (!curr_root)
+      return 0;
+
+    uint32_t lcnt = solve(curr_root->left);
+    uint32_t rcnt = solve(curr_root->right);
+    return lcnt+rcnt+1;
+  };
+
+  return solve(root);
 }
 
 #endif // _TREENODE_H_
