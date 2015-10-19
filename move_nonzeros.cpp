@@ -18,7 +18,8 @@ void moveNonZeros(vector<int32_t>& nums) {
 
 /*
 Follow up:
-Put all non-zero elements at left of array, minimum changes to this array, left-most elements can be anything, returns number of non-zero elements.
+Put all non-zero elements at left of array, minimum changes to this array, left-most elements can be anything,
+returns number of non-zero elements.
  */
 uint32_t moveNonZeros_2(vector<int32_t>& nums) { // issue: not all non-zero are at left
   const uint32_t n = nums.size();
