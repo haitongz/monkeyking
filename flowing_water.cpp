@@ -1,5 +1,6 @@
 /*
-In a N*N matrix, values represent heights. Water flows from high to low, find all points that water can flow to Pacific and Atlantic.
+In a N*N matrix, values represent heights. Water flows from high to low, find all points
+that water can flow to Pacific and Atlantic.
 
 Pacific: ~
 Atlantic: *
@@ -114,7 +115,8 @@ vector<Position> flowingWater(const vector<vector<uint32_t>>& height) {
     grid[m-1][col].atlantic = true;
   }
 
-  // drop water on a square, let it flow to surrounding squares if possible, and then update the current square's .pacific and .atlantic instance variables
+  // drop water on a square, let it flow to surrounding squares if possible, and then update the current square's
+  // .pacific and .atlantic instance variables
   function<void(const uint32_t,const uint32_t)> solve =
     [&](const uint32_t row, const uint32_t col) {
     grid[row][col].visited = true;
