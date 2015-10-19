@@ -6,7 +6,8 @@
 using namespace std;
 
 /*
-The longest Increasing Subsequence (LIS) problem is to find the length of the longest subsequence of a given sequence such that all elements of the subsequence are sorted in increasing order.
+The longest Increasing Subsequence (LIS) problem is to find the length of the longest subsequence of
+a given sequence such that all elements of the subsequence are sorted in increasing order.
 1. Elements don't need to be contiguous;
 2. No need to keep spaces in between, just length of the subsequence.
 
@@ -34,15 +35,18 @@ uint32_t LISLen(const vector<int32_t>& nums) {
 }
 
 /*
-A snake sequence is made up of adjacent numbers such that for each number, the number on the right or the number below it is +1 or -1 its value. For example,
+A snake sequence is made up of adjacent numbers such that for each number,
+the number on the right or the number below it is +1 or -1 its value.
 
+Given
 1 3 2 6 8
 -9 7 1 -1 2
 1 5 0 1 9
 
 In this grid, (3, 2, 1, 0, 1) is a snake sequence.
 
-Given a grid, find the longest snake sequences and their lengths (so there can be multiple snake sequences with the maximum length).
+Given a grid, find the longest snake sequences and their lengths
+(so there can be multiple snake sequences with the maximum length).
  */
 uint32_t longestSnakeSeqLen(const vector<vector<int32_t>>& mat) {
   const uint32_t m = mat.size();
@@ -82,8 +86,10 @@ uint32_t longestSnakeSeqLen(const vector<vector<int32_t>>& mat) {
 }
 
 /*
-Find the longest increasing(increasing means one step) sequence in an integer matrix in 4 directions (up down left right), return the sequence
-For Example:
+Find the longest increasing(increasing means one step) sequence in an integer matrix in 4 directions (up down left right),
+return the sequence
+
+Given
 [
  1 2 3 4
  8 7 6 5
@@ -136,8 +142,6 @@ vector<int32_t> matrixLIS(const vector<vector<int32_t>>& mat) {
 /*
 Given an array arr[0 ... n-1] containing n positive integers, a subsequence of arr[] is called Bitonic if it is first increasing, then decreasing. Write a function that takes an array as argument and returns the length of the longest bitonic subsequence.
 A sequence, sorted in increasing order is considered Bitonic with the decreasing part as empty. Similarly, decreasing order sequence is considered Bitonic with the increasing part as empty.
-
-Examples:
 
 Input arr[] = {1, 11, 2, 10, 4, 5, 2, 1};
 Output: 6 (A Longest Bitonic Subsequence of length 6 is 1, 2, 10, 4, 2, 1)
