@@ -1,6 +1,7 @@
 /*
-There are N houses in a row. Each house can be painted in either Red, Green or Blue color. The cost of coloring each house in each of the colors is different.
-Find the color of each house such that no two adjacent house have the same color and the total cost of coloring all the houses is minimum.
+There are N houses in a row. Each house can be painted in either Red, Green or Blue color.
+The cost of coloring each house in each of the colors is different. Find the color of each house such that
+no two adjacent house have the same color and the total cost of coloring all the houses is minimum.
 */
 #include <iostream>
 
