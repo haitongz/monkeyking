@@ -6,7 +6,7 @@
 
 using namespace std;
 
-static const uint32_t max_lmt = numeric_limits<uint32_t>::max();
+static const uint32_t MAX_LMT = numeric_limits<uint32_t>::max();
 
 /*
 Given an array of non-negative integers, you are initially positioned at the first index of the array.
@@ -32,14 +32,17 @@ bool canJump(const vector<uint32_t>& A) {
 }
 
 /*
-Given an array of non-negative integers, you are initially positioned at the first index of the array.  Each element in the array represents your maximum jump length at that position. Your goal is to reach the last index in the minimum number of jumps.
+Given an array of non-negative integers, you are initially positioned at the first index of the array.
+Each element in the array represents your maximum jump length at that position.
+Your goal is to reach the last index in the minimum number of jumps.
+
 Given array A = [2,3,1,1,4]
 The minimum number of jumps to reach the last index is 2. (Jump 1 step from index 0 to 1, then 3 steps to the last index.)
  */
 uint32_t minJumps_recur(const vector<uint32_t>& A) {
   const uint32_t n = A.size();
   if (!n)
-    return max_lmt;
+    return MAX_LMT;
 
   function<uint32_t(const uint32_t,const uint32_t)> solve = // DFS
     [&](const uint32_t start, const uint32_t end) -> uint32_t {
@@ -51,7 +54,8 @@ uint32_t minJumps_recur(const vector<uint32_t>& A) {
     if (!A[start])
       return max_lmt;
 
-    // Traverse through all the points reachable from A[l]. Recursively get the minimum number of jumps needed to reach arr[h] from these reachable points.
+    // Traverse through all the points reachable from A[l].
+    // Recursively get the minimum number of jumps needed to reach arr[h] from these reachable points.
     uint32_t ret = max_lmt;
 
     for (uint32_t i = start+1; i < end+1 && i < start+A[start]+1; ++i) {
@@ -88,7 +92,9 @@ uint32_t minJumps_dp(const vector<uint32_t>& A) {
 }
 
 /*
-Given a binary array R representing a river: 0 means water and 1 means stone. Initial position R[0] is 1, initial speed is 1. You can choose to jump at old speed, or at speed+1 for next move. Find minimum number of steps to jump river.
+Given a binary array R representing a river: 0 means water and 1 means stone.
+Initial position R[0] is 1, initial speed is 1. You can choose to jump at old speed, or at speed+1 for next move.
+Find minimum number of steps to jump river.
  */
 uint32_t minRiverJumps_recur(const vector<uint8_t>& R) {
   if (R.empty())
