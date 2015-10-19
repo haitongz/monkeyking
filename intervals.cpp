@@ -6,7 +6,8 @@
 using namespace std;
 
 /*
-Given a set of non-overlapping intervals, insert a new interval into the intervals (merge if necessary). You may assume that the intervals were initially sorted according to their start times.
+Given a set of non-overlapping intervals, insert a new interval into the intervals (merge if necessary).
+You may assume that the intervals were initially sorted according to their start times.
 
 Given intervals [1,3],[6,9], insert and merge [2,5] in as [1,5],[6,9].
 Given [1,2],[3,5],[6,7],[8,10],[12,16], insert and merge [4,9] in as [1,2],[3,10],[12,16].
@@ -118,13 +119,15 @@ vector<Interval> insert_2(vector<Interval>& itvls, Interval ni) {
 }
 */
 /*
-Given a array of pairs where each pair contains the start and end time of a meeting (as in integer), determine if a single person can attend all the meetings
+Given a array of pairs where each pair contains the start and end time of a meeting (as in integer),
+determine if a single person can attend all the meetings
 
 Input array { pair(1,4), pair(4, 5), pair(3,4), pair(2,3) }
 Output: false
 
 Follow up:
-determine the minimum number of meeting rooms needed to hold all the meetings. (Or, giving lots of intervals [ai, bi], find a point intersect with the most number of intervals.)
+determine the minimum number of meeting rooms needed to hold all the meetings.
+(Or, giving lots of intervals [ai, bi], find a point intersect with the most number of intervals.)
 
 Input array { pair(1, 4), pair(2,3), pair(3,4), pair(4,5) }
 Output: 2
@@ -171,8 +174,12 @@ uint32_t minRooms(vector<Interval>& mtgs) {
 }
 
 /*
-There are n pairs of numbers. In every pair, the first number is always smaller than the second number. A pair (c, d) can follow another pair (a, b) if b < c. Chain of pairs can be formed in this fashion. Find the longest chain which can be formed from a given set of pairs.
-For example, if the given pairs are {{5, 24}, {39, 60}, {15, 28}, {27, 40}, {50, 90}}, then the longest chain that can be formed is of length 3, and the chain is {{5, 24}, {27, 40}, {50, 90}}
+There are n pairs of numbers. In every pair, the first number is always smaller than the second number.
+A pair (c, d) can follow another pair (a, b) if b < c. Chain of pairs can be formed in this fashion.
+Find the longest chain which can be formed from a given set of pairs.
+
+Given pairs {{5, 24}, {39, 60}, {15, 28}, {27, 40}, {50, 90}}, then the longest chain that can be formed is of length 3,
+and the chain is {{5, 24}, {27, 40}, {50, 90}}
  */
 struct Pair {
   Pair(const int32_t s, const int32_t e)
