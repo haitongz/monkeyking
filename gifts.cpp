@@ -1,5 +1,6 @@
 /*
-There are six kinds of gifts. One piece of first kind has value 1,..., 6 has value 6. Given different numbers of gifts, how to give'em to two people so that they get equal value?
+There are six kinds of gifts. One piece of first kind has value 1,..., 6 has value 6.
+Given different numbers of gifts, how to give'em to two people so that they get equal value?
  */
 #include <iostream>
 #include <cstring> // for bzero
