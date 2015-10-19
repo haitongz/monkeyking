@@ -1,17 +1,22 @@
 /*
-Given n non-negative integers representing the histogram's bar height where the width of each bar is 1, find the area of largest rectangle in the histogram.
+Given n non-negative integers representing the histogram's bar height where the width of each bar is 1,
+find the area of largest rectangle in the histogram.
 
 Solution:
 
-For search the leftmost higher bar, search from left to right. Use stack to store the position of leftmost bar which has smaller height than current bar. Then we can calculate the width to the left. Similarly, we can search the rightmost higher bar.
+For search the leftmost higher bar, search from left to right.
+Use stack to store the position of leftmost bar which has smaller height than current bar.
+Then we can calculate the width to the left. Similarly, we can search the rightmost higher bar.
 
 For example, [2, 1, 5, 6, 2, 3].
 
 First of all, for the first element, the leftmost bar is itself. Push the position 0 to the stack. The stack is [0].
-For the second element 1, since 1 < 2, we pop out the position 0 and find that the leftmost bar is the first one. Then push the position 1 to the stack. The stack is [1].
+For the second element 1, since 1 < 2, we pop out the position 0 and find that the leftmost bar is the first one.
+                          Then push the position 1 to the stack. The stack is [1].
 For the third element 5, since 5 > 1, the leftmost bar is itself. Push the position 2 to the stack. The stack is [1, 2].
 For the fourth element 6, since 6 > 5, the leftmost bar is itself. Push the position 3 to the stack. The stack is [1, 2, 3].
-For the fifth element 2, since 2 < 6, 2 < 5, 2 > 1, we pop out the positions 3 and 2. The leftmost bar is the third element 5. Push the position 5. The stack is [1, 5].
+For the fifth element 2, since 2 < 6, 2 < 5, 2 > 1, we pop out the positions 3 and 2.
+                         The leftmost bar is the third element 5. Push the position 5. The stack is [1, 5].
 For the last element 3, since 3 > 2, the leftmost bar is itself. Push the position 6.
 
 Then search from right to the left to find the rightmost bar.
