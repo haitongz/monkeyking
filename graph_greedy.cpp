@@ -25,9 +25,14 @@ struct Subset {
 };
 
 /*
-Given a connected and undirected graph, a spanning tree of that graph is a subgraph that is a tree and connects all the vertices together. A single graph can have many different spanning trees. A minimum spanning tree (MST) or minimum weight spanning tree for a weighted, connected and undirected graph is a spanning tree with weight less than or equal to the weight of every other spanning tree. The weight of a spanning tree is the sum of weights given to each edge of the spanning tree.
+Given a connected and undirected graph, a spanning tree of that graph is a subgraph that is a tree and
+connects all the vertices together. A single graph can have many different spanning trees.
+A minimum spanning tree (MST) or minimum weight spanning tree for a weighted, connected and undirected graph
+is a spanning tree with weight less than or equal to the weight of every other spanning tree.
+The weight of a spanning tree is the sum of weights given to each edge of the spanning tree.
 
-The algorithm is a Greedy Algorithm. The Greedy Choice is to pick the smallest weight edge that does not cause a cycle in the MST constructed so far.
+The algorithm is a Greedy Algorithm. The Greedy Choice is to pick the smallest weight edge that does not cause
+a cycle in the MST constructed so far.
  */
 void UndirectedGraph::Kruskal() {
   Edge result[V];
@@ -72,7 +77,8 @@ void UndirectedGraph::Kruskal() {
     const Edge& next_edge = edges[i++]; // Step 2: pick the smallest edge and increment the index for next iteration
     uint32_t x = find(next_edge.src);
     uint32_t y = find(next_edge.dst);
-    if (x != y) { // If including this edge does't cause cycle, include it in result and increment the index of result for next edge
+    if (x != y) { // If including this edge does't cause cycle,
+                  // include it in result and increment the index of result for next edge
       result[e++] = next_edge;
       Union(x, y);
     }
@@ -83,7 +89,10 @@ void UndirectedGraph::Kruskal() {
 /*
 Given a graph and a source vertex in graph, find shortest paths from source to all vertices in the given graph.
 
-Dijkstra's algorithm generates a SPT (shortest path tree) with given source as root. We maintain two sets, one set contains vertices included in shortest path tree, other set includes vertices not yet included in shortest path tree. At every step of the algorithm, we find a vertex which is in the other set (set of not yet included) and has minimum distance from source.
+Dijkstra's algorithm generates a SPT (shortest path tree) with given source as root. We maintain two sets,
+one set contains vertices included in shortest path tree, other set includes vertices not yet included in shortest path tree.
+At every step of the algorithm, we find a vertex which is in the other set (set of not yet included)
+and has minimum distance from source.
  */
 /*
 typedef uint32_t vertex_t;
@@ -146,7 +155,8 @@ list<vertex_t> shortestPathTo(const vertex_t vertex, const vector<vertex_t>& pre
 */
 void Dijkstra(const uint32_t graph[V][V], const uint32_t src) {
   uint32_t min_dist[V]; // dist[i] will hold the shortest distance from src to i
-  bool spt[V]; // spt[i] will true if vertex i is included in shortest path tree or shortest distance from src to i is finalized
+  bool spt[V]; // spt[i] will true if vertex i is included in shortest path tree or
+               // shortest distance from src to i is finalized
 
   for (uint32_t i = 0; i < V; ++i) {
     min_dist[i] = MAX_LIMIT;
@@ -154,7 +164,8 @@ void Dijkstra(const uint32_t graph[V][V], const uint32_t src) {
   }
   min_dist[src] = 0; // Distance of source vertex from itself is always 0
 
-  function<uint32_t(void)> minDist = [&](void) { // find the vertex with minimum distance value, from the set of vertices not yet included in shortest path tree
+  function<uint32_t(void)> minDist = [&](void) { // find the vertex with minimum distance value,
+                                                 // from the set of vertices not yet included in shortest path tree
     // Initialize min value
     uint32_t tmp = MAX_LIMIT;
     uint32_t min_idx = src;
@@ -171,7 +182,8 @@ void Dijkstra(const uint32_t graph[V][V], const uint32_t src) {
 
   // Find shortest path for all vertices
   for (uint32_t i = 0; i < V-1; ++i) {
-    // Pick the minimum distance vertex from the set of vertices not yet processed. u is always equal to src in first iteration.
+    // Pick the minimum distance vertex from the set of vertices not yet processed.
+    // u is always equal to src in first iteration.
     const uint32_t u = minDist();
     spt[u] = true; // Mark the picked vertex as processed
 
@@ -224,7 +236,8 @@ void Prim(const uint32_t graph[V][V]) {
     // Add the picked vertex to the MST Set
     mst[u] = true;
 
-    // Update key value and parent index of the adjacent vertices of the picked vertex. Consider only those vertices which are not yet included in MST
+    // Update key value and parent index of the adjacent vertices of the picked vertex.
+    // Consider only those vertices which are not yet included in MST
     for (uint32_t v = 0; v < V; i++)
       // graph[u][v] is non zero only for adjacent vertices of m, mst[v] is
       // false for vertices not yet included in MST. Update the key only if graph[u][v] is smaller than key[v]
