@@ -1,5 +1,5 @@
 /*
-Given two words s1 and s2, find the minimum number of steps required to convert s1 to s2. (each operation is counted as 1 step.)
+Given two words s1 and s2, find the minimum number of steps required to convert s1 to s2 (each operation is counted as 1 step).
 
 You have the following 3 operations permitted on a word:
 
@@ -7,7 +7,8 @@ a) Insert a character
 b) Delete a character
 c) Replace a character
 
-Assume that the total number of operations is d. Pick letters from both strings: x1 and x2. If x1 = x2, remove both and pick next letters.
+Assume that the total number of operations is d. Pick letters from both strings: x1 and x2. If x1 = x2,
+remove both and pick next letters.
 
 If they are different, compare three operations:
 a) insert a character, i.e., remove x2 from s2 since we will insert x2 to s1. Then pick letters from s1 and s2 again.
