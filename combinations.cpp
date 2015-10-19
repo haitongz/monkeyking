@@ -82,7 +82,8 @@ vector<vector<uint32_t>> comb_recur(const uint32_t n, const uint32_t k) {
 }
 
 /*
-Given a set of candidate numbers (C) and a target number (T), find all unique combinations in C where the candidate numbers sums to T.
+Given a set of candidate numbers (C) and a target number (T), find all unique combinations in C
+where the candidate numbers sums to T.
 
 The same repeated number may be chosen from C unlimited number of times.
 
@@ -128,7 +129,8 @@ vector<vector<uint32_t>> combSum_recur(vector<uint32_t>& C, const uint32_t T) {
 }
 
 /*
-Given a collection of candidate numbers (C) and a target number (T), find all unique combinations in C where the candidate numbers sum to T.
+Given a collection of candidate numbers (C) and a target number (T), find all unique combinations in C
+where the candidate numbers sum to T.
 
 Each number in C may only be used once in the combination.
 
