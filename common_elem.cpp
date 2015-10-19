@@ -1,5 +1,6 @@
 /*
-Given a matrix where every row is sorted in increasing order. Write a function that finds and returns a common element in all rows. If there is no common element, then returns -1.
+Given a matrix where every row is sorted in increasing order. Write a function that finds and returns a common element
+in all rows. If there is no common element, then returns -1.
  */
 #include <iostream>
 #include <vector>
@@ -7,7 +8,11 @@ Given a matrix where every row is sorted in increasing order. Write a function t
 using namespace std;
 
 /*
-O(m*n) approach: start from the last column of every row. If elements at all last columns are same, then we found the common element. Otherwise we find the minimum of all last columns. Once we find a minimum element, we know that all other elements in last columns cannot be a common element, so we reduce last column index for all rows except for the row which has minimum value. We keep repeating these steps till either all elements at current last column don't become same, or a last column index reaches 0.
+O(m*n) approach: start from the last column of every row. If elements at all last columns are same, then we found
+the common element. Otherwise we find the minimum of all last columns. Once we find a minimum element, we know that
+all other elements in last columns cannot be a common element, so we reduce last column index for all rows except for
+the row which has minimum value. We keep repeating these steps till either all elements at current last column don't
+become same, or a last column index reaches 0.
  */
 int32_t commonElement(const vector<vector<uint32_t>>& mat) {
   const uint32_t m = mat.size(), n = mat[0].size();
