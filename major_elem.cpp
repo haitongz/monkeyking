@@ -1,5 +1,6 @@
 /*
-Majority Element: A majority element in an array A[] of size n is an element that appears more than n/2 times (and hence there is at most one such element).
+Majority Element: A majority element in an array A[] of size n is an element that appears more than n/2 times
+(and hence there is at most one such element).
 
 Write a function which takes an array and emits the majority element (if it exists), otherwise prints NONE
  */
@@ -10,7 +11,8 @@ Write a function which takes an array and emits the majority element (if it exis
 using namespace std;
 
 /*
-Moore's voting algorithm: cancel out each occurrence of an element e with all the other elements that are different from e then e will exist till end if it is a majority element.
+Moore's voting algorithm: cancel out each occurrence of an element e with all the other elements
+that are different from e then e will exist till end if it is a majority element.
 Time complexity: O(n)
 Auxiliary space: O(1)
  */
