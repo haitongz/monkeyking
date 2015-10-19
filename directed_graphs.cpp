@@ -59,7 +59,8 @@ void DirectedGraph::BFS(const uint32_t s) {
     cout << v << " ";
     q.pop_front();
 
-    // Get all adjacent vertices of the dequeued vertex s. If a adjacent has not been visited, then mark it visited and enqueue it
+    // Get all adjacent vertices of the dequeued vertex s.
+    // If a adjacent has not been visited, then mark it visited and enqueue it
     for (auto i : adjs[v]) {
       if (!visited[i]) {
         visited[i] = true;
@@ -160,7 +161,8 @@ DirectedGraph::isReachable(const uint32_t src, const uint32_t dst) const { // A 
     const uint32_t v = q.front();
     q.pop_front();
 
-    // Get all adjacent vertices of the dequeued vertex s. If a adjacent has not been visited, then mark it visited and enqueue it
+    // Get all adjacent vertices of the dequeued vertex s.
+    // If a adjacent has not been visited, then mark it visited and enqueue it
     for (auto i : adjs[v]) { // If this adjacent node is the destination node, then return true
       if (i == dst)
         return true;
@@ -176,12 +178,14 @@ DirectedGraph::isReachable(const uint32_t src, const uint32_t dst) const { // A 
 }
 
 /*
-The Floyd Warshall Algorithm is for solving the All Pairs Shortest Path problem. The problem is to find shortest distances between every pair of vertices in a given edge weighted directed Graph.
+The Floyd Warshall Algorithm is for solving the All Pairs Shortest Path problem.
+The problem is to find shortest distances between every pair of vertices in a given edge weighted directed Graph.
  */
 void floydWarshall_dp(const uint32_t graph[][V]) {
   uint32_t dist[V][V]; // output matrix that will finally have the shortest distances between every pair of vertices */
 
-  /* Initialize the solution matrix same as input graph matrix. Or we can say the initial values of shortest distances are based on shortest paths considering no intermediate vertex. */
+  /* Initialize the solution matrix same as input graph matrix.
+     Or we can say the initial values of shortest distances are based on shortest paths considering no intermediate vertex. */
   for (uint32_t i = 0; i < V; ++i)
     for (uint32_t j = 0; j < V; ++j)
       dist[i][j] = graph[i][j];
@@ -212,12 +216,15 @@ void floydWarshall_dp(const uint32_t graph[][V]) {
 }
 
 /*
-Given a directed graph, find out if a vertex j is reachable from another vertex i for all vertex pairs (i, j) in the given graph. Here reachable mean that there is a path from vertex i to j. The reach-ability matrix is called transitive closure of a graph.
+Given a directed graph, find out if a vertex j is reachable from another vertex i for all vertex pairs (i, j)
+in the given graph. Here reachable mean that there is a path from vertex i to j. The reach-ability matrix is
+called transitive closure of a graph.
  */
 void transitiveClosure(const uint32_t graph[V][V]) {
   uint32_t reach[V][V]; /* the output matrix that will finally have the shortest distances between every pair of vertices */
 
-  /* Initialize the solution matrix same as input graph matrix. Or we can say the initial values of shortest distances are based on shortest paths considering no intermediate vertex. */
+  /* Initialize the solution matrix same as input graph matrix.
+     Or we can say the initial values of shortest distances are based on shortest paths considering no intermediate vertex. */
   for (uint32_t i = 0; i < V; ++i)
     for (uint32_t j = 0; j < V; ++j)
       reach[i][j] = graph[i][j];
@@ -275,7 +282,8 @@ void DirectedGraph::topologicalSort() {
 }
 
 /*
-Given a Weighted Directed Acyclic Graph and a source vertex in the graph, find the shortest paths from given source to all other vertices.
+Given a Weighted Directed Acyclic Graph and a source vertex in the graph,
+find the shortest paths from given source to all other vertices.
  */
 void DirectedGraph::shortestPath(int32_t s) {
   bool visited[V];
@@ -318,7 +326,8 @@ void DirectedGraph::shortestPath(int32_t s) {
 }
 
 /*
-A directed graph is strongly connected if there is a path between all pairs of vertices. A strongly connected component (ScC) of a directed graph is a maximal strongly connected subgraph.
+A directed graph is strongly connected if there is a path between all pairs of vertices.
+A strongly connected component (ScC) of a directed graph is a maximal strongly connected subgraph.
  */
 DirectedGraph DirectedGraph::getTranspose() {
   DirectedGraph g(V);
@@ -387,7 +396,8 @@ void DirectedGraph::ScC() {
 }
 
 /*
-Given a directed graph, find out whether the graph is strongly connected or not. A directed graph is strongly connected if there is a path between any two pair of vertices.
+Given a directed graph, find out whether the graph is strongly connected or not.
+A directed graph is strongly connected if there is a path between any two pair of vertices.
  */
 bool DirectedGraph::isSC() {
   bool visited[V];
@@ -432,7 +442,9 @@ bool DirectedGraph::isSC() {
 }
 
 /*
-There are N stations on route of a train. The train goes from station 0 to N-1. The ticket cost for all pair of stations (i, j) is given where j is greater than i. Find the minimum cost to reach the destination.
+There are N stations on route of a train. The train goes from station 0 to N-1.
+The ticket cost for all pair of stations (i, j) is given where j is greater than i.
+Find the minimum cost to reach the destination.
 
 Input:
 cost[N][N] = {{0, 15, 80, 90},
@@ -477,7 +489,8 @@ uint32_t minCost_dp(const uint32_t cost[][N]) {
   return solve(0, N-1);
 }
 
-// We can solve this problem using O(N) extra space and O(N2) time. The idea is based on the fact that given input matrix is a Directed Acyclic Graph (DAG).
+// We can solve this problem using O(N) extra space and O(N2) time.
+// The idea is based on the fact that given input matrix is a Directed Acyclic Graph (DAG).
 uint32_t minCost_DAG(const uint32_t cost[][N]) {
   // dist[i] stores minimum cost to reach station i from station 0.
   uint32_t dist[N];
@@ -495,7 +508,8 @@ uint32_t minCost_DAG(const uint32_t cost[][N]) {
 }
 
 /*
-A person is determined to finish the book in ¿k¿ days but he never wants to stop a chapter in between. Find the optimal assignment of chapters, such that the person doesn¿t read too many extra/less pages overall.
+A person is determined to finish the book in ¿k¿ days but he never wants to stop a chapter in between.
+Find the optimal assignment of chapters, such that the person doesn¿t read too many extra/less pages overall.
 
 Example 1:
 Input:  Number of Days to Finish book = 2
@@ -525,7 +539,8 @@ void minAssignment(const uint32_t pages[]) {
   // Average pages to be read in a day
   avg_pages = round(sum/DAYS);
 
-  /* DAG construction vertices being chapter name & Edge weight being |avg_pages-pages in a chapter| Adjacency matrix representation  */
+  /* DAG construction vertices being chapter name & Edge weight being
+     |avg_pages-pages in a chapter| Adjacency matrix representation  */
   for (uint32_t i = 0; i < CHAPTERS+1; ++i) {
     for (uint32_t j = 0; j < CHAPTERS+1; ++j) {
       if (j <= i)
@@ -589,13 +604,17 @@ void minAssignment(const uint32_t pages[]) {
 }
 
 /*
-Given a number of friends who have to give or take some amount of money from one another. Design an algorithm by which the total cash flow among all the friends is minimized. O(N2) where N is the number of persons.
+Given a number of friends who have to give or take some amount of money from one another.
+Design an algorithm by which the total cash flow among all the friends is minimized.
+O(N2) where N is the number of persons.
  */
-// Given a set of persons as graph[] where graph[i][j] indicates/ the amount that person i needs to pay person j, this function finds and prints the minimum cash flow to settle all debts.
+// Given a set of persons as graph[] where graph[i][j] indicates/ the amount that person i needs to pay person j,
+// this function finds and prints the minimum cash flow to settle all debts.
 void minCashFlow(const uint32_t graph[][N]) {
   int32_t amount[N] = {0};
 
-  // Calculate the net amount to be paid to person 'p', and stores it in amount[p]. The value of amount[p] can be calculated by subtracting debts of 'p' from credits of 'p'
+  // Calculate the net amount to be paid to person 'p', and stores it in amount[p].
+  // The value of amount[p] can be calculated by subtracting debts of 'p' from credits of 'p'
   for (uint32_t p = 0; p < N; ++p)
     for (uint32_t i = 0; i < N; ++i)
       amount[p] += graph[i][p]-graph[p][i];
@@ -619,7 +638,9 @@ void minCashFlow(const uint32_t graph[][N]) {
   function<void()> solve = [&]() {
     // Find the indices of minimum and maximum values in amount[].
     // amount[maxcredit_idx] indicates the maximum amount to be given (or
-    // credited) to any person. And amount[maxdebit_idx] indicates the maximum amount to be taken (or debited) from any person. So if there is a positive value in amount[], then there must be a negative value
+    // credited) to any person. And amount[maxdebit_idx] indicates
+    // the maximum amount to be taken (or debited) from any person.
+    // So if there is a positive value in amount[], then there must be a negative value
     uint32_t maxcredit_idx = getMaxIdx(), maxdebit_idx = getMinIdx();
 
     // If both amounts are 0, then all amounts are settled
@@ -643,8 +664,11 @@ void minCashFlow(const uint32_t graph[][N]) {
 }
 
 /*
-Biconnected Components: store visited edges in a stack while DFS on a graph and keep looking for Articulation Points. As soon as an Articulation Point u is found, all edges visited while DFS from node u onwards will form one biconnected component. When DFS completes for one connected component, all edges present in stack will form a biconnected component.
-If there is no Articulation Point in graph, then graph is biconnected and so there will be one biconnected component which is the graph itself.
+Biconnected Components: store visited edges in a stack while DFS on a graph and keep looking for Articulation Points.
+As soon as an Articulation Point u is found, all edges visited while DFS from node u onwards will form one biconnected
+component. When DFS completes for one connected component, all edges present in stack will form a biconnected component.
+If there is no Articulation Point in graph, then graph is biconnected and so there will be one biconnected component
+which is the graph itself.
  */
 void DirectedGraph::BcC() {
   int32_t disc[V];
@@ -695,8 +719,10 @@ void DirectedGraph::BcC() {
           cout << endl;
           ++count;
         }
-      } else if(v != parent[u] && disc[v] < low[u]) { // Update low value of 'u' only of 'v' is still in stack (i.e. it's a back edge, not cross edge).
-      // Case 2 -- per Strongly Connected Components Article
+      } else if(v != parent[u] && disc[v] < low[u]) {
+        // Update low value of 'u' only of 'v' is still in stack
+        // (i.e. it's a back edge, not cross edge).
+        // Case 2 -- per Strongly Connected Components Article
         low[u] = min(low[u], disc[v]);
         stk.push_back({u, v});
       }
@@ -722,9 +748,12 @@ void DirectedGraph::BcC() {
 }
 
 /*
-Given a snake and ladder board, find the minimum number of dice throws required to reach the destination or last cell from source or 1st cell. Basically, the player has total control over outcome of dice throw and wants to find out minimum number of throws required to reach last cell.
+Given a snake and ladder board, find the minimum number of dice throws required to reach the destination
+or last cell from source or 1st cell. Basically, the player has total control over outcome of dice throw
+and wants to find out minimum number of throws required to reach last cell.
 
-If the player reaches a cell which is base of a ladder, the player has to climb up that ladder and if reaches a cell is mouth of the snake, has to go down to the tail of snake without a dice throw.
+If the player reaches a cell which is base of a ladder, the player has to climb up that ladder and if reaches
+a cell is mouth of the snake, has to go down to the tail of snake without a dice throw.
  */
 struct Entry {
   uint32_t v;     // Vertex number
@@ -732,9 +761,12 @@ struct Entry {
 };
 
 /*
-Given a snake and ladder board, find the minimum number of dice throws required to reach the destination or last cell from source or 1st cell. Basically, the player has total control over outcome of dice throw and wants to find out minimum number of throws required to reach last cell.
+Given a snake and ladder board, find the minimum number of dice throws required to reach the destination or last cell
+from source or 1st cell. Basically, the player has total control over outcome of dice throw and wants to find out
+minimum number of throws required to reach last cell.
 
-If the player reaches a cell which is base of a ladder, the player has to climb up that ladder and if reaches a cell is mouth of the snake, has to go down to the tail of snake without a dice throw.
+If the player reaches a cell which is base of a ladder, the player has to climb up that ladder and if reaches a cell
+is mouth of the snake, has to go down to the tail of snake without a dice throw.
  */
 uint32_t snakeAndLadder(const uint32_t move[], const uint32_t N) {
   bool visited[N];
