@@ -1,4 +1,6 @@
-Given a linked list of co-ordinates where adjacent points either form a vertical line or a horizontal line. Delete points from the linked list which are in the middle of a horizontal or vertical line.
+/*
+Given a linked list of co-ordinates where adjacent points either form a vertical line or a horizontal line.
+Delete points from the linked list which are in the middle of a horizontal or vertical line.
 
 Examples:
 
@@ -21,12 +23,11 @@ Source: Microsoft Interview Experience
 
 We strongly recommend to minimize the browser and try this yourself first.
 
-The idea is to keep track of current node, next node and next-next node. While the next node is same as next-next node, keep deleting the next node. In this complete procedure we need to keep an eye on shifting of pointers and checking for NULL values.
-
-Following is C implementation of above idea.
-
-// C program to remove intermediate points in a linked list that represents
-// horizontal and vertical line segments
+The idea is to keep track of current node, next node and next-next node.
+While the next node is same as next-next node, keep deleting the next node.
+In this complete procedure we need to keep an eye on shifting of pointers and checking for NULL values.
+ */
+// remove intermediate points in a linked list that represents horizontal and vertical line segments
 #include <stdio.h>
 #include <stdlib.h>
  
