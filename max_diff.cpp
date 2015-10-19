@@ -1,9 +1,11 @@
 /*
-Given an array arr[] of integers, find out the difference between any two elements such that larger element appears after the smaller number in arr[].
+Given an array a[] of integers, find out the difference between any two elements such that
+larger element appears after the smaller number in a[].
 
 take the difference with the minimum element found so far. So we need to keep track of 2 things:
 1) Maximum difference found so far (max_diff).
 2) Minimum number visited so far (min_element).
+
 Time Complexity: O(n)
 Auxiliary Space: O(1)
  */
