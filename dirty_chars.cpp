@@ -1,5 +1,6 @@
 /*
-Write an efficient C function that takes two strings as arguments and removes the characters from first string which are present in second string (mask string).
+Write an efficient C function that takes two strings as arguments and removes the characters
+from first string which are present in second string (mask string).
  */
 void removeDirtyChars(string& s1, const string& s2) {
   const uint32_t len1 = s1.length(), len2 = s2.length();
