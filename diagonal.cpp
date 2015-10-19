@@ -31,7 +31,8 @@ vector<vector<int32_t>> diagonalOrder(const vector<vector<int32_t>>& mat) {
 
   // There will be m+n-1 lines in the output
   for (uint32_t i = 1; i < (m+n); ++i) {
-    /* Get column index of the first element in this line of output. The index is 0 for first ROW lines and line - ROW for remaining lines
+    /* Get column index of the first element in this line of output. The index is 0 for first ROW lines and line -
+    ROW for remaining lines
      */
     uint32_t s_col = max(0, i-m);
 
@@ -47,7 +48,9 @@ vector<vector<int32_t>> diagonalOrder(const vector<vector<int32_t>>& mat) {
 }
 
 /*
-Given an M x N matrix, transpose the matrix without auxiliary memory. It is easy to transpose matrix using an auxiliary array. If the matrix is symmetric in size, we can transpose the matrix inplace by mirroring the 2D array across its diagonal. How to transpose an arbitrary size matrix inplace?
+Given an M x N matrix, transpose the matrix without auxiliary memory. It is easy to transpose matrix using an auxiliary array.
+If the matrix is symmetric in size, we can transpose the matrix inplace by mirroring the 2D array across its diagonal.
+How to transpose an arbitrary size matrix inplace?
  */
 void inplaceTranspose(vector<vector<int32_t>>& A) {
   const uint32_t r = A.size(), c = A[0].size();
