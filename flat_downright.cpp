@@ -14,7 +14,8 @@ All linked lists are sorted. See the following example
        |                |
        V                V
        30               45
-Write a function flatten() to flatten the lists into a single linked list. The flattened linked list should also be sorted. For example, for the above input list, output list should be 5->7->8->10->19->20->22->28->30->35->40->45->50.
+Write a function flatten() to flatten the lists into a single linked list. The flattened linked list should also be sorted.
+For example, for the above input list, output list should be 5->7->8->10->19->20->22->28->30->35->40->45->50.
  */
 struct ListNode2 {
   ListNode2* right;
