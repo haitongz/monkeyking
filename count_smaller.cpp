@@ -1,11 +1,17 @@
 /*
-Write a function to count number of smaller elements on right of each element in an array. Given an unsorted array a[] of distinct integers, construct another array countSmaller[] such that countSmaller[i] contains count of smaller elements on right side of each element a[i] in array.
+Write a function to count number of smaller elements on right of each element in an array. Given an unsorted array a[]
+of distinct integers, construct another array countSmaller[] such that countSmaller[i] contains count of smaller elements
+on right side of each element a[i] in array.
  */
 
 /*
-A Self Balancing Binary Search Tree (AVL, Red Black,.. etc) can be used to get the solution in O(nLogn) time complexity. We can augment these trees so that every node N contains size the subtree rooted with N. We have used AVL tree in the following implementation.
+A Self Balancing Binary Search Tree (AVL, Red Black,.. etc) can be used to get the solution in O(nLogn) time complexity.
+We can augment these trees so that every node N contains size the subtree rooted with N. We have used AVL tree in the
+following implementation.
 
-We traverse the array from right to left and insert all elements one by one in an AVL tree. While inserting a new key in an AVL tree, we first compare the key with root. If key is greater than root, then it is greater than all the nodes in left subtree of root. So we add the size of left subtree to the count of smaller element for the key being inserted.
+We traverse the array from right to left and insert all elements one by one in an AVL tree. While inserting a new key
+in an AVL tree, we first compare the key with root. If key is greater than root, then it is greater than all the nodes
+in left subtree of root. So we add the size of left subtree to the count of smaller element for the key being inserted.
  */
 BinTreeNode* insert(const BinTreeNode* node, const int32_t key, uint32_t* count) {
   if (!node)
