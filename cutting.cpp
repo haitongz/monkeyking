@@ -4,7 +4,8 @@
 using namespace std;
 
 /*
-Given a rope of length n meters, cut the rope in different parts of integer lengths in a way that maximizes product of lengths of all parts. You must make at least one cut. Assume that the length of rope is more than 2 meters.
+Given a rope of length n meters, cut the rope in different parts of integer lengths in a way that maximizes product of
+lengths of all parts. You must make at least one cut. Assume that the length of rope is more than 2 meters.
 
 Examples:
 Input: 2, return 1 because 1x1 = 1
@@ -44,7 +45,10 @@ uint32_t cutRope2(uint32_t n) {
 }
 
 /*
-Given a rod of length n inches and an array of prices that contains prices of all pieces of size smaller than n. Determine the maximum value obtainable by cutting up the rod and selling the pieces. For example, if length of the rod is 8 and the values of different pieces are given as following, then the maximum obtainable value is 22 (by cutting in two pieces of lengths 2 and 6)
+Given a rod of length n inches and an array of prices that contains prices of all pieces of size smaller than n.
+Determine the maximum value obtainable by cutting up the rod and selling the pieces.
+For example, if length of the rod is 8 and the values of different pieces are given as following,
+then the maximum obtainable value is 22 (by cutting in two pieces of lengths 2 and 6)
 
 Example:
 Pricing list: {1, 5, 8, 9, 10, 17, 17, 20}
