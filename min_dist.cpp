@@ -1,8 +1,12 @@
 /*
-Given an unsorted array a[] and two numbers x and y, find the minimum distance between x and y in a[]. The array might also contain duplicates. You may assume that both x and y are different and present in a[].
+Given an unsorted array a[] and two numbers x and y, find the minimum distance between x and y in a[].
+The array might also contain duplicates. You may assume that both x and y are different and present in a[].
 
-1) Traverse array from left side and stop if either x or y is found. Store index of this first occurrence in a variable say prev
-2) Now traverse a[] after the index prev. If the element at current index i matches with either x or y then check if it is different from a[prev]. If it is different then update the minimum distance if needed. If it is same then update prev i.e., make prev = i.
+1) Traverse array from left side and stop if either x or y is found.
+   Store index of this first occurrence in a variable say prev;
+2) Now traverse a[] after the index prev.
+   If the element at current index i matches with either x or y then check if it is different from a[prev].
+   If it is different then update the minimum distance if needed. If it is same then update prev i.e., make prev = i.
  */
 uint32_t minDist(const int32_t a[], const uint32_t n, const int32_t x, const int32_t y) {
   uint32_t ret = MAX_LIMIT;
