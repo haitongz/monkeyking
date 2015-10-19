@@ -70,7 +70,8 @@ bool isInterleaving_dp(const string& s1, const string& s2, const string& s3) {
 }
 
 /*
-Given two strings str1 and str2, write a function that prints all interleavings of the given two strings. You may assume that all characters in both strings are different.
+Given two strings str1 and str2, write a function that prints all interleavings of the given two strings.
+You may assume that all characters in both strings are different.
  */
 vector<string> interleavings(const string& s1, const string& s2) {
   const uint32_t len1 = s1.length(), len2 = s2.length();
