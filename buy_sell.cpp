@@ -5,7 +5,8 @@ using namespace std;
 /*
 Say you have an array for which the ith element is the price of a given stock on day i.
 
-If you were only permitted to complete at most one transaction (ie, buy one and sell one share of the stock), design an algorithm to find the maximum profit.
+If you were only permitted to complete at most one transaction (ie, buy one and sell one share of the stock),
+design an algorithm to find the maximum profit.
  */
 double maxProfit(const double prices[], const uint32_t n) {
   if (n < 2) {
@@ -33,7 +34,9 @@ double maxProfit(const double prices[], const uint32_t n) {
 /*
 Say you have an array for which the ith element is the price of a given stock on day i.
 
-Design an algorithm to find the maximum profit. You may complete as many transactions as you like (ie, buy one and sell one share of the stock multiple times). However, you may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
+Design an algorithm to find the maximum profit. You may complete as many transactions as you like
+(ie, buy one and sell one share of the stock multiple times).
+However, you may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
  */
 double maxProfit2(const double prices[], const uint32_t n) {
   if (n < 2) {
@@ -125,8 +128,11 @@ double maxProfit4(const double prices[], const uint32_t n, uint32_t k) {
     const double diff = prices[i]-prices[i-1];
 
     for (uint32_t j = 1; j <= k; ++j) {
-      local[i][j] = max(global[i-1][j-1]+max(diff, 0.0), local[i-1][j]+diff); // There are total j transactions made till day i. Two different senarios: 1. jth transaction (buy and sell) takes place on day i; 2. a position was bought earlier but sold on day i. the profit is equal to profit on day i-1 plus stock value change on day i.
-
+      // There are total j transactions made till day i. Two different senarios:
+      // 1. jth transaction (buy and sell) takes place on day i;
+      // 2. a position was bought earlier but sold on day i. the profit is equal to profit on day i-1
+      //    plus stock value change on day i.
+      local[i][j] = max(global[i-1][j-1]+max(diff, 0.0), local[i-1][j]+diff);
       global[i][j] = max(local[i][j], global[i-1][j]);
     }
   }
@@ -177,18 +183,25 @@ double maxProfit5(const double px[], const uint32_t n) {
 }
 
 /*
-The advice to "buy low" is half the formula to success in the bovine stock market. To be considered a great investor you must also follow this problems' advice: "Buy low; buy lower"
+The advice to "buy low" is half the formula to success in the bovine stock market.
+To be considered a great investor you must also follow this problems' advice: "Buy low; buy lower"
 
-Each time you buy a stock, you must purchase it at a lower price than the previous time you bought it. The more times you buy at a lower price than before, the better! Your goal is to see how many times you can continue purchasing at ever lower prices.
+Each time you buy a stock, you must purchase it at a lower price than the previous time you bought it.
+The more times you buy at a lower price than before, the better! Your goal is to see how many times
+you can continue purchasing at ever lower prices.
 
-You will be given the daily selling prices of a stock (positive 16-bit integers) over a period of time. You can choose to buy stock on any of the days. Each time you choose to buy, the price must be strictly lower than the previous time you bought stock. Write a program which identifies which days you should buy stock in order to maximize the number of times you buy.
+You will be given the daily selling prices of a stock (positive 16-bit integers) over a period of time.
+You can choose to buy stock on any of the days. Each time you choose to buy, the price must be strictly
+lower than the previous time you bought stock. Write a program which identifies which days you should buy
+stock in order to maximize the number of times you buy.
 
 Here is a list of stock prices:
  Day   1  2  3  4  5  6  7  8  9 10 11 12
 
 Price 68 69 54 64 68 64 70 67 78 62 98 87
 
-The best investor (by this problem, anyway) can buy at most four times if each purchase is lower then the previous purchase. One four day sequence (there might be others) of acceptable buys is:
+The best investor (by this problem, anyway) can buy at most four times if each purchase is lower then the previous purchase.
+One four day sequence (there might be others) of acceptable buys is:
 Day    2  5  6 10
 
 Price 69 68 64 62
@@ -201,7 +214,11 @@ Two integers on a single line:
 * The length of the longest sequence of decreasing prices
 * The number of sequences that have this length (guaranteed to fit in 31 bits)
 
-In counting the number of solutions, two potential solutions are considered the same (and would only count as one solution) if they repeat the same string of decreasing prices, that is, if they "look the same" when the successive prices are compared. Thus, two different sequence of "buy" days could produce the same string of decreasing prices and be counted as only a single solution.
+In counting the number of solutions, two potential solutions are considered the same (and would only count as one solution)
+if they repeat the same string of decreasing prices, that is, if they "look the same"
+when the successive prices are compared. Thus, two different sequence of "buy" days could produce the same string
+of decreasing prices and be counted as only a single solution.
+
 Sample Input
 12
 68 69 54 64 68 64 70 67 78 62 98 87
