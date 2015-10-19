@@ -7,7 +7,10 @@ using namespace std;
 static const uint32_t MAX_LMT = numeric_limits<uint32_t>::max();
 
 /*
-Harry Porter starts from up left corner, can only move right or down. If he steps in a cell with positive number his strength increases by that amount, otherwise decreases. Game will be over once his strength becomes zero. Find minimum initial strength Harry needs to reach right bottom corner?
+Harry Porter starts from up left corner, can only move right or down.
+If he steps in a cell with positive number his strength increases by that amount, otherwise decreases.
+Game will be over once his strength becomes zero.
+Find minimum initial strength Harry needs to reach right bottom corner?
  */
 // formula: dp[i][j] = max(1, min(dp[i][j+1]-mat[i][j], dp[i+1][j]-mat[i][j]))
 uint32_t minStrength(const vector<vector<int32_t>>& mat) {
@@ -39,7 +42,6 @@ points in that cell are added to our overall points. We need to find minimum ini
 reach cell (m-1, n-1) from (0, 0).
 
 Constraints :
-
 From a cell (i, j) we can move to (i+1, j) or (i, j+1).
 We cannot move from (i, j) if your overall points at (i, j) is <= 0.
 We have to reach at (n-1, m-1) with minimum positive points i.e., > 0.
