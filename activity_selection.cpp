@@ -12,7 +12,7 @@ The maximum set of activities that can be executed by a single person is {0, 1, 
 
 using namespace std;
 
-void printMaxActivities(const uint32_t s[], const uint32_t f[], const uint32_t n) {
+void printMaxActivities(const uint32_t start[], const uint32_t finish[], const uint32_t n) {
   cout << "Following activities are selected:" << endl;
 
   // The first activity always gets selected
@@ -21,8 +21,9 @@ void printMaxActivities(const uint32_t s[], const uint32_t f[], const uint32_t n
 
   // Consider rest of the activities
   for (uint32_t j = 1; j < n; ++j) {
-    // If this activity has start time greater than or equal to the finish time of previously selected activity, then select it
-    if (s[j] >= f[i]) {
+    // If this activity has start time greater than or equal to the finish time of
+    // previously selected activity, then select it
+    if (start[j] >= finish[i]) {
       cout << j << " ";
       i = j;
     }
