@@ -5,7 +5,8 @@
 using namespace std;
 
 /*
-Given a 2D screen, location of a pixel in the screen and a color, replace color of the given pixel and all adjacent same colored pixels with the given color.
+Given a 2D screen, location of a pixel in the screen and a color, replace color of the given pixel and
+all adjacent same colored pixels with the given color.
 Input:
        screen[M][N] = {{1, 1, 1, 1, 1, 1, 1, 1},
                        {1, 1, 1, 1, 1, 1, 0, 0},
@@ -16,7 +17,8 @@ Input:
                        {1, 1, 1, 1, 1, 2, 1, 1},
                        {1, 1, 1, 1, 1, 2, 2, 1}};
     x = 4, y = 4, newColor = 3
-The values in the given 2D screen indicate colors of the pixels. x and y are coordinates of the brush, newColor is the color that should replace the previous color on screen[x][y] and all surrounding pixels with same color.
+The values in the given 2D screen indicate colors of the pixels. x and y are coordinates of the brush,
+newColor is the color that should replace the previous color on screen[x][y] and all surrounding pixels with same color.
 
 Output:
 Screen should be changed to following.
