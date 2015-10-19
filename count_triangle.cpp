@@ -21,7 +21,7 @@ uint32_t numOfTriangles(const uint32_t a[], const uint32_t n) {
   sort(a.begin(), a.end(), less);
 
   // Initialize count of triangles
-  uint32_t count = 0;
+  uint32_t ret = 0;
   // Fix the first element.  We need to run till n-3 as the other two elements are selected from arr[i+1...n-1]
   for (uint32_t i = 0; i < n-2; ++i) {
     // Initialize index of the rightmost third element
@@ -41,9 +41,9 @@ uint32_t numOfTriangles(const uint32_t a[], const uint32_t n) {
       // a triangle with a[i] and a[j]. One is subtracted from k because k is incremented one extra in above while loop.
       // k will always be greater than j. If j becomes equal to k, then above loop will increment k,
       // because arr[k] + arr[i] is always greater than a[k]
-      count += k-j-1;
+      ret += k-j-1;
     }
   }
 
-  return count;
+  return ret;
 }
