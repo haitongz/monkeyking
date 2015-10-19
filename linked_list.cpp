@@ -234,7 +234,8 @@ bool isPalindrome_iter(ListNodeT<T>* head) {
       slow = slow->next;
     }
 
-    /* fast would become NULL when there are even elements in list. And not NULL for odd elements. We need to skip the middle node for odd case and store it somewhere so that we can restore the original list*/
+    /* fast would become NULL when there are even elements in list. And not NULL for odd elements.
+       We need to skip the middle node for odd case and store it somewhere so that we can restore the original list*/
     if (fast) {
       mid = slow;
       slow = slow->next;
@@ -746,7 +747,9 @@ void delList_recur(ListNodeT<T>** head) {
 }
 
 /*
-Write a program to find the node at which the intersection of two singly linked lists begins. For example, the following two linked lists:
+Write a program to find the node at which the intersection of two singly linked lists begins.
+
+Given
 A:          a1 - a2
                   \
                    c1 - c2 - c3
@@ -862,9 +865,9 @@ ListNodeT<T>* reverseKGroup_recur(ListNodeT<T>* head, const uint32_t k) {
 }
 
 /*
-Given a linked list, write a function to reverse every alternate k nodes (where k is an input to the function) in an efficient way. Give the complexity of your algorithm.
+Given a linked list, write a function to reverse every alternate k nodes (where k is an input to the function)
+in an efficient way. Give the complexity of your algorithm.
 
-Example:
 Inputs:   1->2->3->4->5->6->7->8->9->NULL and k = 3
 Output:   3->2->1->4->5->6->9->8->7->NULL.
  */
@@ -940,7 +943,8 @@ void delLesserNodes_recur(ListNodeT<T>** head_ref) {
     }
   };
 
-  /* 2) In the reversed list, delete nodes which have a node with greater value node on left side. Note that head node is never deleted because it is the leftmost node.*/
+  /* 2) In the reversed list, delete nodes which have a node with greater value node on left side.
+        Note that head node is never deleted because it is the leftmost node.*/
   solve(*head_ref);
 
   /* 3) Reverse the linked list again to retain the original order */
@@ -1003,7 +1007,10 @@ ListNode* swapPairs_recur(ListNode* head) {
 }
 
 /*
-Given a Singly Linked List, starting from the second node delete all alternate nodes of it. For example, if the given linked list is 1->2->3->4->5 then your function should convert it to 1->3->5, and if the given linked list is 1->2->3->4 then convert it to 1->3.
+Given a Singly Linked List, starting from the second node delete all alternate nodes of it.
+
+Given linked list 1->2->3->4->5 then your function should convert it to 1->3->5;
+if the given linked list is 1->2->3->4 then convert it to 1->3.
  */
 template <typename T>
 void delAlt_iter(ListNodeT<T>* head) {
@@ -1046,7 +1053,9 @@ void delAlt_recur(ListNodeT<T>* head) {
 }
 
 /*
-Write a function that takes one list and divides up its nodes to make two smaller lists 'a' and 'b'. The sublists should be made from alternating elements in the original list. So if the original list is 0->1->0->1->0->1 then one sublist should be 0->0->0 and the other should be 1->1->1.
+Write a function that takes one list and divides up its nodes to make two smaller lists 'a' and 'b'.
+The sublists should be made from alternating elements in the original list.
+So if the original list is 0->1->0->1->0->1 then one sublist should be 0->0->0 and the other should be 1->1->1.
 
 Time Complexity: O(n)
  */
@@ -1073,9 +1082,9 @@ void alternatingSplit(ListNodeT<T>* src, ListNodeT<T>** aref, ListNodeT<T>** bre
 }
 
 /*
-Given a Linked List of integers, write a function to modify the linked list such that all even numbers appear before all the odd numbers in the modified linked list. Also, keep the order of even and odd numbers same.
+Given a Linked List of integers, write a function to modify the linked list such that all even numbers appear
+before all the odd numbers in the modified linked list. Also, keep the order of even and odd numbers same.
 
-Examples:
 Input: 17->15->8->12->10->5->4->1->7->6->NULL
 Output: 8->12->10->4->6->17->15->5->1->7->NULL
  */
@@ -1124,7 +1133,8 @@ void segregate(ListNode** head_ref) { // O(n)
     prev = curr;
 
   /* We must have prev set before executing lines following this statement */
-  /* If there are more than 1 odd nodes and end of original list is odd then move this node to end to maintain same order of odd numbers in modified list */
+  /* If there are more than 1 odd nodes and end of original list is odd then move this node to end to maintain
+     same order of odd numbers in modified list */
   if (new_end != end && end->value%2) {
     prev->next = end->next;
     end->next = nullptr;
@@ -1185,7 +1195,10 @@ uint8_t detectAndRemoveLoop(ListNodeT<T>* head) {
 }
 
 /*
-You are given two linked lists representing two non-negative numbers. The digits are stored in reverse order and each of their nodes contain a single digit. Add the two numbers and return it as a linked list.
+You are given two linked lists representing two non-negative numbers.
+The digits are stored in reverse order and each of their nodes contain a single digit.
+Add the two numbers and return it as a linked list.
+
 Input: (2 -> 4 -> 3) + (5 -> 6 -> 4)
 Output: 7 -> 0 -> 8
  */
@@ -1234,12 +1247,14 @@ ListNodeT<T>* Union(ListNodeT<T>* head1, ListNodeT<T>* head2) {
 }
 
 /*
-Given three linked lists, say a, b and c, find one node from each list such that the sum of the values of the nodes is equal to a given number.
+Given three linked lists, say a, b and c, find one node from each list such that the sum of the values of the nodes
+is equal to a given number.
 
 1) Sort list b in ascending order, and list c in descending order.
 2) After the b and c are sorted, one by one pick an element from list a and find the pair by traversing both b and c.
 
-Time complexity: linked lists b and c can be sorted in O(nLogn) time using Merge Sort. Step 2 takes O(n*n) time. So the overall time complexity is O(nlogn)+O(nlogn)+O(n*n) = O(n*n)
+Time complexity: linked lists b and c can be sorted in O(nLogn) time using Merge Sort. Step 2 takes O(n*n) time.
+So the overall time complexity is O(nlogn)+O(nlogn)+O(n*n) = O(n*n)
  */
 bool isSumSorted(ListNode* ahead, ListNode* bhead,
                  ListNode* chead, const int32_t target) {
@@ -1302,9 +1317,15 @@ ListNodeT<T>* rightRotateByK(ListNodeT<T>* head, uint32_t k) {
 
 /*
 Given two linked lists, insert nodes of second list into first list at alternate positions of first list.
-For example, if first list is 5->7->17->13->11 and second is 12->10->2->4->6, the first list should become 5->12->7->10->17->2->13->4->11->6 and second list should become empty. The nodes of second list should only be inserted when there are positions available. For example, if the first list is 1->2->3 and second list is 4->5->6->7->8, then first list should become 1->4->2->5->3->6 and second list to 7->8.
 
-Use of extra space is not allowed (Not allowed to create additional nodes), i.e., insertion must be done in-place. Expected time complexity is O(n) where n is number of nodes in first list.
+Given first list 5->7->17->13->11 and second list 12->10->2->4->6, the first list should become
+5->12->7->10->17->2->13->4->11->6 and second list should become empty.
+The nodes of second list should only be inserted when there are positions available.
+Given the first list 1->2->3 and second list 4->5->6->7->8, then first list should become 1->4->2->5->3->6 and
+second list to 7->8.
+
+Use of extra space is not allowed (Not allowed to create additional nodes), i.e., insertion must be done in-place.
+Expected time complexity is O(n) where n is number of nodes in first list.
  */
 template <typename T>
 void mergeAlt(ListNodeT<T>* p, ListNode** q) {
@@ -1329,7 +1350,10 @@ void mergeAlt(ListNodeT<T>* p, ListNode** q) {
 }
 
 /*
-Given two sorted linked lists, construct a linked list that contains maximum sum path from start to end. The result list may contain nodes from both input lists. When constructing the result list, we may switch to the other input list only at the point of intersection (which mean the two node with the same value in the lists). You are allowed to use O(1) extra space.
+Given two sorted linked lists, construct a linked list that contains maximum sum path from start to end.
+The result list may contain nodes from both input lists. When constructing the result list,
+we may switch to the other input list only at the point of intersection
+(which mean the two node with the same value in the lists). You are allowed to use O(1) extra space.
  */
 ListNode* finalMaxSumList(ListNode* a, ListNode* b) {
   ListNode* ret = nullptr;
@@ -1399,8 +1423,9 @@ ListNode* finalMaxSumList(ListNode* a, ListNode* b) {
 /*
 Given a singly linked list L: L0->L1...Ln-1->Ln, reorder it to: L0->Ln->L1->Ln-1...L2->Ln-2
 You must do this in-place without altering the nodes' values.
+
 Given {1,2,3,4}, reorder it to {1,4,2,3}.
-*/
+ */
 void reverseList(ListNode* prev) {
   ListNode* tail = prev->next;
 
