@@ -1,5 +1,7 @@
 /*
-Write an efficient C function to return maximum occurring character in the input string e.g., if input string is 'test string' then function should return 't'.
+Write an efficient C function to return maximum occurring character in the input string
+
+Given input string 'test string' then function should return 't'.
  */
 #include <iostream>
 
