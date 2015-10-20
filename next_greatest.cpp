@@ -1,5 +1,8 @@
 /*
-Given an array of integers, replace every element with the next greatest element (greatest element on the right side) in the array. Since there is no element next to the last element, replace it with -1. For example, if the array is {16, 17, 4, 3, 5, 2}, then it should be modified to {17, 5, 5, 5, 2, -1}.
+Given an array of integers, replace every element with the next greatest element (greatest element on the right side)
+in the array. Since there is no element next to the last element, replace it with -1.
+
+Given array {16, 17, 4, 3, 5, 2}, then it should be modified to {17, 5, 5, 5, 2, -1}.
  */
 vector<int32_t> nextGreatest(const int32_t a[], const uint32_t n) { // O(n)
   if (!n)
@@ -28,7 +31,9 @@ vector<int32_t> nextGreatest(const int32_t a[], const uint32_t n) { // O(n)
 }
 
 /*
-Given an array, print the Next Greater Element (NGE) for every element. The Next greater Element for an element x is the first greater element on the right side of x in array. Elements for which no greater element exist, consider next greater element as -1.
+Given an array, print the Next Greater Element (NGE) for every element.
+The Next greater Element for an element x is the first greater element on the right side of x in array.
+Elements for which no greater element exist, consider next greater element as -1.
  */
 #include <iostream>
 
@@ -38,7 +43,8 @@ Given an array, print the Next Greater Element (NGE) for every element. The Next
 ...a) Mark the current element as next.
 ...b) If stack is not empty, then pop an element from stack and compare it with next.
 ...c) If next is greater than the popped element, then next is the next greater element fot the popped element.
-...d) Keep poppoing from the stack while the popped element is smaller than next. next becomes the next greater element for all such popped elements
+...d) Keep poppoing from the stack while the popped element is smaller than next.
+      next becomes the next greater element for all such popped elements
 ...g) If next is smaller than the popped element, then push the popped element back.
 3) After the loop in step 2 is over, pop all the elements from stack and print -1 as next element for them.
  */
@@ -77,7 +83,8 @@ void NGE(const int32_t a[], const uint32_t n) { // O(n)
     s.push(next);
   }
 
-  /* After iterating over the loop, the remaining elements in stack do not have the next greater element, so print -1 for them */
+  /* After iterating over the loop, the remaining elements in stack do not have the next greater element,
+     so print -1 for them */
   while (!s.empty()) {
     element = s.top();
     s.pop();
