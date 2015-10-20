@@ -199,7 +199,8 @@ Could negative integers be palindromes? (ie, -1)
 
 If you are thinking of converting the integer to string, note the restriction of using extra space.
 
-You could also try reversing an integer. However, if you have solved the problem "Reverse Integer", you know that the reversed integer might overflow. How would you handle such case?
+You could also try reversing an integer. However, if you have solved the problem "Reverse Integer",
+you know that the reversed integer might overflow. How would you handle such case?
 
 There is a more generic way of solving this problem.
  */
@@ -257,9 +258,10 @@ bool isIntPalindrome3(const int32_t x) {
 }
 
 /*
-Given a string s, partition s such that every substring of the partition is a palindrome. Return all possible palindrome partitioning of s.
+Given a string s, partition s such that every substring of the partition is a palindrome.
+Return all possible palindrome partitioning of s.
 
-For example, given s = "aab",
+Given s = "aab",
 Return
 [
     ["aa","b"],
@@ -303,9 +305,10 @@ ResultT palinPartitions(const string& s) {
 }
 
 /*
-Given a string s, partition s such that every substring of the partition is a palindrome. Return the minimum cuts needed for a palindrome partitioning of s.
+Given a string s, partition s such that every substring of the partition is a palindrome.
+Return the minimum cuts needed for a palindrome partitioning of s.
 
-For example, given s = "aab",
+Given s = "aab",
 Return 1 since the palindrome partitioning ["aa","b"] could be produced using 1 cut.
  */
 /*
@@ -333,7 +336,7 @@ uint32_t minCuts(const string& str) {
   return dp[0]-1;
 }
 */
-void palinFlagTable(vector<vector<uint8_t> >& t, const string& s) {
+void palinFlagTable(vector<vector<uint8_t>>& t, const string& s) {
   const uint32_t len = s.length(); // length is supposed to have been checked before calling this method
   t.resize(len);
   for (uint32_t i = 0; i < len; ++i)
@@ -351,10 +354,10 @@ uint32_t minCuts(const string& s) {
   if (len <= 1)
     return 0;
 
-  vector<vector<uint8_t> > palin;
+  vector<vector<uint8_t>> palin;
   palinFlagTable(palin, s);
 
-  vector<int32_t> dp(len+1, numeric_limits<int32_t>::max());
+  vector<int32_t> dp(len+1, MAX_LMT;
   dp[0] = -1;
 
   for (uint32_t i = 0; i < len; ++i) {
@@ -368,14 +371,30 @@ uint32_t minCuts(const string& s) {
 }
 
 /*
-Each cow has an electronic ID tag that the system will read as the cows pass by a scanner. Each ID tag's contents are currently a single string with length M (1 <= M <= 2,000) characters drawn from an alphabet of N (1 <= N <= 26) different symbols (namely, the lower-case roman alphabet).
-Cows, being the mischievous creatures they are, sometimes try to spoof the system by walking backwards. While a cow whose ID is "abcba" would read the same no matter which direction the she walks, a cow with the ID "abcb" can potentially register as two different IDs ("abcb" and "bcba").
-FJ would like to change the cows's ID tags so they read the same no matter which direction the cow walks by. For example, "abcb" can be changed by adding "a" at the end to form "abcba" so that the ID is palindromic (reads the same forwards and backwards). Some other ways to change the ID to be palindromic are include adding the three letters "bcb" to the begining to yield the ID "bcbabcb" or removing the letter "a" to yield the ID "bcb". One can add or remove characters at any location in the string yielding a string longer or shorter than the original string.
-Unfortunately as the ID tags are electronic, each character insertion or deletion has a cost (0 <= cost <= 10,000) which varies depending on exactly which character value to be added or deleted. Given the content of a cow's ID tag and the cost of inserting or deleting each of the alphabet's characters, find the minimum cost to change the ID tag so it satisfies FJ's requirements. An empty ID tag is considered to satisfy the requirements of reading the same forward and backward. Only letters with associated costs can be added to a string.
+Each cow has an electronic ID tag that the system will read as the cows pass by a scanner.
+Each ID tag's contents are currently a single string with length M (1 <= M <= 2,000) characters drawn
+from an alphabet of N (1 <= N <= 26) different symbols (namely, the lower-case roman alphabet).
+Cows, being the mischievous creatures they are, sometimes try to spoof the system by walking backwards.
+While a cow whose ID is "abcba" would read the same no matter which direction the she walks,
+a cow with the ID "abcb" can potentially register as two different IDs ("abcb" and "bcba").
+FJ would like to change the cows's ID tags so they read the same no matter which direction the cow walks by.
+For example, "abcb" can be changed by adding "a" at the end to form "abcba" so that the ID
+is palindromic (reads the same forwards and backwards). Some other ways to change the ID to be palindromic are
+include adding the three letters "bcb" to the begining to yield the ID "bcbabcb" or removing the letter "a" to yield
+the ID "bcb". One can add or remove characters at any location in the string yielding a string longer or
+shorter than the original string.
+Unfortunately as the ID tags are electronic, each character insertion or deletion has a cost (0 <= cost <= 10,000)
+which varies depending on exactly which character value to be added or deleted.
+Given the content of a cow's ID tag and the cost of inserting or deleting each of the alphabet's characters,
+find the minimum cost to change the ID tag so it satisfies FJ's requirements.
+An empty ID tag is considered to satisfy the requirements of reading the same forward and backward.
+Only letters with associated costs can be added to a string.
+
 Input
 Line 1: Two space-separated integers: N and M
 Line 2: This line contains exactly M characters which constitute the initial ID string
-Lines 3..N+2: Each line contains three space-separated entities: a character of the input alphabet and two integers which are respectively the cost of adding and deleting that character.
+Lines 3..N+2: Each line contains three space-separated entities: a character of the input alphabet and two integers
+which are respectively the cost of adding and deleting that character.
 Output
 Line 1: A single line with a single integer that is the minimum cost to change the given name tag.
 Sample Input
@@ -387,7 +406,9 @@ c 200 800
 Sample Output
 900
 Hint
-If we insert an "a" on the end to get "abcba", the cost would be 1000. If we delete the "a" on the beginning to get "bcb", the cost would be 1100. If we insert "bcb" at the begining of the string, the cost would be 350+200+350=900, which is the minimum.
+If we insert an "a" on the end to get "abcba", the cost would be 1000.
+If we delete the "a" on the beginning to get "bcb", the cost would be 1100.
+If we insert "bcb" at the begining of the string, the cost would be 350+200+350=900, which is the minimum.
 */
 const uint16_t MAX_M = 2001;
 const uint8_t ALPHANO = 26;
@@ -416,7 +437,8 @@ uint32_t minCost(const string& tag, const uint32_t M) {
 }
 
 /*
-We are given a string word. We will choose one of its anagrams uniformly at random. Return the probability that the chosen anagram will be a palindrome.
+We are given a string word. We will choose one of its anagrams uniformly at random.
+Return the probability that the chosen anagram will be a palindrome.
 
 NOTES
 -The returned value must have an absolute or a relative error of less than 1e-9.
@@ -478,7 +500,8 @@ double anagramIsPalinProbability(const string& w) {
 }
 
 /*
-Given a string S, find the longest palindromic substring in S. You may assume that the maximum length of S is 1000, and there exists one unique longest palindromic substring.
+Given a string S, find the longest palindromic substring in S. You may assume that the maximum length of S is 1000,
+and there exists one unique longest palindromic substring.
  */
 /*
 uint32_t test2Sides(const string& s, int32_t low, uint32_t high) {
@@ -594,7 +617,8 @@ string longestPalinSubstr_Manacher(const string& s) { // O(n)
      maxLPSCenterPos = i;
    }
 
-   // If palindrome centered at currentRightPosition i, expand beyond centerRightPosition R, adjust centerPosition C based on expanded palindrome.
+   // If palindrome centered at currentRightPosition i, expand beyond centerRightPosition R,
+   // adjust centerPosition C based on expanded palindrome.
    if (i+lps[i] > R) {
      C = i;
      R = i+lps[i];
@@ -613,15 +637,21 @@ string longestPalinSubstr_Manacher(const string& s) { // O(n)
 }
 
 /*
-Given a stream of characters (characters are received one by one), write a function that prints 'Yes' if a character makes the complete string palindrome, else prints 'No'.
+Given a stream of characters (characters are received one by one), write a function that prints 'Yes'
+if a character makes the complete string palindrome, else prints 'No'.
 
 1) The first character is always a palindrome, so print yes for first character.
-
-2) Initialize reverse of first half as "a" and second half as "b". Let the hash value of first half reverse be 'firstr' and that of second half be 'second'.
-
-3) Iterate through string starting from second character, do following for every character str[i], i.e., i varies from 1 to n-1.
-     a) If 'firstr' and 'second' are same, then character by character check the substring ending with current character and print "Yes" if palindrome. Note that if hash values match, then strings need not be same. For example, hash values of "ab" and "ba" are same, but strings are different. That is why we check complete string after hash.
-     b) Update 'firstr' and 'second' for next iteration. If 'i' is even, then add next character to the beginning of 'firstr' and end of second half and update hash values. If 'i' is odd, then keep 'firstr' as it is, remove leading character from second and append a next character at end.
+2) Initialize reverse of first half as "a" and second half as "b". Let the hash value of first half reverse
+   be 'firstr' and that of second half be 'second'.
+3) Iterate through string starting from second character, do following for every character str[i],
+   i.e., i varies from 1 to n-1.
+     a) If 'firstr' and 'second' are same, then character by character check the substring ending with
+        current character and print "Yes" if palindrome. Note that if hash values match, then strings need not be same.
+        For example, hash values of "ab" and "ba" are same, but strings are different. That is why we check complete
+        string after hash.
+     b) Update 'firstr' and 'second' for next iteration. If 'i' is even, then add next character to the beginning
+        of 'firstr' and end of second half and update hash values. If 'i' is odd, then keep 'firstr' as it is,
+        remove leading character from second and append a next character at end.
  */
 #define D 256 // D is the number of characters in input alphabet
 #define Q 103 // Q is a prime number used for evaluating Rabin Karp's Rolling hash
