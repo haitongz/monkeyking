@@ -1,5 +1,6 @@
 /*
-Given a text txt[0..n-1] and a pattern pat[0..m-1], write a function search(char pat[], char txt[]) that prints all occurrences of pat[] in txt[]. You may assume that n > m.
+Given a text txt[0..n-1] and a pattern pat[0..m-1], write a function search(char pat[], char txt[])
+that prints all occurrences of pat[] in txt[]. You may assume that n > m.
  */
 #include <iostream>
 #include <functional>
@@ -101,7 +102,8 @@ vector<uint32_t> KMP(const string& txt, const string& patt) {
         lps[i++] = ++len; // lps[i] = the longest proper prefix of pat[0..i] which is also a suffix of pat[0..i]
       } else { // (pat[i] != pat[len])
         if (len) {
-          len = lps[len-1]; // This is tricky. Consider the example AAACAAAA and i = 7. Also, note that we do not increment i here
+          len = lps[len-1]; // This is tricky. Consider the example AAACAAAA and i = 7.
+                            // Also, note that we do not increment i here
         } else { // (len == 0)
           lps[i++] = 0;
         }
@@ -157,7 +159,8 @@ vector<uint32_t> RobinKarp(const string& txt, const string& patt, const uint32_t
   vector<uint32_t> ret;
   // Slide the pattern over text one by one
   for (uint32_t i = 0; i < N-M+1; ++i) {
-    // Check the hash values of current window of text and pattern. If the hash values match then only check for characters on by one
+    // Check the hash values of current window of text and pattern.
+    // If the hash values match then only check for characters on by one
     if (p == t) {
       uint32_t j = 0;
       for (; j < M; ++j) {
@@ -182,24 +185,26 @@ vector<uint32_t> RobinKarp(const string& txt, const string& patt, const uint32_t
 }
 
 /*
-Given a text txt[0..n-1] and a pattern pat[0..m-1], write a function search(char pat[], char txt[]) that prints all occurrences of pat[] and its permutations (or anagrams) in txt[]. You may assume that n > m.
+Given a text txt[0..n-1] and a pattern pat[0..m-1], write a function search(char pat[], char txt[])
+that prints all occurrences of pat[] and its permutations (or anagrams) in txt[]. You may assume that n > m.
 Expected time complexity is O(n).
  */
 
 /*
-We can achieve O(n) time complexity under the assumption that alphabet size is fixed which is typically true as we have maximum 256 possible characters in ASCII. The idea is to use two count arrays:
+We can achieve O(n) time complexity under the assumption that alphabet size is fixed which is typically true
+as we have maximum 256 possible characters in ASCII. The idea is to use two count arrays:
 
 1) The first count array store frequencies of characters in pattern.
 2) The second count array stores frequencies of characters in current window of text.
 
-Time complexity to compare two count arrays is O(1) as the number of elements in them are fixed (independent of pattern and text sizes):
-1) Store counts of frequencies of pattern in first count array countP[]. Also store counts of frequencies of characters in first window of text in array countTW[].
-
+Time complexity to compare two count arrays is O(1) as the number of elements in them are fixed
+(independent of pattern and text sizes):
+1) Store counts of frequencies of pattern in first count array countP[].
+Also store counts of frequencies of characters in first window of text in array countTW[].
 2) Now run a loop from i = M to N-1. Do following in loop.
 ..a) If the two count arrays are identical, we found an occurrence.
 ..b) Increment count of current character of text in countTW[]
 ..c) Decrement count of first character in previous window in countWT[]
-
 3) The last window is not checked by above loop, so explicitly check it.
  */
 vector<uint32_t> searchPermu(const string& txt, const string& patt) {
