@@ -1,5 +1,8 @@
 /*
-Given a set of n integers, divide the set in two subsets of n/2 sizes each such that the difference of the sum of two subsets is as minimum as possible. If n is even, then sizes of two subsets must be strictly n/2 and if n is odd, then size of one subset must be (n-1)/2 and size of other subset must be (n+1)/2.
+Given a set of n integers, divide the set in two subsets of n/2 sizes each such that the difference of
+the sum of two subsets is as minimum as possible.
+If n is even, then sizes of two subsets must be strictly n/2 and if n is odd,
+then size of one subset must be (n-1)/2 and size of other subset must be (n+1)/2.
  */
 void TOWUtil(int* arr, int n, bool* curr_elements, int no_of_selected_elements,
              bool* soln, int* min_diff, int sum, int curr_sum, int curr_position)
