@@ -61,6 +61,40 @@ const char* strstr(const char* haystack, const char* needle) {
   return nullptr;
 }
 
+/*
+ Boyer-Moore
+  */
+const char* bm_strstr(const char* haysack, const char* needle) {
+  const uint32_t n = strlen(needle);
+  if (!n)
+    return haysack;
+
+  uint32_t len = strlen(haysack);
+  int32_t tbl[256];
+  for (auto& i : tbl)
+    i = -1;
+  for (uint32_t i = 0; i < n; ++i)
+    tbl[needle[i]] = i;
+
+  for (int32_t h_idx = n-1, n_idx = n-1; h_idx < len;) {
+    for (; n_idx >= 0 && haysack[h_idx] == needle[n_idx]; --h_idx, --n_idx);
+    if (n_idx < 0)
+      return haysack+h_idx+1;
+
+    char c = haysack[h_idx];
+    if (tbl[c] < n_idx)
+      h_idx += n-tbl[c]-1;
+    else
+      h_idx += n-n_idx;
+
+    n_idx = n-1;
+  }
+
+  return nullptr;
+}
+
+#define MAX_CHARS 100000
+
 const char* KMP(const char* haystack, const char* needle) {
   if (!haystack || !needle)
     return nullptr;
@@ -72,7 +106,7 @@ const char* KMP(const char* haystack, const char* needle) {
   if (!h_len)
     return nullptr;
 
-  int32_t pattern[100000];
+  int32_t pattern[MAX_CHARS];
   pattern[0] = -1;
   int32_t i = -1;
 
@@ -141,17 +175,17 @@ set<string> permutations_recur(const string& s) {
   set<string> ret;
 
   function<void(const string&,const string&)> solve = // DFS
-    [&](const string& prefix, const string& str) {
-    const uint32_t len = str.length();
+    [&](const string& prefix, const string& curr_s) {
+    const uint32_t len = curr_s.length();
     if (!len) {
       ret.insert(prefix);
       return;
     }
 
     for (uint32_t i = 0; i < len; ++i) {
-      char c = str[i];
-      string left = str.substr(0, i);
-      string right = str.substr(i+1, len-i-1);
+      char c = curr_s[i];
+      string left = curr_s.substr(0, i);
+      string right = curr_s.substr(i+1, len-i-1);
       solve(prefix+c, left+right);
     }
   };
@@ -173,21 +207,21 @@ vector<string> lexicographicPermu(string s) {
   sort(s.begin(), s.end());
 
   // Create a temp array that will be used by allLexicographicRecur()
-  char data[len+1];
-  data[len] = '\0';
+  char mem[len+1];
+  mem[len] = '\0';
   vector<string> ret;
 
   function<void(const uint32_t)> solve =
     [&](const uint32_t index) {
     if (index == len) {
-      ret.push_back(data);
+      ret.push_back(mem);
       return;
     }
 
     // One by one fix all characters at the given index and recur for the subsequent indexes
     for (uint32_t i = 0; i < len; ++i) {
       // Fix the ith character at index and if this is not the last index then recursively call for higher indexes
-      data[index] = s[i];
+      mem[index] = s[i];
       solve(index+1);
     }
   };
@@ -237,6 +271,7 @@ int main(int argc, char** argv) {
   string needle = "ad";
   cout << KMP(haystack.c_str(), needle.c_str()) << endl;
   cout << strstr(haystack.c_str(), needle.c_str()) << endl;
+  cout << bm_strstr(haystack.c_str(), needle.c_str()) << endl;
 
   set<string> res = permutations_recur("ell");
   for (auto& i : res)
