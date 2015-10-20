@@ -8,7 +8,9 @@ using namespace std;
 static const int32_t MAX_LIMIT = numeric_limits<int32_t>::max();
 
 /*
-Given an nxn matrix, where every row and column is sorted in increasing order. Given a number x, how to decide whether this x is in the matrix. The designed algorithm should have linear time complexity.
+Given an nxn matrix, where every row and column is sorted in increasing order.
+Given a number x, how to decide whether this x is in the matrix.
+The designed algorithm should have linear time complexity.
  */
 bool found(const vector<vector<int32_t>>& mat, const int32_t target) {
   const uint32_t n = mat.size();
@@ -96,9 +98,8 @@ bool found3(const vector<vector<int32_t>>& mat, const int32_t target) {
 }
 
 /*
-Given an nxn matrix, where every row and column is sorted in non-decreasing order. Print all values of matrix in sorted order.
-
-Example:
+Given an nxn matrix, where every row and column is sorted in non-decreasing order.
+Print all values of matrix in sorted order.
 
 Input: mat[][]  =  {{10, 20, 30, 40},
                     {15, 25, 35, 45},
@@ -109,7 +110,9 @@ Output:
 values of matrix in sorted order
 10 15 20 25 27 29 30 32 33 35 37 39 40 45 48 50
 
-Use a minheap of size N which stores values of first column. Then do extract minimum. In extract minimum, replace the minimum value with the next value of the row from which the value is extracted. Time complexity of this solution is O(N2LogN).
+Use a minheap of size N which stores values of first column. Then do extract minimum.
+In extract minimum, replace the minimum value with the next value of the row from which the value is extracted.
+Time complexity of this solution is O(n2*log(n)).
  */
 struct MinHeapNode {
   int32_t value;
@@ -185,7 +188,8 @@ MinHeap::MinHeap(vector<MinHeapNode>& a)
   }
 }
 
-// A recursive method to heapify a subtree with root at given index. This method assumes that the subtrees are already heapified
+// A recursive method to heapify a subtree with root at given index.
+// This method assumes that the subtrees are already heapified
 void MinHeap::heapify(const uint32_t idx) {
   uint32_t left = leftChildIdx(idx);
   uint32_t right = rightChildIdx(idx);
