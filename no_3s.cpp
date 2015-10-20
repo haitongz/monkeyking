@@ -1,5 +1,6 @@
 /*
-Given a number n, write a function that returns count of numbers from 1 to n that don't contain digit 3 in their decimal representation.
+Given a number n, write a function that returns count of numbers from 1 to n that don't contain digit 3
+in their decimal representation.
  */
 #include <iostream>
 
