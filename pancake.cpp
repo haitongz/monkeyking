@@ -3,7 +3,8 @@ Given an unsorted array, sort the given array. You are allowed to do only follow
 
 flip(arr, i): Reverse array from 0 to i
 
-Unlike a traditional sorting algorithm, which attempts to sort with the fewest comparisons possible, the goal is to sort the sequence in as few reversals as possible.
+Unlike a traditional sorting algorithm, which attempts to sort with the fewest comparisons possible,
+the goal is to sort the sequence in as few reversals as possible.
  */
 void flip(int32_t a[], const uint32_t idx) {
   int32_t tmp, start = 0;
@@ -47,7 +48,8 @@ int pancakeSort(int32_t *a, const uint32_t n) {
 }
 
 /*
-Imagine a hypothetical machine where flip(i) always takes O(1) time. Write an efficient program for sorting a given array in O(nLogn) time on the given machine.
+Imagine a hypothetical machine where flip(i) always takes O(1) time.
+Write an efficient program for sorting a given array in O(nLogn) time on the given machine.
  */
 int32_t ceilSearch(int32_t a[], const uint32_t low, const uint32_t high, const int32_t x) {
     int mid;
