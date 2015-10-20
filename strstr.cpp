@@ -7,7 +7,8 @@
 using namespace std;
 
 /*
-Implement strstr(). Returns a pointer to the first occurrence of needle in haystack, or null if needle is not part of haystack.
+Implement strstr(). Returns a pointer to the first occurrence of needle in haystack,
+or null if needle is not part of haystack.
  */
 const char* strstr(const char* haystack, const char* needle) {
   if (!haystack || !needle)
@@ -129,7 +130,9 @@ int strstr_rollinghash(char* haystack, char* needle) {
 */
 
 /*
-A permutation, also called an arrangement number or order, is a rearrangement of the elements of an ordered list S into a one-to-one correspondence with S itself. A string of length n has n! permutations.
+A permutation, also called an arrangement number or order,
+is a rearrangement of the elements of an ordered list S into a one-to-one correspondence with S itself.
+A string of length n has n! permutations.
  */
 set<string> permutations_recur(const string& s) {
   if (s.length() <= 1)
@@ -158,7 +161,8 @@ set<string> permutations_recur(const string& s) {
 }
 
 /*
-Given a string of length n, print all permutation of the given string. Repetition of characters is allowed. Print these permutations in lexicographically sorted order.
+Given a string of length n, print all permutation of the given string.
+Repetition of characters is allowed. Print these permutations in lexicographically sorted order.
  */
 vector<string> lexicographicPermu(string s) {
   const uint32_t len = s.length();
