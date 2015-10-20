@@ -1,16 +1,16 @@
+/*
 Given singly linked list with every node having an additional “arbitrary” pointer that currently points to NULL.
 Need to make the “arbitrary” pointer point to the next higher value node.
 
-A Simple Solution is to traverse all nodes one by one, for every node, find the node which has next greater value of current node and change the next pointer. Time Complexity of this solution is O(n2.
+A Simple Solution is to traverse all nodes one by one, for every node, find the node which has next greater value of
+current node and change the next pointer. Time Complexity of this solution is O(n2).
 
 An Efficient Solution works in O(nLogn) time. The idea is to use Merge Sort for linked list.
 1) Traverse input list and copy next pointer to arbit pointer for every node.
 2) Do Merge Sort for the linked list formed by arbit pointers.
 
-Below is C implementation of above idea. All of the merger sort functions are taken from here. The taken functions are modified here so that they work on arbit pointers instead of next pointers.
-
-// C program to populate arbit pointers to next higher value
-// using merge sort
+All of the merger sort functions are modified here so that they work on arbit pointers instead of next pointers.
+ */
 #include<stdio.h>
 #include<stdlib.h>
  
