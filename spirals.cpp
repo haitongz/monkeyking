@@ -159,7 +159,9 @@ vector<vector<uint32_t>> spiralMatrix(const uint32_t n) {
 }
 
 /*
-Write a code which inputs two numbers m and n and creates a matrix of size m x n (m rows and n columns) in which every elements is either X or 0. The Xs and 0s must be filled alternatively, the matrix should have outermost rectangle of Xs, then a rectangle of 0s, then a rectangle of Xs, and so on.
+Write a code which inputs two numbers m and n and creates a matrix of size m x n (m rows and n columns)
+in which every elements is either X or 0. The Xs and 0s must be filled alternatively,
+the matrix should have outermost rectangle of Xs, then a rectangle of 0s, then a rectangle of Xs, and so on.
 
 Input:  m = 6, n = 7
 Output: Following matrix
