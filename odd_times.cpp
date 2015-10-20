@@ -1,5 +1,6 @@
 /*
-Given an unsorted array that contains even number of occurrences for all numbers except two numbers. Find the two numbers which have odd occurrences in O(n) time complexity and O(1) extra space.
+Given an unsorted array that contains even number of occurrences for all numbers except two numbers.
+Find the two numbers which have odd occurrences in O(n) time complexity and O(1) extra space.
  */
 pair<int32_t,int32_t> twoOdd(const int32_t a[], const uint32_t n) {
   if (!n)
