@@ -4,10 +4,11 @@
 using namespace std;
 
 /*
-Suppose a sorted array is rotated at some pivot unknown to you beforehand. (i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).  You are given a target value to search. If found in the array return its index, otherwise return -1.
+Suppose a sorted array is rotated at some pivot unknown to you beforehand. (i.e., 0 1 2 4 5 6 7 might become 4 5 6 7 0 1 2).
+You are given a target value to search. If found in the array return its index, otherwise return -1.
 You may assume no duplicate exists in the array.
 
-O(logn)
+Time complexity: O(logn)
  */
 int32_t searchInRotated(const int32_t A[], const uint32_t n, const int32_t target) {
   if (!n)
@@ -177,9 +178,10 @@ void reversal(vector<int32_t>& a, const uint32_t d) {
 /*
 Initialize A = arr[0..d-1] and B = arr[d..n-1]
 1) Do following until size of A is equal to size of B
-  a)  If A is shorter, divide B into Bl and Br such that Br is of same length as A. Swap A and Br to change ABlBr into BrBlA. Now A is at its final place, so recur on pieces of B.
-  b)  If A is longer, divide A into Al and Ar such that Al is of same length as B Swap Al and B to change AlArB into BArAl. Now B is at its final place, so recur on pieces of A.
-
+  a)  If A is shorter, divide B into Bl and Br such that Br is of same length as A. Swap A and Br to change ABlBr into BrBlA.
+      Now A is at its final place, so recur on pieces of B.
+  b)  If A is longer, divide A into Al and Ar such that Al is of same length as B Swap Al and B to change AlArB into BArAl.
+      Now B is at its final place, so recur on pieces of A.
 2)  Finally when A and B are of equal size, block swap them.
  */
 /*This function swaps d elements starting at index fi with d elements starting at index si */
@@ -218,9 +220,11 @@ int main(int argc, char** argv) {
   int32_t d[7] = {4,5,6,7,0,1,2};
   int32_t target = 3;
   cout << "Index of number " << target << " in rotated array: " << searchInRotated(d, 7, target) << endl;
-  cout << "Number " << target << (existsInRotated(d, 7, target) ? " does " : " does not ") << "exist in rotated array." << endl;
+  cout << "Number " << target << (existsInRotated(d, 7, target) ? " does " : " does not ")
+       << "exist in rotated array." << endl;
 
   int32_t a[7] = {1,3,1,1,1};
   target = 1;
-  cout << "Number " << target << (existsInRotated(a, 5, target) ? " does " : " does not ") << "exist in rotated array." << endl;
+  cout << "Number " << target << (existsInRotated(a, 5, target) ? " does " : " does not ")
+       << "exist in rotated array." << endl;
 }
