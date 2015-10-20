@@ -1,5 +1,6 @@
 /*
-Reverse DNS look up is using an internet IP address to find a domain name. For example, if you type 74.125.200.106 in browser, it automatically redirects to google.in.
+Reverse DNS look up is using an internet IP address to find a domain name.
+For example, if you type 74.125.200.106 in browser, it automatically redirects to google.in.
 
 How to implement Reverse DNS Look Up cache? Following are the operations needed from cache.
 1) Add a IP address to URL Mapping in cache.
@@ -47,7 +48,8 @@ void insert(TrieNode* root, char* ipAddr, char* URL) {
 
   // Traversing over the length of the ip address.
   for (uint32_t level = 0; level < len; ++level) {
-    // Get index of child node from current character in ipAddr. Index must be from 0 to 10 where 0 to 9 is used for digits and 10 for dot
+    // Get index of child node from current character in ipAddr.
+    // Index must be from 0 to 10 where 0 to 9 is used for digits and 10 for dot
     const uint8_t index = getIndex(ipAddr[level]);
 
     // Create a new child if not exist already
