@@ -15,10 +15,12 @@ void rearrange(int32_t a[], const uint32_t n) {
     }
   }
 
-  // Now all positive numbers are at end and negative numbers at the beginning of array. Initialize indexes for starting point of positive and negative numbers to be swapped
+  // Now all positive numbers are at end and negative numbers at the beginning of array.
+  // Initialize indexes for starting point of positive and negative numbers to be swapped
   uint32_t pos = i+1, neg = 0;
 
-  // Increment the negative index by 2 and positive index by 1, i.e., swap every alternate negative number with next positive number
+  // Increment the negative index by 2 and positive index by 1, i.e., swap every alternate negative number
+  // with next positive number
   while (pos < n && neg < pos && a[neg] < 0) {
     swap(a[neg], a[pos]);
     ++pos;
