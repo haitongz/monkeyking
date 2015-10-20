@@ -2,7 +2,11 @@
 Given an nxn square matrix, find sum of all sub-squares of size k x k where k is smaller than or equal to n
 
 Simple solution is to calculate all subsquares, O(k^2n^2).
-O(n2) solution: preprocess the given square matrix, calculate sum of all vertical strips of size kx1 in a temporary square matrix stripSum[][]. Once we have sum of all vertical strips, we can calculate sum of first sub-square in a row as sum of first k strips in that row, and for remaining sub-squares, we can calculate sum in O(1) time by removing the leftmost strip of previous subsquare and adding the rightmost strip of new square.
+O(n2) solution: preprocess the given square matrix, calculate sum of all vertical strips of size kx1
+in a temporary square matrix stripSum[][]. Once we have sum of all vertical strips,
+we can calculate sum of first sub-square in a row as sum of first k strips in that row, and for remaining sub-squares,
+we can calculate sum in O(1) time by removing the leftmost strip of previous subsquare and
+adding the rightmost strip of new square.
  */
 #include <iostream>
 #include <vector>
@@ -38,7 +42,8 @@ vector<int32_t> subsquareSums(const vector<vector<int32_t>>& mat, const uint32_t
 
     ret.push_back(sum);
 
-    // Calculate sum of remaining squares in current row by removing the leftmost strip of previous sub-square and adding a new strip
+    // Calculate sum of remaining squares in current row by removing the leftmost strip of previous sub-square and
+    // adding a new strip
     for (uint32_t j = 1; j < n-k+1; ++j) {
       sum += (stripsum[i][j+k-1] - stripsum[i][j-1]);
       ret.push_back(sum);
