@@ -1,5 +1,6 @@
 /*
-Given an array of n elements, where each element is at most k away from its target position, devise an algorithm that sorts in O(nlogk) time.
+Given an array of n elements, where each element is at most k away from its target position,
+devise an algorithm that sorts in O(nlogk) time.
  */
 void sortK(const int32_t a[], const uint32_t n, const uint32_t k) {
   // Create a Min Heap of first (k+1) elements from input array
