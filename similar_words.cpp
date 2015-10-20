@@ -11,7 +11,9 @@ Say dictionary has ["cs", "ct", "cby"], target word is "cat" and k=1
 
 Last value in each row is the edit distance to target word. if it's no bigger than k add this word to result.
 
-Note: when cb is scanned, edit distance is already 2 and has same length as 'cat'. This means all subtrees of this node can't have smaller edit distances, we can return immediately without checking "cby". Trie approach can save lots of time when dictionary is huge.
+Note: when cb is scanned, edit distance is already 2 and has same length as 'cat'.
+This means all subtrees of this node can't have smaller edit distances, we can return immediately without checking "cby".
+Trie approach can save lots of time when dictionary is huge.
  */
 #include <iostream>
 #include <vector>
