@@ -99,7 +99,8 @@ bool isMatch_dp(const char* s, const char* p) {
   for (uint32_t i = 0; i < s_len+1; ++i) {
     for (uint32_t j = 1; j < p_len+1; ++j) {
       if (i > 0) {
-        if (dp[i-1][j-1] && match(s[i-1], p[j-1])) { // match exactly one character, index of both string and pattern move forward by 1
+        // match exactly one character, index of both string and pattern move forward by 1
+        if (dp[i-1][j-1] && match(s[i-1], p[j-1])) {
           dp[i][j] = true;
           continue;
         }
@@ -135,9 +136,11 @@ bool isMatch_recur(const char* s, const char* p) {
     if (*rhs == '\0')
       return (*lhs == '\0');
 
-    if (*(rhs+1) != '*') { // If the next character of p is NOT '*', then it must match the current character of s. Continue pattern matching with the next character of both s and p.
+    if (*(rhs+1) != '*') { // If the next character of p is NOT '*', then it must match the current character of s.
+                           // Continue pattern matching with the next character of both s and p.
       return match(lhs, rhs) && dfs(++lhs, ++rhs);
-    } else { // If the next character of p is '*', then we do a brute force exhaustive matching of 0, 1, or more repeats of current character of p...until we could not match any more characters.
+    } else { // If the next character of p is '*', then we do a brute force exhaustive matching of 0, 1,
+             // or more repeats of current character of p...until we could not match any more characters.
       while (*lhs && match(lhs, rhs)) {
         if (dfs(lhs, rhs+2)) // rhs+2 gets past rhs+1, where '*' doesn't apply anymore
           return true;
