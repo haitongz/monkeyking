@@ -1,9 +1,11 @@
 /*
-Create the data structure for a component that will receive a series of numbers over the time and, when asked, returns the median of all received elements.
+Create the data structure for a component that will receive a series of numbers over the time and, when asked,
+returns the median of all received elements.
 
 Note:
-Might need to find the median multiple times. Median is the middle element in an odd length sorted array, and in the even case it's the average of the middle elements.
-*/
+Might need to find the median multiple times. Median is the middle element in an odd length sorted array,
+and in the even case it's the average of the middle elements.
+ */
 #include <iostream>
 #include <vector>
 #include <algorithm>
