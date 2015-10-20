@@ -126,7 +126,8 @@ void printPowerSets(const uint32_t n) {
 }
 
 /*
-Given two arrays: a1[0..m-1] and a2[0..n-1]. Find whether a2[] is a subset of a1[] or not. Both the arrays are not in sorted order.
+Given two arrays: a1[0..m-1] and a2[0..n-1]. Find whether a2[] is a subset of a1[] or not.
+Both the arrays are not in sorted order.
 
 Time Complexity: O(mLogm + nLogn)
  */
