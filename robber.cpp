@@ -4,9 +4,12 @@
 using namespace std;
 
 /*
-A professional robber plans to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping him from robbing each of them is that adjacent houses have security system connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
+A professional robber plans to rob houses along a street. Each house has a certain amount of money stashed,
+the only constraint stopping him from robbing each of them is that adjacent houses have security system connected
+and it will automatically contact the police if two adjacent houses were broken into on the same night.
 
-Given a list of non-negative integers representing the amount of money of each house, determine the maximum amount of money you can rob tonight without alerting the police.
+Given a list of non-negative integers representing the amount of money of each house,
+determine the maximum amount of money you can rob tonight without alerting the police.
  */
 uint32_t rob(const vector<uint32_t>& money) {
   const uint32_t n = money.size();
