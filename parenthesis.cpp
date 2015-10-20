@@ -6,7 +6,8 @@
 using namespace std;
 
 /*
-Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed) parentheses substring.
+Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed)
+parentheses substring.
 
 For "(()", the longest valid parentheses substring is "()", which has length = 2.
 
@@ -64,7 +65,8 @@ uint32_t longestValidParenLen_dp(const string& s) {
 }
 
 /*
-Given a string with parentheses, return a string with balanced parentheses by removing the fewest characters possible. You cannot add anything to the string.
+Given a string with parentheses, return a string with balanced parentheses by removing the fewest characters possible.
+You cannot add anything to the string.
 
 Examples:
 balance("()") -> "()"
@@ -143,7 +145,8 @@ vector<string> generateParentheses(const uint32_t n) {
 }
 
 /*
-Given a string having parenthesis like '(((X)) (((Y))))', we need to find the maximum depth of balanced parenthesis, like 4 in above example. Since 'Y' is surrounded by 4 balanced parenthesis.
+Given a string having parenthesis like '(((X)) (((Y))))', we need to find the maximum depth of balanced parenthesis,
+like 4 in above example. Since 'Y' is surrounded by 4 balanced parenthesis.
  */
 int32_t maxBalancedParenDepth(const string& s) {
   const uint32_t len = s.length();
