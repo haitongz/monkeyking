@@ -7,7 +7,8 @@ using namespace std;
 #define MAX_CHAR 256
 
 /*
-A string is composed of a shorter substring repeating n times. Minimum substring length is 2. Check whether a string is such case.
+A string is composed of a shorter substring repeating n times. Minimum substring length is 2.
+Check whether a string is such case.
 
 For example,
 "abcabcabc"  -> true
@@ -60,7 +61,9 @@ bool isRepeat(const string& s) {
 }
 
 /*
-Given a string, find the length of the longest substring without repeating characters. For example, the longest substring without repeating letters for "abcabcbb" is "abc", which the length is 3. For "bbbbb" the longest substring is "b", with the length of 1.
+Given a string, find the length of the longest substring without repeating characters.
+For example, the longest substring without repeating letters for "abcabcbb" is "abc", which the length is 3.
+For "bbbbb" the longest substring is "b", with the length of 1.
  */
 /*
 uint32_t longestUniqueSubstrLen(const string& s) {
@@ -111,10 +114,14 @@ uint32_t longestUniqueSubstrLen(const string& s) { // O(n)
   for (uint32_t i = 1; i < len; ++i) {
     int32_t prev_idx = visited[s[i]];
 
-    // If the current character is not present in the already processed substring or it is not part of the current NRCS, increment curr_len
+    // If the current character is not present in the already processed substring or
+    // it is not part of the current NRCS increment curr_len
     if (prev_idx == -1 || (i-curr_len > prev_idx/*this means not part of current NRCS*/))
       ++curr_len;
-    else { /* If the current character is present in currently considered NRCS, then update NRCS to start from the next character of previous instance. Also, when we are changing the NRCS, we should also check whether length of the previous NRCS was greater than max_len or not.*/
+    else { /* If the current character is present in currently considered NRCS,
+              then update NRCS to start from the next character of previous instance.
+              Also, when we are changing the NRCS, we should also check whether length of
+              the previous NRCS was greater than max_len or not.*/
       ret = max(curr_len, ret);
       curr_len = i-prev_idx;
     }
@@ -166,7 +173,8 @@ int32_t firstNonRepeating(char* str) {
 }
 
 /*
-Given a stream of characters, find the first non-repeating character from stream. You need to tell the first non-repeating character in O(1) time at any moment.
+Given a stream of characters, find the first non-repeating character from stream.
+You need to tell the first non-repeating character in O(1) time at any moment.
  */
 void appendNode(DListNodeT<char>** head_ref, DListNodeT<char>** tail_ref, const char x) {
   DListNodeT<char>* tmp = new DListNodeT<char>(x);
@@ -182,7 +190,8 @@ void appendNode(DListNodeT<char>** head_ref, DListNodeT<char>** tail_ref, const 
   *tail_ref = tmp;
 }
 
-// A utility function to remove a node 'temp' fromt DLL. Note that the function may change head and tail pointers, that is why pointers to these pointers are passed.
+// A utility function to remove a node 'temp' fromt DLL.
+// Note that the function may change head and tail pointers, that is why pointers to these pointers are passed.
 void removeNode(DListNodeT<char>** head_ref, DListNodeT<char>** tail_ref, DListNodeT<char>* tmp) {
   if (!head_ref || !(*head_ref))
     return;
@@ -203,7 +212,8 @@ void findFirstNonRepeating(istream& strm) {
   // inDLL[x] contains pointer to a DLL node if x is present in DLL. If x is not present, then inDLL[x] is NULL
   DListNodeT<char>* inDLL[MAX_CHAR];
 
-  // repeated[x] is true if x is repeated two or more times. If x is not seen so far or x is seen only once. then repeated[x] is false
+  // repeated[x] is true if x is repeated two or more times.
+  // If x is not seen so far or x is seen only once. then repeated[x] is false
   bool repeated[MAX_CHAR];
 
   // Initialize the above two arrays
@@ -220,7 +230,8 @@ void findFirstNonRepeating(istream& strm) {
     char x = s[i];
     cout << "Reading " << x << " from stream \n";
 
-    // We process this character only if it has not occurred or occurred only once. repeated[x] is true if x is repeated twice or more.s
+    // We process this character only if it has not occurred or occurred only once.
+    // repeated[x] is true if x is repeated twice or more.s
     if (!repeated[x]) {
       // If the character is not in DLL, then add this at the end of DLL.
       if (!inDLL[x]) {
