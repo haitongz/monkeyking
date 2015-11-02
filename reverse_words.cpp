@@ -64,12 +64,12 @@ string reverseWords(const string& s) {
     if (!ret.empty())
       ret.push_back(' ');
 
-    string t;
+    string tmp;
     while (i >= 0 && s[i] != ' ')
-      t.push_back(s[i--]);
+      tmp.push_back(s[i--]);
 
-    reverse(t.begin(), t.end());
-    ret.append(t);
+    reverse(tmp.begin(), tmp.end());
+    ret.append(tmp);
   }
 
   return ret;
