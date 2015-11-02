@@ -49,33 +49,35 @@ void ReverseWordOrder(char* s) {
   ReverseWords(s);
 }
 */
-
 string reverseWords(const string& s) {
-  string res;
-  const uint32_t len = s.length();
+  const uint len = s.length();
   if (!len)
-    return res;
+    return "";
 
-  for (int32_t i = len-1; i >= 0;) {
+  string ret;
+
+  for (int i = len-1; i >= 0;) {
     while (i >= 0 && s[i] == ' ')
       --i;
     if (i < 0)
       break;
-    if (!res.empty())
-      res.push_back(' ');
+    if (!ret.empty())
+      ret.push_back(' ');
 
     string t;
     while (i >= 0 && s[i] != ' ')
       t.push_back(s[i--]);
 
     reverse(t.begin(), t.end());
-    res.append(t);
+    ret.append(t);
   }
 
-  return res;
+  return ret;
 }
 
 int main(int argc, char** argv) {
   string str = "the sky is blue";
   cout << reverseWords(str) << endl;
+  
+  return 0;
 }
