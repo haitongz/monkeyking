@@ -53,10 +53,10 @@ vector<Interval> insert(vector<Interval>& itvls, Interval nv) {
     return {nv};
 
   uint32_t idx = 0;
-  vector<Interval> res;
+  vector<Interval> ret;
 
   while (idx < n && itvls[idx].end < nv.start) {
-    res.push_back(itvls[idx++]);
+    ret.push_back(itvls[idx++]);
   }
 
   while (idx < n && nv.end >= itvls[idx].start) {
@@ -65,10 +65,10 @@ vector<Interval> insert(vector<Interval>& itvls, Interval nv) {
     ++idx;
   }
 
-  res.push_back(nv);
-  copy((itvls.begin()+idx), itvls.end(), back_inserter(res));
+  ret.push_back(nv);
+  copy((itvls.begin()+idx), itvls.end(), back_inserter(ret));
 
-  return res;
+  return ret;
 }
 /*
 vector<Interval> insert_2(vector<Interval>& itvls, Interval ni) {
@@ -137,7 +137,7 @@ bool canAttendAll(vector<Interval>& mtgs) {
   if (!n)
     return false;
 
-  sort(mtgs.begin(), mtgs.end(), [&](Interval a, Interval b) {return a.start < b.start;});
+  sort(mtgs.begin(), mtgs.end(), [&](const Interval& a, const Interval& b) {return a.start < b.start;});
 
   for (uint32_t i = 1; i < n; ++i) {
     if (mtgs[i].start < mtgs[i-1].end)
@@ -161,16 +161,16 @@ uint32_t minRooms(vector<Interval>& mtgs) {
 
   sort(times.begin(), times.end(), [](int32_t a, int32_t b) { return (abs(a) == abs(b)) ? (a < b) : (abs(a) < abs(b)); });
 
-  uint32_t res = 0, curr = 0;
+  uint32_t ret = 0, curr = 0;
 
   for (auto t : times) {
     if (t >= 0)
-      res = max(res, ++curr);
+      ret = max(ret, ++curr);
     else
       --curr;
   }
 
-  return res;
+  return ret;
 }
 
 /*
@@ -201,16 +201,16 @@ uint32_t maxPairChainLen_greedy(vector<Pair>& p) {
 
   sort(p.begin(), p.end());
   uint32_t active_p = 0;
-  uint32_t res = 1;
+  uint32_t ret = 1;
 
   for (uint32_t i = 1; i < n; ++i) {
     if (p[i].a > p[active_p].b) {
-      ++res;
+      ++ret;
       active_p = i;
     }
   }
 
-  return res;
+  return ret;
 }
 
 int main(int argc, char** argv) {
