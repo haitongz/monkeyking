@@ -78,6 +78,10 @@ string reverseWords(const string& s) {
 int main(int argc, char** argv) {
   string str = "the sky is blue";
   cout << reverseWords(str) << endl;
-  
+  str = "   ";
+  cout << reverseWords(str) << endl;
+  str = "@ @";
+  cout << reverseWords(str) << endl;
+
   return 0;
 }
