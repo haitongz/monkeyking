@@ -6,32 +6,31 @@
 using namespace std;
 
 /*
-The longest Increasing Subsequence (LIS) problem is to find the length of the longest subsequence of
+The Longest Increasing Subsequence (LIS) problem is to find the length of the longest subsequence of
 a given sequence such that all elements of the subsequence are sorted in increasing order.
 1. Elements don't need to be contiguous;
 2. No need to keep spaces in between, just length of the subsequence.
 
 For example, length of LIS for {10, 22, 9, 33, 21, 50, 41, 60, 80} is 6 and LIS is {10, 22, 33, 50, 60, 80}.
  */
-uint32_t LISLen(const vector<int32_t>& nums) {
-  const uint32_t n = nums.size();
+uint32_t LISLen(const int32_t a[], const uint32_t n) {
   if (!n)
     return 0;
 
   vector<uint32_t> dp(n, 1); // initialize to 1, as each number is a sequence
-  uint32_t res = 1;
+  uint32_t ret = 1;
 
   for (uint32_t i = 1; i < n; ++i) {
     for (uint32_t j = 0; j < i; ++j) {
-      if (nums[i] > nums[j]) {
+      if (a[i] > a[j]) {
         dp[i] = max(dp[i], dp[j]+1);
       }
 
-      res = max(res, dp[i]);
+      ret = max(ret, dp[i]);
     }
   }
 
-  return res;
+  return ret;
 }
 
 /*
@@ -54,19 +53,19 @@ uint32_t longestSnakeSeqLen(const vector<vector<int32_t>>& mat) {
   if (m < 2 || n < 2)
     return 0;
 
-  uint32_t res = 0;
+  uint32_t ret = 0;
   vector<vector<uint32_t>> dp(m, vector<uint32_t>(n, 1));
 
   for (int32_t i = m-2; i >= 0; --i) { // right most column, can't move right
     if (abs(mat[i][n-1]-mat[i+1][n-1]) == 1) {
       dp[i][n-1] = dp[i+1][n-1]+1;
-      res = max(dp[i][n-1], res);
+      ret = max(dp[i][n-1], ret);
     }
   }
   for (int32_t j = n-2; j >= 0; --j) { // bottom row, can't move down
     if (abs(mat[m-1][j]-mat[m-1][j+1]) == 1) {
       dp[m-1][j] = dp[m-1][j+1]+1;
-      res = max(dp[m-1][j], res);
+      ret = max(dp[m-1][j], ret);
     }
   }
   for (int32_t i = m-2; i >= 0; --i) { // now move
@@ -78,16 +77,16 @@ uint32_t longestSnakeSeqLen(const vector<vector<int32_t>>& mat) {
         dp[i][j] = max(dp[i][j], dp[i+1][j]+1);
       }
 
-      res = max(dp[i][j], res);
+      ret = max(dp[i][j], ret);
     }
   }
 
-  return res;
+  return ret;
 }
 
 /*
-Find the longest increasing(increasing means one step) sequence in an integer matrix in 4 directions (up down left right),
-return the sequence
+Find the longest increasing (increasing means one step) sequence
+in an integer matrix in 4 directions (up down left right), return the sequence
 
 Given
 [
@@ -96,7 +95,7 @@ Given
 ]
 
 The output should be [1, 2, 3, 4, 5, 6, 7, 8]
- */
+
 vector<int32_t> matrixLIS(const vector<vector<int32_t>>& mat) {
   const uint32_t m = mat.size();
   const uint32_t n = mat[0].size();
@@ -106,18 +105,18 @@ vector<int32_t> matrixLIS(const vector<vector<int32_t>>& mat) {
   static const vector<pair<int8_t,int8_t>> dirs = {{-1,0}, {1,0}, {0,-1}, {0,1}};
   vector<vector<int32_t>> dp(m, vector<int32_t>(n, 0));
 
-  function<int32_t(const int32_t,const int32_t)> dfs =
-    [&](const int32_t i, const int32_t j) {
+  function<int32_t(const uint32_t,const uint32_t)> solve = // DFS
+    [&](const uint32_t i, const uint32_t j) {
     if (dp[i][j] != 0)
       return dp[i][j];
 
-    for (auto& d : dirs) {
+    for (const auto& d : dirs) {
       int32_t newi = i+d.first, newj = j+d.second;
       if (newi < 0 || newj < 0 || newi >= m || newj >= n)
         continue;
 
       if (mat[newi][newj] == mat[i][j]+1)
-        dp[i][j] = max(dp[i][j], dfs(newi, newj));
+        dp[i][j] = max(dp[i][j], solve(newi, newj));
     }
 
     return ++dp[i][j];
@@ -126,7 +125,7 @@ vector<int32_t> matrixLIS(const vector<vector<int32_t>>& mat) {
   int32_t max_start = 0, max_path = 0;
   for (uint32_t i = 0; i < m; ++i) {
     for (uint32_t j = 0; j < n; ++j) {
-      int32_t path = dfs(i, j);
+      int32_t path = solve(i, j);
       if (path > max_path) {
         max_start = mat[i][j];
         max_path = path;
@@ -134,38 +133,38 @@ vector<int32_t> matrixLIS(const vector<vector<int32_t>>& mat) {
     }
   }
 
-  vector<int32_t> res(max_path);
-  //iota(res.begin(), res.end(), max_start);
-  return res;
+  vector<int32_t> ret(max_path);
+  iota(ret.begin(), ret.end(), max_start);
+  return ret;
 }
+ */
 
 /*
-Given an array arr[0 ... n-1] containing n positive integers,
-a subsequence of arr[] is called Bitonic if it is first increasing, then decreasing.
+Given an array a[0 ... n-1] containing n positive integers,
+a subsequence of a[] is called Bitonic if it is first increasing, then decreasing.
 Write a function that takes an array as argument and returns the length of the longest bitonic subsequence.
 A sequence, sorted in increasing order is considered Bitonic with the decreasing part as empty.
 Similarly, decreasing order sequence is considered Bitonic with the increasing part as empty.
 
-Input arr[] = {1, 11, 2, 10, 4, 5, 2, 1};
+Input a[] = {1, 11, 2, 10, 4, 5, 2, 1};
 Output: 6 (A Longest Bitonic Subsequence of length 6 is 1, 2, 10, 4, 2, 1)
 
-Input arr[] = {12, 11, 40, 5, 3, 1}
+Input a[] = {12, 11, 40, 5, 3, 1}
 Output: 5 (A Longest Bitonic Subsequence of length 5 is 12, 11, 5, 3, 1)
 
-Input arr[] = {80, 60, 30, 40, 20, 10}
+Input a[] = {80, 60, 30, 40, 20, 10}
 Output: 5 (A Longest Bitonic Subsequence of length 5 is 80, 60, 30, 20, 10)
  */
-uint32_t longestBitonicSubseqLen(const vector<uint32_t>& nums) {
-  const uint32_t n = nums.size();
+uint32_t longestBitonicSubseqLen(const uint32_t a[], const uint32_t n) {
   if (n < 3)
     return 0;
 
   vector<uint32_t> t1(n, 1), t2(n, 1);
   for (int32_t i = 0, k = n-1; i < n && k >= 0; ++i, --k) {
     for (int32_t j = i+1, l = k-1; j < n && l >= 0; ++j, --l) {
-      if (nums[j] > nums[i])
+      if (a[j] > a[i])
         t1[j] = t1[i]+1;
-      if (nums[l] > nums[k])
+      if (a[l] > a[k])
         t2[l] = t2[k]+1;
     }
     if (i > 1)
@@ -183,28 +182,24 @@ uint32_t longestBitonicSubseqLen(const vector<uint32_t>& nums) {
 }
 
 int main(int argc, char** argv) {
-  vector<int32_t> a = {10, 22, 9, 33, 21, 50, 41, 60, 80};
-  cout << "LIS length: " << LISLen(a) << endl;
+  int32_t a[9] = {10, 22, 9, 33, 21, 50, 41, 60, 80};
+  cout << "LIS length: " << LISLen(a, 9) << endl;
 
   vector<vector<int32_t>> mat = {{1, 3, 2, 6, 8},
                                  {-9, 7, 1, -1, 2},
                                  {1, 5, 0, 1, 9}};
   cout << "Longest snake sequence length: " << longestSnakeSeqLen(mat) << endl;
 
-  mat = {{1,8}, {2,7}, {3,6}, {4,5}};
-  vector<int32_t> res = matrixLIS(mat);
+ /* mat = {{1,8}, {2,7}, {3,6}, {4,5}};
+    vector<int32_t> res = matrixLIS(mat);
 
   cout << "Longest increasing sequence: ";
-  for (auto i : res)
+  for (const auto i : res)
     cout << i << " ";
   cout << endl;
-
-  vector<uint32_t> b = {1, 11, 2, 10, 4, 5, 2, 1};
-  cout << "Longest bitonic subsequence length is: " << longestBitonicSubseqLen(b) << endl;
-  b = {12, 11, 40, 5, 3, 1};
-  cout << "Longest bitonic subsequence length is: " << longestBitonicSubseqLen(b) << endl;
-  b = {80, 60, 30, 40, 20, 10};
-  cout << "Longest bitonic subsequence length is: " << longestBitonicSubseqLen(b) << endl;
+ */
+  uint32_t b[8] = {1, 11, 2, 10, 4, 5, 2, 1};
+  cout << "Longest bitonic subsequence length is: " << longestBitonicSubseqLen(b, 8) << endl;
 
   return 0;
 }
