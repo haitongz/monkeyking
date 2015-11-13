@@ -132,6 +132,42 @@ const char* KMP(const char* haystack, const char* needle) {
 
   return nullptr;
 }
+
+template <uint128_t _needle_, uint32_t _needle_size_>
+static inline const char* strstr(const char* buffer) {
+#ifdef __SSE4_2__
+  static_assert(_needle_size_ <= sizeof(__m128i), "Needle size is too big");
+  static const uint128_t _value_ = _needle_;
+  static const __m128i needle = _mm_loadu_si128(reinterpret_cast<const __m128i*>(&_value_));
+  for (__m128i haystack = _mm_loadu_si128(reinterpret_cast<const __m128i*>(buffer));;) {
+    int x = _mm_cmpistri(needle, haystack, _SIDD_SBYTE_OPS | _SIDD_CMP_EQUAL_ORDERED | _SIDD_LEAST_SIGNIFICANT);
+    bool c = _mm_cmpistrc(needle, haystack,
+      _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ORDERED | _SIDD_LEAST_SIGNIFICANT);
+    bool z = _mm_cmpistrc(needle, haystack,
+      _SIDD_UBYTE_OPS | _SIDD_CMP_EQUAL_ORDERED | _SIDD_LEAST_SIGNIFICANT);
+    if (__PENG_LIKELY(c)) {
+      __PENG_ASSERT(x != 16);
+      if (__PENG_LIKELY(sizeof(__m128i) - _needle_size_ >= x)) {
+        buffer += x;
+        return buffer;
+      } else {
+        buffer += x;
+        haystack = _mm_loadu_si128(reinterpret_cast<const __m128i*>(buffer));
+      }
+    }
+    if (__PENG_UNLIKELY(z)) {
+      break;
+    }
+    buffer += sizeof(__m128i) - _needle_size_ + 1;
+    haystack = _mm_loadu_si128(reinterpret_cast<const __m128i*>(buffer));
+  }
+  return NULL;
+#else
+#error "SSE4 is required"
+  __PENG_ABORT("Not supported");
+#endif
+}
+
 /*
 int strstr_rollinghash(char* haystack, char* needle) {
   if (!needle || !*needle)
