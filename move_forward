@@ -1,0 +1,6 @@
+Use move(x) when you know you want to move from x, because it is a value that is no longer needed for anything else.
+Think of this, at a high level, as enabling an optimization of copy.
+
+Use forward(x) when you don't know whether x is bound to an rvalue or lvalue in your caller, so its value might be
+needed even after you return. Think of this, at a high-level, as ressurecting any rvalue-ness that may have been
+erased by giving the argument a name.
