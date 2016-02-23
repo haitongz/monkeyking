@@ -3,3 +3,19 @@
 3. linked list manipulation
 4. 股票价格，比leetcode上的变型要难一点，没通过所有的test
 5. minimum cab number给了一堆顾客的出行schedule，要求最少几辆车可以handle以至于没有人需要等车，应该是求interval overlap
+
+
+
+很多链表题，以及best time to buy and sell stock 
+另：find collatz conjecture with boundary B and max number of steps N
+
+1，口袋里有n个硬币，抛出头的概率分别为p1,p2,...,pn。你现在拿出一个硬币，抛一下是头。问同一个硬币再抛一下出头的概率。 
+
+
+2，写一个程序把reverse polish notation转换成infix notation。不能有多余的括号。 
+
+
+3，n个任务，给定部分任务的先后顺序，输出一个执行序列使得任务1的完成时间最小，在此基础上任务2的完成时间最小，然后任务3，依次直到任务n。 
+
+
+4，在1和0的矩阵中找到最大的只含0的子矩阵的面积。 
