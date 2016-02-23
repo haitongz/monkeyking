@@ -1,0 +1,5 @@
+1. 输入一行string，copy成两行一样的。要求改错，用到构造函数blabla
+2. newton-raphson方法
+3. linked list manipulation
+4. 股票价格，比leetcode上的变型要难一点，没通过所有的test
+5. minimum cab number给了一堆顾客的出行schedule，要求最少几辆车可以handle以至于没有人需要等车，应该是求interval overlap
