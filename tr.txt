@@ -1,7 +1,129 @@
 1. 输入一行string，copy成两行一样的。要求改错，用到构造函数blabla
+
 2. newton-raphson方法
+#include<stdio.h>
+#include<math.h>
+float f(float x)
+{
+    return x*log10(x) - 1.2;
+}
+float df (float x)
+{
+    return log10(x) + 0.43429;
+}
+void main()
+{
+    int itr, maxmitr;
+    float h, x0, x1, allerr;
+    printf("\nEnter x0, allowed error and maximum iterations\n");
+    scanf("%f %f %d", &x0, &allerr, &maxmitr);
+    for (itr=1; itr<=maxmitr; itr++)
+    {
+        h=f(x0)/df(x0);
+        x1=x0-h;
+        printf(" At Iteration no. %3d, x = %9.6f\n", itr, x1);
+        if (fabs(h) < allerr)
+        {
+            printf("After %3d iterations, root = %8.6f\n", itr, x1);
+            return 0;
+        }
+        x0=x1;
+    }
+    printf(" The required solution does not converge or iterations are insufficient\n");
+    return 1;
+}
+
 3. linked list manipulation
+
 4. 股票价格，比leetcode上的变型要难一点，没通过所有的test
+
+I: time O(n), space O(1)
+int maxProfit(int[] prices) {
+        if (prices.length < 2) return 0;
+        
+        int maxProfit = 0;
+        int curMin = prices[0];
+        
+        for (int i = 1; i < prices.length; i++) {
+            curMin = Math.min(curMin, prices[i]);
+            maxProfit = Math.max(maxProfit, prices[i] - curMin);
+        }
+        
+        return maxProfit;
+    }
+II: time O(n), space O(1)
+int maxProfit(int[] prices) {
+        if (prices.length < 2) return 0;
+        
+        int maxProfit = 0;
+        for (int i = 1; i < prices.length; i++) {
+            int diff = prices[i] - prices[i - 1];
+            if (diff > 0) {
+                maxProfit += diff;
+            }
+        }
+        
+        return maxProfit;
+    }
+III: time O(n), space O(n)
+int maxProfit(int[] prices) {
+        if (prices.length < 2) return 0;
+        
+        int n = prices.length;
+        int[] preProfit = new int[n];
+        int[] postProfit = new int[n];
+        
+        int curMin = prices[0];
+        for (int i = 1; i < n; i++) {
+            curMin = Math.min(curMin, prices[i]);
+            preProfit[i] = Math.max(preProfit[i - 1], prices[i] - curMin);
+        }
+        
+        int curMax = prices[n - 1];
+        for (int i = n - 2; i >= 0; i--) {
+            curMax = Math.max(curMax, prices[i]);
+            postProfit[i] = Math.max(postProfit[i + 1], curMax - prices[i]);
+        }
+        
+        int maxProfit = 0;
+        for (int i = 0; i < n; i++) {
+            maxProfit = Math.max(maxProfit, preProfit[i] + postProfit[i]);
+        }
+        
+        return  maxProfit;
+    }
+IV: time O(nk), space O(k)
+int maxProfit(int k, int[] prices) {
+        if (prices.length < 2) return 0;
+        if (k >= prices.length) return maxProfit2(prices);
+        
+        int[] local = new int[k + 1];
+        int[] global = new int[k + 1];
+        
+        for (int i = 1; i < prices.length ; i++) {
+            int diff = prices[i] - prices[i - 1];
+            
+            for (int j = k; j > 0; j--) {
+                local[j] = Math.max(global[j - 1], local[j] + diff);
+                global[j] = Math.max(global[j], local[j]);
+            }
+        }
+        
+        return global[k];
+    }
+
+int maxProfit2(int[] prices) {
+        int maxProfit = 0;
+        
+        for (int i = 1; i < prices.length; i++) {
+            if (prices[i] > prices[i - 1]) {
+                maxProfit += prices[i] - prices[i - 1];
+            }
+        }
+        
+        return maxProfit;
+    }
+
 5. minimum cab number给了一堆顾客的出行schedule，要求最少几辆车可以handle以至于没有人需要等车，应该是求interval overlap
 
 
