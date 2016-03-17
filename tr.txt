@@ -195,7 +195,7 @@ What is the next number with both of these properties?
 #include <climits>
 #include <string>
 using namespace std;
-鏉ユ簮涓€浜�.涓夊垎鍦拌鍧�. 
+
 /**
 * algorithm class to find the number with:
 * 1) base of 17 representation is palindrome
@@ -208,20 +208,20 @@ public:
   *       which has p form. From 1point 3acres bbs
   * @return unsigned long long, return the next 17 based palidoromed number
   *           which has at least 17 consecutive 1 bits
-  */. 鍥磋鎴戜滑@1point 3 acres
+  */
 unsigned long long findNextPNumber17Bits(const string& input) {
   string cur = input;. visit 1point3acres.com for more.
   string next;
   while (1) {
    next = nextPNumber(cur);
    unsigned long long num = decode(next);
-   if (num == ULLONG_MAX) //.鐣欏璁哄潧-涓€浜�-涓夊垎鍦�
+   if (num == ULLONG_MAX)
     return 0;
    if (count_consecutive_ones(num) >= 17) {
     return num;
    }
    cur = next;
-  }.1point3acres缃�
+  }
   return 0;
 }
 private:
@@ -230,10 +230,10 @@ private:
   * if all is 'G', return true
   * else return false
   */
-bool isAll16s(const string &num) {. 鐗涗汉浜戦泦,涓€浜╀笁鍒嗗湴
+bool isAll16s(const string &num) {
   int n = num.size();
   for (int i = 0; i < n; i++) {
-   if (num[i] != 'g'). 鐣欏鐢宠璁哄潧-涓€浜╀笁鍒嗗湴
+   if (num[i] != 'g')
     return false;
   }
   return true;. From 1point 3acres bbs
@@ -241,7 +241,7 @@ bool isAll16s(const string &num) {. 鐗涗汉浜戦泦,涓€浜╀笁鍒嗗湴
 ;
 /**
   *  input a string with 17 as base and output
-  *  the value as 10 base. 鐣欏鐢宠璁哄潧-涓€浜╀笁鍒嗗湴
+  *  the value as 10 base.
   */
 unsigned long long decode(const string& in) {
   unsigned long long result = 0;
@@ -263,16 +263,13 @@ int count_consecutive_ones(unsigned long long input) {
   int count = 0;
   while (input) {
    input = (input & (input << 1));
-   count++;. 鍥磋鎴戜滑@1point 3 acres
-  }. Waral 鍗氬鏈夋洿澶氭枃绔�,
+   count++;
+  }
   return count;
-}.1point3acres缃�
+}
 
-/**. 鐣欏鐢宠璁哄潧-涓€浜╀笁鍒嗗湴
-  * generate next p number
-  */
 string nextPNumber(const string& num) {
-  if (isAll16s(num)). 鐣欏鐢宠璁哄潧-涓€浜╀笁鍒嗗湴
+  if (isAll16s(num))
    return '1' + string(num.size(), '0') + '1';
   int n = num.size();
   int mid = n / 2;
@@ -288,14 +285,14 @@ string nextPNumber(const string& num) {
   }
   int j;
   // If there are odd digits, then increment. 1point3acres.com/bbs
-  // the middle digit and store the carry. 涓€浜�-涓夊垎-鍦帮紝鐙鍙戝竷
+  // the middle digit and store the carry
   if (n % 2 == 1) {
-   nums[mid] += carry;. Waral 鍗氬鏈夋洿澶氭枃绔�,
+   nums[mid] += carry;
    carry = nums[mid] / 17;
    nums[mid] %= 17;
    j = mid + 1;
   } else
-   j = mid; 鏉ユ簮涓€浜�.涓夊垎鍦拌鍧�. 
+   j = mid;
 
   // Add 1 to the rightmost digit of the left side, propagate the carry
   // towards MSB digit and simultaneously copying mirror of the left side
@@ -303,7 +300,7 @@ string nextPNumber(const string& num) {
   while (i >= 0) {
    nums[i] += carry;
    carry = nums[i] / 17;
-   nums[i] %= 17;. 涓€浜�-涓夊垎-鍦帮紝鐙鍙戝竷
+   nums[i] %= 17;
    nums[j++] = nums[i--]; // copy mirror to right
   }. From 1point 3acres bbs
   // encode to special chars
@@ -320,8 +317,13 @@ string nextPNumber(const string& num) {
 
 };
 int main() {
-string cur = "19b91";. 涓€浜�-涓夊垎-鍦帮紝鐙鍙戝竷
-findNextPNumber solver;. 鐣欏鐢宠璁哄潧-涓€浜╀笁鍒嗗湴
+string cur = "19b91";
+findNextPNumber solver;
 cout << solver.findNextPNumber17Bits(cur);
 return 0;
 }
+
+implement a function that verifies whether a binary tree is a binary search tree or not.
+find duplicates in two linked lists and find the lowest common ancestor
+find two elements in an array which sum equals to a target number
+How you tell if a positive number is a total square (4,9,16...) ? Notice that a square number is the summation of odd series ( 9=1+3+5, 16 = 1+3+5+7),
