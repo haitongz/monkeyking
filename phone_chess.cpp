@@ -176,7 +176,7 @@ int main(int argc, char** argv) {
         string piece;
         getline(cin, piece);
         if (strcasecmp(piece.c_str(), "knight") && strcasecmp(piece.c_str(), "bishop")) {
-            cerr << "Wrong piece!" << endl;
+            cerr << "Unsupported piece! Please choose Bishop or Knight." << endl;
             continue;
         }
 
