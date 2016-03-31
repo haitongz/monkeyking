@@ -4,34 +4,25 @@
 #include <functional>
 #include <iterator>
 #include <cstring>
+#include <map>
 
 using namespace std;
 
-vector<vector<int8_t>> grid; // store the input grid
-
-typedef pair<int8_t,int8_t> Coordinates;
+typedef pair<int32_t,int32_t> Coordinates;
 typedef function<vector<Coordinates>(const Coordinates)> MovesFinder;
+
+vector<vector<int8_t>> grid; // store the input grid
+map<const uint8_t,Coordinates> coors; // for looking up coordinates of a valid value, 10 keys at most
 
 // this method returns i and j of input value
 Coordinates getCoordinates(const uint8_t value) {
-    const uint8_t rows = grid.size();
-    const uint8_t cols = grid[0].size();
-
-    for (int8_t i = 0; i < rows; ++i) {
-        for (int8_t j = 0; j < cols; ++j) {
-            if (grid[i][j] == value) {
-                return {i,j};
-            }
-        }
-    }
-
-    return {-1,-1};
+    return coors.count(value) ? coors[value] : Coordinates(-1,-1);
 }
 
 // check whether an input coordinates is in board and not -1
 bool isValidCell(const Coordinates& c) {
-    const int8_t rows = grid.size();
-    const int8_t cols = grid[0].size();
+    const uint32_t rows = grid.size();
+    const uint32_t cols = grid[0].size();
 
     return c.first >= 0 && c.first < rows &&
            c.second >= 0 && c.second < cols &&
@@ -53,8 +44,8 @@ nextKnightMoves(Coordinates start) {
     // can it choose to stay or not?
     // ret.push_back(start);
 
-    const int8_t i = start.first;
-    const int8_t j = start.second;
+    const int32_t i = start.first;
+    const int32_t j = start.second;
 
     if (isValidCell({i+1,j+2})) {
         ret.push_back({i+1,j+2});
@@ -92,66 +83,63 @@ nextBishopMoves(Coordinates start) {
 
     vector<Coordinates> ret;
 
-    const int8_t i = start.first;
-    const int8_t j = start.second;
-    uint8_t k = 0;
-    uint8_t l = 0;
-    const int8_t rows = grid.size();
-    const int8_t cols = grid[0].size();
+    const uint32_t i = start.first;
+    const uint32_t j = start.second;
+    uint32_t k = 0;
+    uint32_t l = 0;
+    const uint32_t rows = grid.size();
+    const uint32_t cols = grid[0].size();
 
-    while (k < rows && l < cols) {
-        if (k != i && // can we choose to stay?
-            abs(k-i) == abs(l-j) &&
-            isValidCell({k,l})) {
-            ret.push_back({k,l});
+    for (uint32_t k = 0; k < rows; ++k) {
+        for (uint32_t l = 0; l < cols; ++l) {
+            int32_t xdiff = k-i, ydiff = l-j;
+            if (xdiff &&
+                abs(xdiff) == abs(ydiff) &&
+                isValidCell({k,l})) {
+                ret.push_back({k,l});
+            }
         }
-        ++k;
-        ++l;
     }
 
     return ret;
 }
 
 // get the number of valid phone numbers with different functions
-uint32_t getNumbers(const uint8_t N,
-                    const vector<uint8_t>& starts,
-                    const MovesFinder& func) {
-    // Algorithm: for example if we want to calculate
-    // number of 7-digit valid phone numbers that Knight can generate starting from point 1, then
-    // the total number of valid phone numbers should be the number of 6-digit
-    // numbers starting from 8 + number of 6-digit numbers starting from 6.
+uint32_t getNumber(const uint32_t N,
+                   const vector<uint8_t>& starts,
+                   const MovesFinder& func) {
+    // If we want to calculate the number of 7-digit valid phone numbers that
+    // Knight/Bishop can generate starting from point, for example 1, then
+    // it should be sum of number of valid 6-digit phone numbers starting from
+    // 8 and number of 6-digit valid phone numbers starting from 6.
     // Complexity: O(N) as we fill a matrix of dimension (N+1)*10 one cell a time.
 
-    uint32_t mgrid[N+1][10]; // one extra row for digit 0
+    uint32_t mtable[N+1][10]; // one extra row for digit 0
 
-    for (uint8_t i = 0; i < N+1; ++i) {
+    for (uint32_t i = 0; i < N+1; ++i) {
         for (uint8_t j = 0; j < 10; ++j) {
-            mgrid[i][j] = 0; // initial cell values are 0
+            mtable[i][j] = 0; // initial cell values are 0
         }
     }
     for (uint8_t i = 0; i < 10; ++i) {
-        mgrid[1][i] = 1; // there's only 1-digit number at any point
+        mtable[1][i] = 1; // there's only 1-digit number at any point
     }
 
-    function<uint32_t(const uint8_t,const Coordinates)> solve =
-    [&](const uint8_t digits, const Coordinates& c) -> uint32_t {
-        if (!digits || !isValidCell(c)) {
+    function<uint32_t(const uint32_t,const Coordinates)> solve =
+    [&](const uint32_t digits, const Coordinates& c) -> uint32_t {
+        if (!digits) {
             return 0;
         }
 
         uint8_t value = grid[c.first][c.second];
-        if (mgrid[digits][value] == 0) {
+        if (!mtable[digits][value]) {
             vector<Coordinates> moves = func(c);
-            if (moves.empty()) {
-                return 0;
-            }
-
             for (auto n : moves) {
-                mgrid[digits][value] += solve(digits-1, n);
+                mtable[digits][value] += solve(digits-1, n);
             }
         }
 
-        return mgrid[digits][value];
+        return mtable[digits][value];
     };
 
     uint32_t ret = 0;
@@ -232,7 +220,7 @@ int main(int argc, char** argv) {
             continue;
         }
 
-        const uint8_t rows = atoi(numStr.c_str());
+        const uint32_t rows = atoi(numStr.c_str());
 
         cout << "columns: ";
         getline(cin, numStr);
@@ -240,9 +228,9 @@ int main(int argc, char** argv) {
             continue;
         }
 
-        const uint8_t cols = atoi(numStr.c_str());
+        const uint32_t cols = atoi(numStr.c_str());
 
-        for (uint8_t i = 0; i < rows; ++i) {
+        for (uint32_t i = 0; i < rows; ++i) {
             grid.push_back(vector<int8_t>());
             cout << "space-separated characters: ";
             getline(cin, numStr);
@@ -254,14 +242,20 @@ int main(int argc, char** argv) {
                 break;
             }
 
-            for (uint8_t j = 0; j < cols; ++j) {
+            for (uint32_t j = 0; j < cols; ++j) {
                 if (digits[j].length() != 1) {
                     cerr << "Wrong row content!" << endl;
                     restart = true;
                     break;
                 }
-                char c = digits[j][0];
-                grid.back().push_back(isdigit(c) ? atoi(&c) : -1);
+
+                if (isdigit(digits[j][0])) {
+                    uint8_t value = atoi(digits[j].c_str());
+                    grid.back().push_back(value);
+                    coors[value] = {i,j};
+                } else {
+                    grid.back().push_back(-1);
+                }
             }
         }
         if (restart) {
@@ -269,9 +263,9 @@ int main(int argc, char** argv) {
         }
 
         if (!strcasecmp(piece.c_str(), "knight")) {
-            cout << "There are " << getNumbers(digits, starts, nextKnightMoves) << " " << digits << "-digit numbers." << endl;
+            cout << "There are " << getNumber(digits, starts, nextKnightMoves) << " " << digits << "-digit numbers." << endl;
         } else if (!strcasecmp(piece.c_str(), "bishop")) {
-            cout << "There are " << getNumbers(digits, starts, nextBishopMoves) << " " << digits << "-digit numbers." << endl;
+            cout << "There are " << getNumber(digits, starts, nextBishopMoves) << " " << digits << "-digit numbers." << endl;
         }
 
         grid.clear();
