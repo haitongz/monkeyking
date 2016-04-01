@@ -1,0 +1,424 @@
+Print a BST such that it looks like a tree (with new lines and indentation, the way we see it in algorithms books).
+For example:
+1
+2
+3
+4
+         4                     
+   2           6         
+1     3     5     7   
+                    8
+and:
+
+1
+2
+3
+   3         
+1     4   
+  2     5
+FB的题，本质上就是level order遍历。这里不需要画斜线，只用空格表示还是比较简单的。
+因为是二叉树，每一层最大节点数都是可以计算的，也就是每一个节点离previous节点的距离（空格数）也可以计算到。那么每层遍历的时候针对每个节点（包括空节点）输空格即可。
+下面的代码适用于任意二叉树。
+
+int max_height(TreeNode* node) {
+    if(!node) return 0;
+    return 1 + max(max_height(node->left), max_height(node->right));
+}
+void pretty_print_bst(TreeNode* root, int space_size = 3) {    
+    deque<TreeNode*> q = { root };    
+    
+    int height = max_height(root);
+    int cur_level_nodes = 1, next_level_nodes = 0, level = 1;
+    int padding = space_size * (pow(2, height - level) - 1);
+    cout << setw(padding / 2) << "";
+    while (level <= height) {
+        cout << setw(space_size);
+        if (q.front()) {
+            cout << q.front()->val;
+            q.push_back(q.front()->left);
+            q.push_back(q.front()->right);
+        } else {
+            cout << " ";
+            q.push_back(nullptr);
+            q.push_back(nullptr);
+        }
+        next_level_nodes += 2;
+        cout << setw(padding) << "";
+        q.pop_front();
+        // go to next level
+        if (--cur_level_nodes == 0) {
+            cur_level_nodes = next_level_nodes;
+            next_level_nodes = 0;
+            ++level;
+            padding = space_size * (pow(2, height - level) - 1);
+            cout << endl << setw(padding / 2) << "";
+        }
+    }
+}
+Check the original question at CareerCup
+
+Read More
+Kth Smallest Node In BST Jan 19 2015
+找BST中第k小的节点。
+G家考过很多次，其他公司的面经里也经常出现。递归解法很简单O(N)。
+
+int get_kth(TreeNode* root, int k) {
+    int ret = 0, count = 0;
+  
+    function<void(TreeNode*)> solve = [&](TreeNode* node) {
+        if(!node) return;
+        solve(node->left);
+        if(++count == k) {
+            ret = node->val;
+            return;
+        }
+        solve(node->right);
+    }; 
+    solve(root);
+    return ret;
+}
+也可以用stack来做iterative的中序遍历，直接count一下就好，也是O(N)。
+
+
+
+如果想更优化效率，可以引入order statistic tree。
+Order statistic tree是一种BST的变种，往每个node里面加上一个field来存左子树的节点数，在树平衡时可以达到O(logN)复杂度。
+这种树在很多题目中都可以用到。
+伪代码（摘自GeeksforGeeks）：
+
+
+start:
+if K = root.leftElement + 1
+   root node is the K th node.
+   goto stop
+else if K > root.leftElements
+   K = K - (root.leftElements + 1)
+   root = root.right
+   goto start
+else
+   root = root.left
+   goto start
+stop:
+Read More
+Closest Value in Binary Search Tree Jan 18 2015
+给一个target和一个BST, 写个算法找出离target最近的数。
+
+TreeNode* closestBST(TreeNode* root, int val){
+    if(!root) return nullptr;
+    if(root->val == val) return root;
+    if(val < root->val){
+        if(!root->left) return root;
+        TreeNode * p = closestBST(root->left, val);
+        return abs(p->val-val) > abs(root->val-val) ? root : p;
+    } else {
+        if(!root->right) return root;
+        TreeNode * p = closestBST(root->right, val);
+        return abs(p->val-val) > abs(root->val-val) ? root : p;
+    }
+    return nullptr;
+}
+Check the original question at MITBBS
+
+Read More
+Merge Two BST Jan 18 2015
+You are given two balanced binary search trees. Write a function that merges the two given balanced BSTs into a balanced binary search tree.
+Your merge function should take O(M+N) time and O(1) space.
+G家onsite题，算是很多小问题的综合题。因为不允许用extra space，可以先把两个输入BST给转换成链表，然后merge两个链表，再把merge完的链表重新转化成BST。
+TreeNode* flatten_bst(TreeNode* root) {
+    if(!root) return nullptr;
+   
+    auto left = flatten_bst(root->left), right = flatten_bst(root->right);
+   
+    auto left_tail = left;
+    while (left_tail && left_tail->right) left_tail = left_tail->right;
+   
+    if(left_tail) left_tail->right = root;
+    root->left = nullptr;
+    root->right = right;
+    return left ? left : root;
+}
+TreeNode* merge_bst_list(TreeNode* a, TreeNode* b) {
+    if(!a || !b) return a ? a : b;
+    if(a->val < b->val) {
+        a->right = merge_bst_list(a->right, b);
+        return a;
+    } else {
+        b->right = merge_bst_list(a, b->right);
+        return b;
+    }
+}
+TreeNode* middle(TreeNode* nd, TreeNode* end) {
+    auto fast = nd, slow = nd;
+    while (fast!=end && fast->right!=end) {
+        fast = fast->right->right;
+        slow = slow->right;
+    }
+    return slow;
+};
+TreeNode* bst_from_list(TreeNode* head) {
+    if(!head) return nullptr;
+   
+    function<TreeNode*(TreeNode*,TreeNode*)> convert = [&](TreeNode *begin, TreeNode *end) -> TreeNode*{
+        if(!begin || begin == end) return nullptr;
+        if(begin->right == end) {
+            begin->left = begin->right = nullptr;
+            return begin;
+        }
+        auto mid = middle(begin, end);
+        mid->left = convert(begin, mid);
+        mid->right = convert(mid->right,end);
+        return mid;
+    };
+    return convert(head, nullptr);
+}
+TreeNode* merge_bst(TreeNode* a, TreeNode* b) {
+    if(!a || !b) return a ? a : b;
+    auto la = flatten_bst(a), lb = flatten_bst(b);
+    return bst_from_list(merge_bst_list(la, lb));
+}
+Check the original question at MITBBS
+
+Read More
+Convert to Binary Search Tree Jan 11 2015
+Given a singly linked list where elements are sorted in ascending order, convert it to a height balanced BST.
+
+TreeNode *sortedListToBST(ListNode *head) {
+    if (!head) return nullptr;
+    auto middle = [](ListNode* nd, ListNode* end) {
+        auto fast = nd;
+        auto slow = nd;
+        while (fast!=end && fast->next!=end) {
+            fast = fast->next->next;
+            slow = slow->next;
+        }
+        return slow;
+    };    
+    function<TreeNode*(ListNode*,ListNode*)> convert = [&](ListNode *begin, ListNode *end) -> TreeNode*{
+        if(!begin || begin == end)
+            return nullptr;
+        
+        if(begin->next == end)
+            return new TreeNode(begin->val);
+        
+        auto mid = middle(begin,end);
+        auto root = new TreeNode(mid->val);
+        root->left = convert(begin,mid);
+        root->right = convert(mid->next,end);
+        return root;
+    };    
+    return convert(head, nullptr);
+}
+Convert a sorted array to balanced binary search tree.
+
+TreeNode *sortedArrayToBST(vector<int> &num) {
+    if (num.empty()) return nullptr;
+    
+    function<TreeNode*(int,int)> convert = [&](int begin, int end) -> TreeNode*{
+        if(begin == end)
+            return nullptr;
+        
+        if(begin+1 == end)
+            return new TreeNode(num[begin]);
+        
+        auto mid = begin + (end-begin)/2;
+        auto root = new TreeNode(num[mid]);
+        root->left = convert(begin,mid);
+        root->right = convert(mid+1,end);
+        return root;
+    };    
+    return convert(0,num.size());
+}
+Follow up:
+How about convert a sorted doubly linked list to a binary search tree? You must do it in place without creating any new nodes.
+
+DoublyListNode* to_bst(DoublyListNode* head) {
+    if (!head) return nullptr;
+    
+    auto middle = [](DoublyListNode* nd, DoublyListNode* end) {
+        auto fast = nd;
+        auto slow = nd;
+        while (fast!=end && fast->next!=end) {
+            fast = fast->next->next;
+            slow = slow->next;
+        }
+        return slow;
+    };
+    function<DoublyListNode*(DoublyListNode*,DoublyListNode*)> convert =
+        [&](DoublyListNode *begin, DoublyListNode *end) -> DoublyListNode*{
+            
+        if(!begin || begin == end) return nullptr;
+        if(begin->next == end) {
+            begin->prev = begin->next = nullptr;
+            return begin;
+        }
+        auto mid = middle(begin, end);
+        mid->prev = convert(begin, mid);
+        mid->next = convert(mid->next,end);
+        return mid;
+    };
+    return convert(head, nullptr);
+}
+Read More
+Convert BST to Sorted Doubly-Linked List Jan 9 2015
+
+DoublyListNode* bst_to_list(TreeNode* root) {
+    DoublyListNode dum;
+    auto cur = &dum;
+   
+    function<void(TreeNode*)> dfs = [&](TreeNode* node) {
+        if(!node) return;
+        dfs(node->left);
+       
+        auto new_node = new DoublyListNode(node->val);
+        cur->next = new_node;
+        new_node->prev = cur;
+        cur = new_node;
+       
+        dfs(node->right);
+    };
+   
+    dfs(root);
+   
+    if(dum.next) dum.next->prev = nullptr;
+    return dum.next;
+}
+Read More
+Get Next Node of BST Jan 3 2015
+
+TreeNode* get_next(TreeNode* root, int val) {
+    if(!root) return nullptr;
+    
+    TreeNode *cur = root, *prev = nullptr;
+    while(cur) {
+        if(val < cur->val) {
+            prev = cur;
+            cur = cur->left;
+        } else {
+            cur = cur->right;
+        }
+    }
+    return prev;
+}
+Check the original question at MITBBS
+
+Read More
+Validate Binary Search Tree Jan 3 2015
+Given a binary tree, determine if it is a valid binary search tree (BST).
+
+class Solution {
+public:
+    long long cur_min;
+    bool valid(TreeNode *root) {
+        if(!root) return true;
+        
+        if(!valid(root->left)) return false;
+        
+        if (root->val <= cur_min) return false;
+        cur_min = root->val;
+        
+        return valid(root->right);
+    }
+    bool isValidBST(TreeNode *root) {
+        cur_min = LLONG_MIN;
+        return valid(root);
+    }
+};
+A solution without using cur_min
+
+bool checkBST(TreeNode *root) {
+    return checkBST(root,INT_MIN,INT_MAX);
+}
+bool checkBST(TreeNode* n, int min, int max){
+    if(!n)
+        return true;
+   
+    if(n->val <= min || n->val > max)
+        return false;
+   
+    if(!checkBST(n->left, min, n->val) || !(checkBST(n->right,n->val,max)))
+        return false;
+   
+    return true;
+}
+Check the original question at Leetcode
+
+Read More
+Recover Binary Search Tree Jan 3 2015
+Two elements of a binary search tree (BST) are swapped by mistake.
+Recover the tree without changing its structure.
+Note:
+A solution using O(n) space is pretty straight forward. Could you devise a constant space solution?
+
+class Solution {
+public:
+    TreeNode *first,*second,*last;
+    
+    void dfs(TreeNode *root) {
+        if(!root) return;
+        
+        dfs(root->left);
+        
+        if(last) {
+            if(root->val < last->val) {
+                if(!first) first=last;
+                second=root;
+            }
+        }
+        last = root;
+        
+        dfs(root->right);
+    }
+    
+    void recoverTree(TreeNode *root) {
+        last = first = second = nullptr;        
+        dfs(root);        
+        if(first && second) swap(first->val, second->val);
+    }
+};
+Check the original question at Leetcode
+
+Read More
+Unique Binary Search Trees Jan 3 2015
+Given n, how many structurally unique BST’s (binary search trees) that store values 1…n?
+
+int numTrees(int n) {
+    int dp[n+1];
+    dp[0] = dp[1] = 1;
+    
+    for(int i = 2; i <= n; ++i) {
+        int sum = 0;
+        for(int j = 0; j < i; ++j) {
+            sum += dp[j]*dp[i-j-1];
+        }
+        dp[i]=sum;
+    }
+    
+    return dp[n];
+}
+How about return all BSTs?
+
+vector<TreeNode *> generateTrees(int n) {
+    using ret_vec = vector<TreeNode*>;
+    
+    function<ret_vec (int,int)> dfs = [&](int b0, int b1) -> ret_vec {
+        if (b0 > b1) return {nullptr};
+        
+        ret_vec ret;
+        for(int i = b0; i <= b1; ++i) {
+            auto left = dfs(b0, i-1);
+            auto right = dfs(i+1, b1);
+            
+            for(auto l : left) {
+                for(auto r : right) {
+                    auto root = new TreeNode(i);
+                    root->left = l;
+                    root->right = r;
+                    ret.push_back(root);
+                }
+            }
+        }
+        return ret;
+    };
+    
+    return dfs(1, n);
+}
