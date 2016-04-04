@@ -1,18 +1,10 @@
 Print a BST such that it looks like a tree (with new lines and indentation, the way we see it in algorithms books).
 For example:
-1
-2
-3
-4
          4                     
    2           6         
 1     3     5     7   
                     8
 and:
-
-1
-2
-3
    3         
 1     4   
   2     5
@@ -55,9 +47,7 @@ void pretty_print_bst(TreeNode* root, int space_size = 3) {
         }
     }
 }
-Check the original question at CareerCup
 
-Read More
 Kth Smallest Node In BST Jan 19 2015
 找BST中第k小的节点。
 G家考过很多次，其他公司的面经里也经常出现。递归解法很简单O(N)。
@@ -77,11 +67,7 @@ int get_kth(TreeNode* root, int k) {
     solve(root);
     return ret;
 }
-也可以用stack来做iterative的中序遍历，直接count一下就好，也是O(N)。
-
-
-
-如果想更优化效率，可以引入order statistic tree。
+也可以用stack来做iterative的中序遍历，直接count一下就好，也是O(N)。 如果想更优化效率，可以引入order statistic tree。
 Order statistic tree是一种BST的变种，往每个node里面加上一个field来存左子树的节点数，在树平衡时可以达到O(logN)复杂度。
 这种树在很多题目中都可以用到。
 伪代码（摘自GeeksforGeeks）：
@@ -99,7 +85,7 @@ else
    root = root.left
    goto start
 stop:
-Read More
+
 Closest Value in Binary Search Tree Jan 18 2015
 给一个target和一个BST, 写个算法找出离target最近的数。
 
@@ -117,9 +103,7 @@ TreeNode* closestBST(TreeNode* root, int val){
     }
     return nullptr;
 }
-Check the original question at MITBBS
 
-Read More
 Merge Two BST Jan 18 2015
 You are given two balanced binary search trees. Write a function that merges the two given balanced BSTs into a balanced binary search tree.
 Your merge function should take O(M+N) time and O(1) space.
@@ -176,9 +160,7 @@ TreeNode* merge_bst(TreeNode* a, TreeNode* b) {
     auto la = flatten_bst(a), lb = flatten_bst(b);
     return bst_from_list(merge_bst_list(la, lb));
 }
-Check the original question at MITBBS
 
-Read More
 Convert to Binary Search Tree Jan 11 2015
 Given a singly linked list where elements are sorted in ascending order, convert it to a height balanced BST.
 
@@ -208,6 +190,7 @@ TreeNode *sortedListToBST(ListNode *head) {
     };    
     return convert(head, nullptr);
 }
+
 Convert a sorted array to balanced binary search tree.
 
 TreeNode *sortedArrayToBST(vector<int> &num) {
@@ -258,7 +241,7 @@ DoublyListNode* to_bst(DoublyListNode* head) {
     };
     return convert(head, nullptr);
 }
-Read More
+
 Convert BST to Sorted Doubly-Linked List Jan 9 2015
 
 DoublyListNode* bst_to_list(TreeNode* root) {
@@ -282,7 +265,7 @@ DoublyListNode* bst_to_list(TreeNode* root) {
     if(dum.next) dum.next->prev = nullptr;
     return dum.next;
 }
-Read More
+
 Get Next Node of BST Jan 3 2015
 
 TreeNode* get_next(TreeNode* root, int val) {
@@ -299,9 +282,7 @@ TreeNode* get_next(TreeNode* root, int val) {
     }
     return prev;
 }
-Check the original question at MITBBS
 
-Read More
 Validate Binary Search Tree Jan 3 2015
 Given a binary tree, determine if it is a valid binary search tree (BST).
 
@@ -340,9 +321,7 @@ bool checkBST(TreeNode* n, int min, int max){
    
     return true;
 }
-Check the original question at Leetcode
 
-Read More
 Recover Binary Search Tree Jan 3 2015
 Two elements of a binary search tree (BST) are swapped by mistake.
 Recover the tree without changing its structure.
@@ -375,9 +354,7 @@ public:
         if(first && second) swap(first->val, second->val);
     }
 };
-Check the original question at Leetcode
 
-Read More
 Unique Binary Search Trees Jan 3 2015
 Given n, how many structurally unique BST’s (binary search trees) that store values 1…n?
 
