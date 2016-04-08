@@ -4,24 +4,22 @@
 
 using namespace std;
 
-struct ListNode
-{
+struct ListNode {
   ListNode(const int32_t v)
     : value(v)
-    , next(nullptr)
-  {
+    , next(nullptr) {
   }
 
   int32_t value;
   ListNode* next;
 };
 
-ListNode* getTail(ListNode* head)
-{
+ListNode* getTail(ListNode* head) {
   ListNode* ret = head;
 
-  while (ret && ret->next)
+  while (ret && ret->next) {
     ret = ret->next;
+  }
 
   return ret;
 }
@@ -541,7 +539,7 @@ ListNode* merge2Sorted_recur(ListNode* a, ListNode* b) {
 }
 
 /*
-Sort a linked list in O(nlogn) time using constant space complexity.
+MergeSort a linked list in O(nlogn) time using constant space complexity.
  */
 ListNode* merge(ListNode* l1, ListNode* l2) {
   ListNode dummy(0);
@@ -1206,12 +1204,11 @@ ListNode* addTwoNums(const ListNode* l1, const ListNode* l2) {
     l2 = !l2 ? NULL : l2->next;
   }
 
-  ListNode* res = sumList->next;
+  ListNode* ret = sumList->next;
   delete sumList;
-  return res;
+  return ret;
 }
 
-/*
 ListNode* Union(ListNode* head1, ListNode* head2) {
   auto t1 = head1, t2 = head2;
   ListNode* ret = nullptr;
@@ -1231,7 +1228,7 @@ ListNode* Union(ListNode* head1, ListNode* head2) {
 
   return ret;
 }
- */
+
 /*
 Given three linked lists, say a, b and c, find one node from each list such that the sum of the values of the nodes
 is equal to a given number.
