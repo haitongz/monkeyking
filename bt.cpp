@@ -4,13 +4,199 @@
 #include <map>
 #include <stack>
 #include <set>
+#include <vector>
+#include <queue>
 #include <cstring>
-#include "tree_node.h"
 
 using namespace std;
 
-static const int32_t MAX_LMT = numeric_limits<int32_t>::max();
-static const int32_t MIN_LMT = numeric_limits<int32_t>::min();
+static const int32_t MAX_LMT = numeric_limits<int32_t>::has_infinity ?
+                               numeric_limits<int32_t>::infinity() : numeric_limits<int32_t>::max();
+
+static const int32_t MIN_LMT = numeric_limits<int32_t>::has_infinity ?
+                               -1*numeric_limits<int32_t>::infinity() : numeric_limits<int32_t>::min();
+
+struct BinTreeNode { // binary tree node
+  int32_t value;
+  BinTreeNode* left;
+  BinTreeNode* right;
+
+  BinTreeNode(const int v)
+      : value(v), left(nullptr), right(nullptr) {
+  }
+};
+
+void prettyPrint(const BinTreeNode* root, uint8_t spaces = 2) {
+  deque<const BinTreeNode*> q{root};
+  uint32_t height = maxHeight_recur(root);
+  uint32_t currLvlNodes = 1, nextLvlNodes = 0, level = 1;
+  uint32_t padding = spaces * (pow(2, height-level) - 1);
+
+  cout << setw(padding/2) << "";
+
+  while (level <= height) {
+    cout << setw(spaces);
+
+    if (q.front()) {
+      cout << q.front()->value;
+      q.push_back(q.front()->left);
+      q.push_back(q.front()->right);
+    } else {
+      cout << " ";
+      q.push_back(nullptr);
+      q.push_back(nullptr);
+    }
+
+    nextLvlNodes += 2;
+    cout << setw(padding) << "";
+    q.pop_front();
+
+    // go to next level
+    if (--currLvlNodes == 0) {
+      currLvlNodes = nextLvlNodes;
+      nextLvlNodes = 0;
+      ++level;
+      padding = spaces * (pow(2, height-level) - 1);
+      cout << endl << setw(padding/2) << "";
+    }
+  }
+}
+
+bool bstInsert_recur(BinTreeNode** root, const int32_t key) {
+  if (!root)
+    return false;
+
+  function<bool(BinTreeNode**)> solve =
+    [&](BinTreeNode** curr_root) {
+    BinTreeNode*& ptr = *curr_root;
+    if (!ptr) {
+      ptr = new BinTreeNode(key);
+      return true;
+    } else if (ptr->value == key) {
+      return false;
+    } else if (ptr->value > key) {
+      return solve(&(ptr->left));
+    } else {
+      return solve(&(ptr->right));
+    }
+  };
+
+  return solve(root);
+}
+
+void delTree_iter(BinTreeNode** root) {
+  if (!root) {
+#ifdef _DEBUG_
+    cerr << "Null root!" << endl;
+#endif
+    return;
+  }
+
+  deque<const BinTreeNode*> q{*root};
+
+  while (!q.empty()) {
+    const uint32_t cp = q.size();
+    for (uint32_t i = 0; i < cp; ++i) {
+      const BinTreeNode* nd = q.front();
+      q.pop_front();
+      if (nd->left)
+        q.push_back(nd->left);
+      if (nd->right)
+        q.push_back(nd->right);
+
+      delete nd;
+      nd = nullptr;
+    }
+  }
+
+  *root = nullptr;
+}
+
+void delTree_recur(BinTreeNode** root) {
+  function<void(BinTreeNode**)> solve =
+    [&](BinTreeNode** ndp) { // DFS, postorder
+    if (!ndp)
+      throw exception();
+    else if (*ndp) {
+      BinTreeNode* nd = *ndp;
+      solve(&(nd->left));
+      solve(&(nd->right));
+      delete nd;
+      nd = NULL;
+    }
+  };
+
+  solve(root);
+}
+
+bool isLeaf(const BinTreeNode* nd) {
+  return (nd && !nd->left && !nd->right);
+}
+
+uint32_t height_recur(const BinTreeNode* root) {
+  function<uint32_t(const BinTreeNode*)> solve =
+    [&](const BinTreeNode* curr_root) -> uint32_t {
+    if (!curr_root) {
+      return 0;
+    } else {
+      // compute the height of each subtree
+      uint32_t lheight = solve(curr_root->left);
+      uint32_t rheight = solve(curr_root->right);
+
+      /* use the larger one */
+      return (lheight > rheight ? lheight+1 : rheight+1);
+    }
+  };
+
+  return solve(root);
+}
+
+uint32_t height_iter(const BinTreeNode* root) {
+  if (!root)
+    return 0;
+
+  // Create an empty queue for level order tarversal
+  deque<const BinTreeNode*> q = {root};
+  uint32_t ret = 0;
+
+  while (1) {
+    // count (queue size) indicates number of nodes at current lelvel.
+    uint32_t cnt = q.size();
+    if (!cnt)
+      return ret;
+
+    ++ret;
+
+    // Dequeue all nodes of current level and Enqueue all nodes of next level
+    while (cnt > 0) {
+      const BinTreeNode* nd = q.front();
+      q.pop_front();
+      if (nd->left)
+        q.push_back(nd->left);
+      if (nd->right)
+        q.push_back(nd->right);
+
+      --cnt;
+    }
+  }
+}
+
+/*
+Find number of nodes in a binary tree
+ */
+uint32_t count_recur(const BinTreeNode* root) {
+  function<uint32_t(const BinTreeNode*)> solve =
+    [&](const BinTreeNode* curr_root) -> uint32_t {
+    if (!curr_root)
+      return 0;
+
+    uint32_t lcnt = solve(curr_root->left);
+    uint32_t rcnt = solve(curr_root->right);
+    return lcnt+rcnt+1;
+  };
+
+  return solve(root);
+}
 
 /*
 Two trees are identical when they have same data and arrangement of data is also same.
@@ -18,10 +204,9 @@ Two trees are identical when they have same data and arrangement of data is also
 To identify if two trees are identical, we need to traverse both trees simultaneously,
 and while traversing we need to compare data and children of the trees.
  */
-template <typename T>
-bool areIdentical(const Node* r1, const Node* r2) {
-  function<bool(const Node*,const Node*)> solve =
-    [&](const Node* curr_root1, const Node* curr_root2) {
+bool areIdentical(const BinTreeNode* r1, const BinTreeNode* r2) {
+  function<bool(const BinTreeNode*,const BinTreeNode*)> solve =
+    [&](const BinTreeNode* curr_root1, const BinTreeNode* curr_root2) {
     if (!curr_root1 && !curr_root2)
       return true;
     else if (!curr_root1 ||
@@ -42,10 +227,9 @@ The minimum/maximum depth is the number of nodes along
 the shortest/longest path from the root node down to
 the nearest/farest leaf node.
  */
-template <typename T>
-uint32_t minDepth_recur(const Node* root) {
-  function<int32_t(const Node*)> solve =
-    [&](const Node* curr_root) {
+uint32_t minDepth_recur(const BinTreeNode* root) {
+  function<int32_t(const BinTreeNode*)> solve =
+    [&](const BinTreeNode* curr_root) {
     if (!curr_root)
       return 0;
 
@@ -57,10 +241,9 @@ uint32_t minDepth_recur(const Node* root) {
   return solve(root);
 }
 
-template <typename T>
-uint32_t maxDepth_recur(const Node* root) {
-  function<int32_t(const Node*)> solve =
-    [&](const Node* curr_root) {
+uint32_t maxDepth_recur(const BinTreeNode* root) {
+  function<int32_t(const BinTreeNode*)> solve =
+    [&](const BinTreeNode* curr_root) {
     if (!curr_root)
       return 0;
 
@@ -76,17 +259,16 @@ uint32_t maxDepth_recur(const Node* root) {
 Mirror of a tree is another binary tree with
 left and right children of all non-leaf nodes interchanged.
  */
-template <typename T>
-void mirror(Node* root) { // postorder
-  function<void(Node*)> solve =
-    [&](Node* curr_root) {
+void mirror(BinTreeNode* root) { // postorder
+  function<void(BinTreeNode*)> solve =
+    [&](BinTreeNode* curr_root) {
     if (!curr_root)
       return;
 
     solve(curr_root->left);
     solve(curr_root->right);
 
-    Node* tmp = curr_root->left;
+    BinTreeNode* tmp = curr_root->left;
     curr_root->left = curr_root->right;
     curr_root->right = tmp;
   };
@@ -97,10 +279,9 @@ void mirror(Node* root) { // postorder
 /*
 Count leaf nodes
  */
-template <typename T>
-uint32_t leafCount(const Node* root) {
-  function<uint32_t(const Node*)> solve =
-    [&](const Node* curr_root) -> uint32_t {
+uint32_t leafCount(const BinTreeNode* root) {
+  function<uint32_t(const BinTreeNode*)> solve =
+    [&](const BinTreeNode* curr_root) -> uint32_t {
     if (!curr_root)
       return 0;
     if (!curr_root->left && !curr_root->right)
@@ -116,43 +297,47 @@ uint32_t leafCount(const Node* root) {
 Given a binary tree (not a binary search tree) and two values say n1 and n2,
 write a program to find the least common ancestor.
  */
-const BinTreeNode*
-LCA(const BinTreeNode* root, const int32_t n1, const int32_t n2) {
+const BinTreeNode* LCA(const BinTreeNode* root, const int32_t n1, const int32_t n2) {
+  int32_t target = MIN_LMT;
   vector<const BinTreeNode*> to_ext;
 
-  function<bool(const BinTreeNode*,const int32_t)> solve = // backtracking
-    [&](const BinTreeNode* curr_root, const int32_t v) {
+  function<bool(const BinTreeNode*)> solve = // backtracking
+    [&](const BinTreeNode* curr_root) {
     if (!curr_root)
       return false;
 
     to_ext.push_back(curr_root);
 
-    if (curr_root->value == v)
+    if (curr_root->value == target)
       return true;
-    if (solve(curr_root->left, v) || solve(curr_root->right, v))
+    if (solve(curr_root->left) || solve(curr_root->right))
       return true;
 
     to_ext.pop_back();
+
     return false;
   };
 
   vector<const BinTreeNode*> path1, path2;
-  bool res = solve(root, n1);
-  if (!res)
+  target = n1;
+  bool found = solve(root);
+  if (!found)
     return nullptr;
   else
     path1 = to_ext;
 
   to_ext.clear();
-  res = solve(root, n2);
-  if (!res)
+  target = n2;
+  found = solve(root);
+  if (!found)
     return nullptr;
   else
     path2 = to_ext;
 
   uint32_t i = 0;
   for (; i < path1.size() && path1[i] == path2[i]; ++i);
-  return path1[i-1];
+
+  return i > 0 ? path1[i-1] : nullptr;
 }
 
 /*
@@ -174,7 +359,7 @@ return
 ]
  */
 vector<vector<int32_t>>
-r2LPathsWithSum_recur(const BinTreeNode* root, const int32_t sum) {
+r2lPathsWithSum_recur(const BinTreeNode* root, const int32_t sum) {
   vector<vector<int32_t>> ret;
   vector<int32_t> to_ext;
 
@@ -185,17 +370,17 @@ r2LPathsWithSum_recur(const BinTreeNode* root, const int32_t sum) {
     if (!curr_root)
       return;
 
-    if (!curr_root->left && !curr_root->right) { // this is a leaf
+    if (isLeaf(curr_root)) {
       if (curr_root->value == remain) {
-        ret.push_back(to_ext);
-        ret.back().push_back(remain); // to_ext doesn't pop back here
+        to_ext.push_back(curr_root->value);
+        ret.push_back(to_ext); // to_ext doesn't pop back yet
       }
       return;
     }
 
     to_ext.push_back(curr_root->value);
-    solve(curr_root->left, remain-curr_root->value);
-    solve(curr_root->right, remain-curr_root->value);
+    solve(curr_root->left, remain - curr_root->value);
+    solve(curr_root->right, remain - curr_root->value);
     to_ext.pop_back();
   };
 
@@ -293,10 +478,9 @@ int32_t maxL2LPathSum(const BinTreeNode* root) {
 /*
 Find diameter of a binary tree
  */
-template <typename T>
-uint32_t diameter(const Node* root) { // O(n)
-  function<uint32_t(const Node*,uint32_t&)> solve =
-    [&](const Node* curr_root, uint32_t& curr_height) -> uint32_t {
+uint32_t diameter(const BinTreeNode* root) { // O(n)
+  function<uint32_t(const BinTreeNode*,uint32_t&)> solve =
+    [&](const BinTreeNode* curr_root, uint32_t& curr_height) -> uint32_t {
     /* Get the heights of left and right subtrees in
        lheight and rheight store the returned values in ldiameter and rdiameter */
     if (!curr_root) {
@@ -336,10 +520,9 @@ return the root of the binary tree [4,5,2,#,#,3,1].
  / \
 3   1
  */
-template <typename T>
-Node* invert_recur(Node* root) {
-  function<Node*(Node*)> solve =
-    [&](Node* curr_root) {
+BinTreeNode* invert_recur(BinTreeNode* root) {
+  function<BinTreeNode*(BinTreeNode*)> solve =
+    [&](BinTreeNode* curr_root) {
     if (!curr_root || !curr_root->left)
       return curr_root;
 
@@ -355,9 +538,8 @@ Node* invert_recur(Node* root) {
   return solve(root);
 }
 
-template <typename T>
-Node* invert_iter(Node* root) {
-  Node* p = root, *parent = nullptr, *parent_right = nullptr;
+BinTreeNode* invert_iter(BinTreeNode* root) {
+  BinTreeNode* p = root, *parent = nullptr, *parent_right = nullptr;
   while (p) {
     auto left = p->left;
     p->left = parent_right;
@@ -373,10 +555,9 @@ Node* invert_iter(Node* root) {
 /*
 Check a binary tree is height balanced or not
  */
-template <typename T>
-bool isHeightBalanced(const Node* root) {
-  function<int32_t(const Node*)> solve =
-    [&](const Node* curr_root) {
+bool isHeightBalanced(const BinTreeNode* root) {
+  function<int32_t(const BinTreeNode*)> solve =
+    [&](const BinTreeNode* curr_root) {
     if (!curr_root)
       return 0;
 
@@ -398,8 +579,7 @@ bool isHeightBalanced(const Node* root) {
   return solve(root) != -1;
 }
 
-template <typename T>
-bool isSymmetric(const Node* root) {
+bool isSymmetric(const BinTreeNode* root) {
   if (!root) {
 #ifdef _DEBUG_
     cerr << "Null root!" << endl;
@@ -407,16 +587,15 @@ bool isSymmetric(const Node* root) {
     return true; // ?
   }
 
-  deque<const Node*> nodes;
-  nodes.push_front(root);
+  deque<const BinTreeNode*> q{root};
 
-  while (!nodes.empty()) {
-    const uint32_t cp = nodes.size();
-    stack<T> values;
+  while (!q.empty()) {
+    const uint32_t cp = q.size();
+    stack<int32_t> values;
 
     for (uint32_t i = 0; i < cp; ++i) {
-      const Node* nd = nodes.front();
-      nodes.pop_front();
+      const BinTreeNode* nd = q.front();
+      q.pop_front();
 
       if (values.empty()) {
         values.push(nd->value);
@@ -429,11 +608,11 @@ bool isSymmetric(const Node* root) {
       }
 
       if (nd->left) {
-        nodes.push_back(nd->left);
+        q.push_back(nd->left);
       }
 
       if (nd->right) {
-        nodes.push_back(nd->right);
+        q.push_back(nd->right);
       }
     }
 
@@ -444,8 +623,7 @@ bool isSymmetric(const Node* root) {
   return true;
 }
 
-template <typename T>
-bool isSymmetric2(const Node* root) {
+bool isSymmetric2(const BinTreeNode* root) {
   if (!root) {
 #ifdef _DEBUG_
     cerr << "Null root!" << endl;
@@ -453,14 +631,14 @@ bool isSymmetric2(const Node* root) {
     return true; // ?
   }
 
-  stack<const Node*> s1, s2;
+  stack<const BinTreeNode*> s1, s2;
   s1.push(root->left);
   s2.push(root->right);
 
   while (!s1.empty() && !s2.empty()) {
-    const Node* n1 = s1.top();
+    const BinTreeNode* n1 = s1.top();
     s1.pop();
-    const Node* n2 = s2.top();
+    const BinTreeNode* n2 = s2.top();
     s2.pop();
 
     if (!n1 && !n2)
@@ -481,8 +659,7 @@ bool isSymmetric2(const Node* root) {
 /*
 Check whether 2 binary trees are equal
  */
-template <typename T>
-bool areBTsEqual(const Node* r1, const Node* r2) {
+bool areBTsEqual(const BinTreeNode* r1, const BinTreeNode* r2) {
   function<bool(const BinTreeNode*,const BinTreeNode*)> solve =
     [&](const BinTreeNode* curr_root1, const BinTreeNode* curr_root2) -> bool {
     if (!curr_root1 && !curr_root2)
@@ -510,12 +687,11 @@ For example:
           6
 should return 6.
  */
-template <typename T>
-int32_t deepestLeft(const Node* root) {
+int32_t deepestLeft(const BinTreeNode* root) {
   uint32_t max_lvl = 0, ret = 0;
 
-  function<void(const Node*,const uint32_t)> solve =
-    [&](const Node* curr_root, const uint32_t curr_lvl) {
+  function<void(const BinTreeNode*,const uint32_t)> solve =
+    [&](const BinTreeNode* curr_root, const uint32_t curr_lvl) {
     if (!curr_root)
       return;
 
@@ -579,7 +755,8 @@ bool isSumTree(const BinTreeNode* root) { // O(n)
 }
 
 /*
-Given an arbitrary binary tree, convert it to a binary tree that holds Children Sum Property. You can only increment data values in any node (You cannot change structure of tree and cannot decrement value of any node).
+Given an arbitrary binary tree, convert it to a binary tree that holds Children Sum Property.
+You can only increment data values in any node (You cannot change structure of tree and cannot decrement value of any node).
  */
 void convert2SumTree(BinTreeNode* root) {
   /* This function is used to increment subtree by diff */
@@ -633,14 +810,13 @@ Given a binary tree, write a function to get the maximum width of the given tree
 Width of a tree is maximum of widths of all levels.
  */
 // A function that fills count array with count of nodes at every level of given binary tree
-template <typename T>
-uint32_t maxWidth(const Node* root) { // preorder traversal, O(n)
-  const uint32_t h = height(root);
+uint32_t maxWidth(const BinTreeNode* root) { // preorder traversal, O(n)
+  const uint32_t h = height_recur(root);
   // Create an array that will store count of nodes at each level
   vector<uint32_t> count(h, 0);
 
-  function<void(const Node*,const uint32_t)> solve =
-    [&](const Node* curr_root, const uint32_t curr_lvl) {
+  function<void(const BinTreeNode*,const uint32_t)> solve =
+    [&](const BinTreeNode* curr_root, const uint32_t curr_lvl) {
     ++count[curr_lvl];
     solve(curr_root->left, curr_lvl+1);
     solve(curr_root->right, curr_lvl+1);
@@ -661,10 +837,10 @@ Write a program that converts a given tree to its Double Tree.
 To create Double Tree of the given tree, create a new duplicate for each node,
 and insert the duplicate as the left child of the original node.
  */
-template <typename T>
-void doubleTree(Node* root) {
-  function<void(Node*)> solve =
-    [&](Node* curr_root) { // postorder, O(n)
+
+void doubleTree(BinTreeNode* root) {
+  function<void(BinTreeNode*)> solve =
+    [&](BinTreeNode* curr_root) { // postorder, O(n)
     if (!curr_root)
       return;
 
@@ -717,13 +893,12 @@ Consider the below trees:
     /  \    /
    9   10  12
  */
-template <typename T>
-bool isFoldable(const Node* root) {
+bool isFoldable(const BinTreeNode* root) {
   if (!root)
     return true;
 
-  function<bool(const Node*,const Node*)> areSame =
-    [&](const Node* curr_root1, const Node* curr_root2) {
+  function<bool(const BinTreeNode*,const BinTreeNode*)> areSame =
+    [&](const BinTreeNode* curr_root1, const BinTreeNode* curr_root2) {
     if (!curr_root1 && !curr_root2) {
       return true;
     }
@@ -738,8 +913,8 @@ bool isFoldable(const Node* root) {
   };
 
   /* Change a tree so that the roles of the left and right pointers are swapped at every node. See http://geeksforgeeks.org/?p=662 for details */
-  function<void(Node*)> mirror =
-    [&](Node* curr_root) {
+  function<void(BinTreeNode*)> mirror =
+    [&](BinTreeNode* curr_root) {
     if (!curr_root)
       return;
     else {
@@ -748,7 +923,7 @@ bool isFoldable(const Node* root) {
       mirror(curr_root->right);
 
       /* swap the pointers in this node */
-      Node* tmp = curr_root->left;
+      BinTreeNode* tmp = curr_root->left;
       curr_root->left = curr_root->right;
       curr_root->right = tmp;
     }
@@ -768,15 +943,14 @@ bool isFoldable(const Node* root) {
 Given a root of a tree, and an integer k.
 Collect all the nodes which are at k distance from root.
  */
-template <typename T>
-vector<Node*> allKDistant(const Node* root, const uint32_t k) {
-  if (!root)
-    return;
-  if (!k) {
-    return {root};
+vector<const BinTreeNode*> allKDistant(const BinTreeNode* root, const uint32_t k) {
+  if (!root) {
+    return {};
+  } else if (!k) {
+    return vector<const BinTreeNode*>(1, root);
   }
 
-  vector<Node*> ret;
+  vector<const BinTreeNode*> ret;
 
   function<void(const BinTreeNode*,const uint32_t)> solve =
     [&](const BinTreeNode* curr_root, const uint32_t lvl) {
@@ -804,16 +978,16 @@ No parent pointers are available.
 // may be upward or downward.
 // This function returns distance of root from target node.
 // It returns -1 if target node is not present in tree rooted with root.
-template <typename T>
-void kDistanceNodes(const Node* root,
-                    const Node* target, const uint32_t k) {
+void kDistanceBinTreeNodes(const BinTreeNode* root,
+                           const BinTreeNode* target,
+                           const uint32_t k) {
   if (!root || !target)
     return;
 
-  vector<Node*> ret;
+  vector<const BinTreeNode*> ret;
 
-  function<void(const Node*,const int32_t)> downward =
-    [&](const Node* curr_root, const int32_t d) {
+  function<void(const BinTreeNode*,const int32_t)> downward =
+    [&](const BinTreeNode* curr_root, const int32_t d) {
     if (!curr_root || d < 0)
       return;
 
@@ -828,8 +1002,8 @@ void kDistanceNodes(const Node* root,
     downward(curr_root->right, d-1);
   };
 
-  function<int32_t(const Node*)> solve =
-    [&](const Node* curr_root) {
+  function<int32_t(const BinTreeNode*)> solve =
+    [&](const BinTreeNode* curr_root) {
     if (!curr_root)
       return -1;
 
@@ -861,7 +1035,7 @@ void kDistanceNodes(const Node* root,
     dist = solve(curr_root->right);
     if (dist != -1) {
       if (dist+1 == k)
-        ret.push_back(root);
+        ret.push_back(curr_root);
       else
         downward(curr_root->left, k-dist-2);
       return 1+dist;
@@ -888,7 +1062,7 @@ void kDistantFromLeaf(const BinTreeNode* root, const uint32_t k) {
     if (!curr_root)
       return;
 
-    /* append this Node to the path array */
+    /* append this BinTreeNode to the path array */
     path[curr_pathlen] = curr_root->value;
     visited[curr_pathlen] = false;
 
@@ -2615,7 +2789,7 @@ bool areCousins(const BinTreeNode* root, const BinTreeNode* a, const BinTreeNode
             areSiblings(curr_root->right));
   };
 
-  // Recursive function to find level of Node 'ptr' in a binary tree
+  // Recursive function to find level of BinTreeNode 'ptr' in a binary tree
   function<uint32_t(const BinTreeNode*,const uint32_t,const BinTreeNode*)> level =
     [&](const BinTreeNode* curr_root, const uint32_t curr_lvl, const BinTreeNode* target) -> uint32_t {
     if (!curr_root)
@@ -2623,7 +2797,7 @@ bool areCousins(const BinTreeNode* root, const BinTreeNode* a, const BinTreeNode
     if (curr_root == target)
       return curr_lvl;
 
-    // Return level if Node is present in left subtree
+    // Return level if BinTreeNode is present in left subtree
     uint32_t ret = level(curr_root->left, curr_lvl+1, target);
     if (ret)
       return ret;
@@ -2631,8 +2805,8 @@ bool areCousins(const BinTreeNode* root, const BinTreeNode* a, const BinTreeNode
     return level(curr_root->right, curr_lvl+1, target);
   };
 
-  // 1. The two Nodes should be on the same level in the binary tree.
-  // 2. The two Nodes should not be siblings (means that they should not have the same parent Node).
+  // 1. The two BinTreeNodes should be on the same level in the binary tree.
+  // 2. The two BinTreeNodes should not be siblings (means that they should not have the same parent Node).
   uint32_t lvl1 = level(root, 1, a);
   uint32_t lvl2 = level(root, 1, b);
 
@@ -2838,17 +3012,17 @@ The root-to-leaf path 1->2 represents the number 12.
 The root-to-leaf path 1->3 represents the number 13.
 Return the sum = 12 + 13 = 25.
  */
-typedef BinTreeNodeT<uint8_t> BinTreeNode1;
-uint32_t r2LNumsSum_iter(const BinTreeNode1* root) {
+// typedef BinTreeNodeT<uint8_t> BinTreeNode1;
+uint32_t r2lNumsSum_iter(const BinTreeNode* root) {
   if (!root)
     throw exception();
 
-  deque<pair<const BinTreeNode1*,uint32_t>> paths;
+  deque<pair<const BinTreeNode*,uint32_t>> paths;
   paths.push_back({root, root->value});
   uint32_t ret = 0;
 
   while (!paths.empty()) {
-    const BinTreeNode1* curr = paths.front().first;
+    const BinTreeNode* curr = paths.front().first;
     const uint32_t tmp = paths.front().second;
     paths.pop_front();
     if (curr->left) {
@@ -2864,12 +3038,12 @@ uint32_t r2LNumsSum_iter(const BinTreeNode1* root) {
   return ret;
 }
 
-uint32_t r2LNumsSum_recur(const BinTreeNode1* root) {
+uint32_t r2lNumsSum_recur(const BinTreeNode* root) {
   if (!root)
     throw exception();
 
-  function<uint32_t(const BinTreeNode1*,const uint32_t)> solve =
-    [&](const BinTreeNode1* curr_root, const uint32_t curr_pathnum) -> uint32_t {
+  function<uint32_t(const BinTreeNode*,const uint32_t)> solve =
+    [&](const BinTreeNode* curr_root, const uint32_t curr_pathnum) -> uint32_t {
     if (!curr_root)
       return 0;
 
@@ -2893,7 +3067,7 @@ such that adding up all the values along the path equals the given sum.
         7    2      1
 return true, as there exist a root-to-leaf path 5->4->11->2 which sum is 22.
  */
-bool R2LPathWithSum_recur(const BinTreeNode* root, const int32_t sum) {
+bool r2lPathWithSum_recur(const BinTreeNode* root, const int32_t sum) {
   function<bool(const BinTreeNode*,const int32_t)> solve =
     [&](const BinTreeNode* curr_root, const int32_t remain) -> bool {
     if (!curr_root)
@@ -2930,10 +3104,10 @@ The flattened tree should look like:
             \
              6
  */
-template <typename T>
-void flatten_recur(Node* root) {
-  function<void(Node*)> solve = // DFS
-    [&](Node* curr_root) {
+
+void flatten_recur(BinTreeNode* root) {
+  function<void(BinTreeNode*)> solve = // DFS
+    [&](BinTreeNode* curr_root) {
     if (!curr_root)
       return;
 
@@ -2941,7 +3115,7 @@ void flatten_recur(Node* root) {
     solve(curr_root->left);
 
     if (curr_root->left) {
-      Node* p = curr_root->left;
+      BinTreeNode* p = curr_root->left;
       while (p->right)
         p = p->right;
 
@@ -2954,18 +3128,17 @@ void flatten_recur(Node* root) {
   return solve(root);
 }
 
-template <typename T>
-void flatten_recur2(Node* root) {
-  function<Node*(Node*)> solve =
-    [&](Node* curr_root) -> Node* {
+void flatten_recur2(BinTreeNode* root) {
+  function<BinTreeNode*(BinTreeNode*)> solve =
+    [&](BinTreeNode* curr_root) -> BinTreeNode* {
     if (!curr_root)
       return nullptr;
     if (!curr_root->left && !curr_root->right)
       return curr_root;
 
     if (curr_root->left) {
-      Node* mostleft = solve(curr_root->left);
-      Node* old = curr_root->right;
+      BinTreeNode* mostleft = solve(curr_root->left);
+      BinTreeNode* old = curr_root->right;
       curr_root->right = curr_root->left;
       if (mostleft)
         mostleft->right = old;
@@ -2980,8 +3153,8 @@ void flatten_recur2(Node* root) {
   solve(root);
 }
 
-template <typename T>
-void flatten_iter(Node* root) {
+
+void flatten_iter(BinTreeNode* root) {
   if (!root) {
 #ifdef _DEBUG_
     cerr << "Null root!" << endl;
@@ -2989,11 +3162,11 @@ void flatten_iter(Node* root) {
     return;
   }
 
-  stack<Node*> stk;
+  stack<BinTreeNode*> stk;
   stk.push(root);
 
   while (!stk.empty()) {
-    Node* curr = stk.top();
+    BinTreeNode* curr = stk.top();
     stk.pop();
     if (curr->right)
       stk.push(curr->right);
@@ -3096,13 +3269,13 @@ So siblings at every level are connected from left to right.
 The conversion should happen in-place, i.e., left child pointer should be used
 as down pointer and right child pointer should be used as right sibling pointer.
  */
-template <typename T>
-void convert2DownRight(Node* root) {
+
+void convert2DownRight(BinTreeNode* root) {
   if (!root)
     return;
 
-  deque<Node*> q = {root};
-  Node* first = root;
+  deque<BinTreeNode*> q = {root};
+  BinTreeNode* first = root;
 
   while (1) {
         // nodeCount (queue size) indicates number of nodes
@@ -3111,12 +3284,12 @@ void convert2DownRight(Node* root) {
     if (!node_cnt)
       break;
 
-    Node* prev = nullptr;  // Stores link of previously dequeued node.
+    BinTreeNode* prev = nullptr;  // Stores link of previously dequeued node.
 
     // Dequeue all nodes of current level and Enqueue all nodes of next level
     while (node_cnt > 0) {
       // Dequeue a node and enqueue its children for next iteration of outer loop
-      Node* node = q.front();
+      BinTreeNode* node = q.front();
       q.pop_front();
       if (node->left)
         q.push_back(node->left);
@@ -3323,21 +3496,21 @@ int main(int argc, const char** argv) {
   //cout << "Max path sum: " << maxPathSum_iter(rt) << endl;
 
   int32_t n = 22;
-  if (R2LPathWithSum_recur(rt, n))
+  if (r2lPathWithSum_recur(rt, n))
     cout << "There are path(s) that have sum " << n << endl;
 
-  BinTreeNode1 root1(0);
-  BinTreeNode1 l11(6);
-  BinTreeNode1 l21(2);
-  BinTreeNode1 r11(4);
-  BinTreeNode1 r21(5);
+  BinTreeNode root1(0);
+  BinTreeNode l11(6);
+  BinTreeNode l21(2);
+  BinTreeNode r11(4);
+  BinTreeNode r21(5);
 
-  const BinTreeNode1* rt1 = &root1;
+  const BinTreeNode* rt1 = &root1;
   root1.right = &r11;
   r11.right = &r21;
   root1.left = &l11;
   l11.left = &l21;
-  cout << r2LNumsSum_recur(rt1) << endl;
+  cout << r2lNumsSum_recur(rt1) << endl;
 
   a = {5, 3, 8, 1, -4, 7, 10, 2, -6, 9, 11, 12, 15};
   root = nullptr;
@@ -3345,19 +3518,19 @@ int main(int argc, const char** argv) {
   for (uint16_t i = 0; i < a.size(); ++i) {
     bstInsert_recur(&root, a[i]); // construct a BST here: we just use it for convenience
   }
-  bfsPrint(root);
+  prettyPrint(root);
 
   flatten_recur(root);
-  bfsPrint(root);
+  prettyPrint(root);
   delTree_iter(&root);
 
   for (uint16_t i = 0; i < a.size(); ++i) {
     bstInsert_recur(&root, a[i]); // reconstruct the BST
   }
-  bfsPrint(root);
+  prettyPrint(root);
 
   flatten_iter(root);
-  bfsPrint(root);
+  prettyPrint(root);
   delTree_iter(&root);
 
   root = new BinTreeNode(1);
@@ -3407,7 +3580,7 @@ int main(int argc, const char** argv) {
 
   //if (r2PathSumExists_recur(rt, n))
   {
-    vector<vector<int32_t>> paths = r2LPathsWithSum_recur(rt, n);
+    vector<vector<int32_t>> paths = r2lPathsWithSum_recur(rt, n);
     for (uint32_t i = 0; i < paths.size(); ++i) {
       for (uint32_t j = 0; j < paths[i].size(); ++j) {
         cout << paths[i][j] << ",";
