@@ -1,0 +1,169 @@
+1. 输入一行string，copy成两行一样的。要求改错，用到构造函数blabla
+
+2. newton-raphson方法
+#include<stdio.h>
+#include<math.h>
+float f(float x)
+{
+    return x*log10(x) - 1.2;
+}
+float df (float x)
+{
+    return log10(x) + 0.43429;
+}
+void main()
+{
+    int itr, maxmitr;
+    float h, x0, x1, allerr;
+    printf("\nEnter x0, allowed error and maximum iterations\n");
+    scanf("%f %f %d", &x0, &allerr, &maxmitr);
+    for (itr=1; itr<=maxmitr; itr++)
+    {
+        h=f(x0)/df(x0);
+        x1=x0-h;
+        printf(" At Iteration no. %3d, x = %9.6f\n", itr, x1);
+        if (fabs(h) < allerr)
+        {
+            printf("After %3d iterations, root = %8.6f\n", itr, x1);
+            return 0;
+        }
+        x0=x1;
+    }
+    printf(" The required solution does not converge or iterations are insufficient\n");
+    return 1;
+}
+
+3. linked list manipulation
+
+4. 股票价格，比leetcode上的变型要难一点，没通过所有的test
+
+I: time O(n), space O(1)
+int maxProfit(int[] prices) {
+        if (prices.length < 2) return 0;
+        
+        int maxProfit = 0;
+        int curMin = prices[0];
+        
+        for (int i = 1; i < prices.length; i++) {
+            curMin = Math.min(curMin, prices[i]);
+            maxProfit = Math.max(maxProfit, prices[i] - curMin);
+        }
+        
+        return maxProfit;
+    }
+II: time O(n), space O(1)
+int maxProfit(int[] prices) {
+        if (prices.length < 2) return 0;
+        
+        int maxProfit = 0;
+        for (int i = 1; i < prices.length; i++) {
+            int diff = prices[i] - prices[i - 1];
+            if (diff > 0) {
+                maxProfit += diff;
+            }
+        }
+        
+        return maxProfit;
+    }
+III: time O(n), space O(n)
+int maxProfit(int[] prices) {
+        if (prices.length < 2) return 0;
+        
+        int n = prices.length;
+        int[] preProfit = new int[n];
+        int[] postProfit = new int[n];
+        
+        int curMin = prices[0];
+        for (int i = 1; i < n; i++) {
+            curMin = Math.min(curMin, prices[i]);
+            preProfit[i] = Math.max(preProfit[i - 1], prices[i] - curMin);
+        }
+        
+        int curMax = prices[n - 1];
+        for (int i = n - 2; i >= 0; i--) {
+            curMax = Math.max(curMax, prices[i]);
+            postProfit[i] = Math.max(postProfit[i + 1], curMax - prices[i]);
+        }
+        
+        int maxProfit = 0;
+        for (int i = 0; i < n; i++) {
+            maxProfit = Math.max(maxProfit, preProfit[i] + postProfit[i]);
+        }
+        
+        return  maxProfit;
+    }
+IV: time O(nk), space O(k)
+int maxProfit(int k, int[] prices) {
+        if (prices.length < 2) return 0;
+        if (k >= prices.length) return maxProfit2(prices);
+        
+        int[] local = new int[k + 1];
+        int[] global = new int[k + 1];
+        
+        for (int i = 1; i < prices.length ; i++) {
+            int diff = prices[i] - prices[i - 1];
+            
+            for (int j = k; j > 0; j--) {
+                local[j] = Math.max(global[j - 1], local[j] + diff);
+                global[j] = Math.max(global[j], local[j]);
+            }
+        }
+        
+        return global[k];
+    }
+
+int maxProfit2(int[] prices) {
+        int maxProfit = 0;
+        
+        for (int i = 1; i < prices.length; i++) {
+            if (prices[i] > prices[i - 1]) {
+                maxProfit += prices[i] - prices[i - 1];
+            }
+        }
+        
+        return maxProfit;
+    }
+
+5. minimum cab number给了一堆顾客的出行schedule，要求最少几辆车可以handle以至于没有人需要等车，应该是求interval overlap
+
+
+
+很多链表题，以及best time to buy and sell stock 
+另：find collatz conjecture with boundary B and max number of steps N
+
+1，口袋里有n个硬币，抛出头的概率分别为p1,p2,...,pn。你现在拿出一个硬币，抛一下是头。问同一个硬币再抛一下出头的概率。 
+
+
+2，写一个程序把reverse polish notation转换成infix notation。不能有多余的括号。 
+
+
+3，n个任务，给定部分任务的先后顺序，输出一个执行序列使得任务1的完成时间最小，在此基础上任务2的完成时间最小，然后任务3，依次直到任务n。 
+
+
+4，在1和0的矩阵中找到最大的只含0的子矩阵的面积。 
+
+
+
+电面2： technical by one of the 7 ppl in the team. 聊简历。Q1. 一直push back vector有啥不好？ 答：一定长度后会重新allocate memory ，然后把原来的copy 到新的memory来。 Q2. 一个牌子的薯片，每包里面有一个coupon，共有N个不同的coupon， 问多少包后expect 能收集够N个？coupon collection 经典题。 用linearity of expection 来解， 收集第一个要吃一包， 第二个要n/n-1, 第三个n/n-2，… 第n个要n 包， 然后全部加起来。
+
+
+
+
+电面都挺简单， 顺利通过了。 一周后通知onsite。 公司楼下有个破旧的中文书店，挺有意思。 公司里面像是yoga studio， 到处的佛像跟中文字画，老板估计是个东方文化爱好者。 
+
+
+round 0. 一开始要先做一套题， 90分钟， 包括概率， 随机（很多markov chain 的题），数学， algorithm, 还有些比较深的计算机知识， 被告知不会的就跳过， lz是学数学的， 所以一些计算机的(隐约记得是啥cpu clock time的）就直接跳过了。
+
+
+一个polynomial， coefficients are all positive integer. 你给一个值，电脑返回polynimial 的结果， e.g. input=x, output=y. 你的目标是figure out 每一个 coeffincient 是多少。 问最少尝试多少次可以得到答案。 答案：2次，一次input=1, output=y1, 可以得知polynomial不会超过degree y1。 第二次input=y1, 然后就可以decompose 出每一个coefficient。 
+
+
+
+
+round 1. 答完这套题后有两个进来跟你walk through 每道题 (他们说自己是programmer, 但是数学貌似懂得比我还多,囧 )你不会做的他们会尝试给你hints，你能解的就解，解不出的讲讲思路。 当时有道markov chian + tree的题来回都答不上来。
+
+
+round 2. programmer. q1: memory 不够怎么sort, 答： 分开sort, 然后在merge sort. q2. 如何decide 一个不会有collision 的hash table。 编程弱得一逼，完全没概念。
+
+
+round 3. team 老大，非常friendly的香港人。 聊了很久的简历。 有些东西自己做了一下就写上简历，被问到才发现不是很懂，后悔不已. 最后来一个一道随机题。一个房间有一堆硬币，一半H, 一般T， 一个机器人进去发现是H就把它翻到T， 如果是T，就flip一次。 问最后房间里H, T的分布。答： 典型markov chain， 写出transition matrix, 算stationary distribution, 最后2/3T, 1/3H。
