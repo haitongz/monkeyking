@@ -1,0 +1,26 @@
+1. 一个binary search写的有bug， 让你改错，不能改超过三行。
+根我感觉错误出在求中间index的时候值自然偏左，然后它的写法一些test case里面会进入死循环。
+2. 用stack实现一个输入是polish reverse notation那种的计算器。我才发现leetcode上有那么一道类似的题。
+不难但是有点烦因为它让你检查各种非法输入然后返回－1，然后保证stack里面的数都不能超过12位，要查overflow。
+3. 直角坐标系里给两个长方形，各边都和坐标轴平行，给了它们的左下和右上顶点的坐标，让求合起来的面积，当然，要是否有重合的部分。
+1.
+用malloc实现alloc (我也不知道是啥，反正是很底层的function，为了优化malloc的memory管理和time)
+2.  leetcode permutation
+我用了这里的第二个解法 http://www.cnblogs.com/grandyang/p/4358848.html
+让我说了一遍用dfs怎么做。。
+3. leetcode add two numbers
+followup: 如何加快程序。。用stack不用heap。。减少branch pridiction。。。
+4.C++: inheritance, pointers, reference, semephore...
+Binary search to find the first occurrance of the target element
+
+第一题给了一个函数，可以从一个数组中找出出现次数最多的数字，找出里面的bug。
+非常的简单，只要带入几个不同的edge case就可以发现bug所在。然后要求修改原来的函数，改动不能超过4行。
+第二题是输入一个string，根据string里面的内容对于string进行处理，最后得到一个interger的结果。
+其实就是实现一个小型stack+计算器的函数。例如输入"13 DUP 4 POP 5 DUP + DUP + -", space用来分隔没一个命令，
+遇到数字则入stack, 遇到string或者符号则对stack进行操作。这道题难度不大，因为我用的是python，python对于实现stack还是非常简单的。
+第三题难度最大，其实就是公交车的月票系统，给出一个数组包含了你在这个月需要坐车的date，
+然后提供两种票，一个是日票，2块钱一天，一个是周票，7块钱一周。 然后算出你这个月如何可以花最少的钱。
+我的思路大概就是构建一个7天的window，然后筛选出不符合周票的天数。例如[1，2，3，4，15，28，29] 得到结果应该是13块钱。
+
+
+http://massivealgorithms.blogspot.com/2015/12/leetcode-322-coin-change.html
