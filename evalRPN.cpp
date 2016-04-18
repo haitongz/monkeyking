@@ -1,5 +1,8 @@
 #include <iostream>
+#include <functional>
 #include <stack>
+#include <set>
+#include <map>
 
 using namespace std;
 
@@ -12,128 +15,128 @@ Some examples:
   ["2", "1", "+", "3", "*"] -> ((2 + 1) * 3) -> 9
   ["4", "13", "5", "/", "+"] -> (4 + (13 / 5)) -> 6
  */
-int32_t evalRPN(const vector<string>& tokens) {
-  const uint32_t n = tokens.size();
-  if (!n)
-    throw exception();
+int evaluate(const string tokens[], const uint n) {
+  if (!n) {
+    cerr << "Wrong array size!" << endl;
+    exit(1);
+  }
 
   function<bool(const string&)> isnum =
-    [&](const string& digit) {
-    const uint32_t len = digit.length();
-    if (len < 1)
+    [&](const string& str) {
+    const uint len = str.length();
+    if (!len)
       return false;
 
-    if ((digit[0] == '-' && len > 1) || // negative number
-        (digit[0] >= '0' && digit[0] <= '9')) // positive number
-      return true;
+    uint i = (str[0] == '-') ? 1 : 0;
 
-    return false;
+    for (; i < len; ++i) {
+      if (!isdigit(str[i])) {
+        return false;
+      }
+    }
+
+    return true;
   };
 
-  stack<int32_t> operands;
+  stack<int> operands;
 
-  for (uint32_t i = 0; i < n; ++i) {
+  for (uint i = 0; i < n; ++i) {
     const string& s = tokens[i];
     if (isnum(s)) {
       operands.push(atoi(s.c_str()));
-      continue;
+    } else {
+      int op1 = operands.top(); // this appears second
+      operands.pop();
+      int op2 = operands.top(); // this appears first
+      operands.pop();
+
+      if (s == "+") {
+        operands.push(op2+op1);
+      } else if (s == "-") {
+        operands.push(op2-op1);
+      } else if (s == "*") {
+        operands.push(op2*op1);
+      } else if (s == "/") {
+        operands.push(op2/op1);
+      } else {
+        cerr << "Unsupported operator!" << endl;
+        exit(1);
+      }
     }
-
-    int32_t op1 = operands.top();
-    operands.pop();
-    int32_t op2 = operands.top();
-    operands.pop();
-
-    if (s == "+")
-      operands.push(op2+op1);
-    if (s == "-")
-      operands.push(op2-op1);
-    if (s == "*")
-      operands.push(op2*op1);
-    if (s == "/")
-      operands.push(op2/op1);
   }
 
   return operands.top();
 }
 
 /*
-Parse a formula string (only contains "+-()", no '*\/').
-For example,
-5 + 2x - ( 3y + 2x - ( 7 - 2x) - 9 ) = 3 + 4y
-Parse this string, with a given float of 'x' value, output a float for 'y' value.
+Convert RPN to Infix
  */
-double parse(const string& f, double x) {
-  double sum_y_left = 0, sum_y_right = 0;
-  double sum_num_left = 0, sum_num_right = 0;
-  double *cur_sum_y = &sum_y_left, *cur_sum_num = &sum_num_left;
-  int last_op = 1, bracket_op = 1;
-  stack<int> brackets;
+struct Entry {
+  string expr;
+  string op;
+};
 
-  for (int i = 0; i <= f.size(); ++i) {
-    char c = f[i];
-    if (f[i] >= '0' && f[i] <= '9') {
-      int over = i+1;
-      while (f[over] >= '0' && f[over] <= '9')
-        ++over;
+bool precedenceLess(const string& lhs, const string& rhs, bool assoc) {
+  static const map<string,uint> KNOWN({{"+", 1}, {"-", 1}, {"*", 2}, {"/", 2}, {"^", 3}});
+  static const set<string> ASSOCIATIVE({"+", "*"});
+  return (KNOWN.count(lhs) ? KNOWN.find(lhs)->second : 0) <
+         (KNOWN.count(rhs) ? KNOWN.find(rhs)->second : 0) + (assoc && !ASSOCIATIVE.count(rhs) ? 1 : 0);
+}
 
-      double number = atoi(f.substr(i, over-i).c_str()) * last_op * bracket_op;
-      if (f[over] == 'x') {
-        *cur_sum_num += number * x;
-        i = over;
-      } else if (f[over] == 'y') {
-        *cur_sum_y += number;
-        i = over;
-      } else {
-        *cur_sum_num += number;
-        i = over-1;
-      }
-    } else if (c == 'x') {
-      *cur_sum_num += last_op * bracket_op * x;
-    } else if (c == 'y') {
-      *cur_sum_y += last_op * bracket_op;
-    } else if (c == '(') {
-      brackets.push(last_op);
-      bracket_op *= last_op;
-      last_op = 1;
-    } else if (c == ')') {
-      bracket_op /= brackets.top();
-      brackets.pop();
-    } else if (c == '+' || c == '-') {
-      last_op = c == '+' ? 1 : -1;
-    } else if (c == '=' || c == '\0') {
-      cur_sum_num = &sum_num_right;
-      cur_sum_y = &sum_y_right;
-      last_op = 1;
-      brackets = stack<int>();
+void parenthesize(Entry& old, const string& token, bool assoc) {
+  if (!old.op.empty() && precedenceLess(old.op, token, assoc))
+    old.expr = '(' + old.expr + ')';
+}
+
+void addToken(stack<Entry>& stk, const string& token) {
+  if (token.find_first_of("0123456789") != string::npos)
+    stk.push(Entry({token, string()})); // it's a number
+  else { // it's an operator
+    if (stk.size() < 2) {
+      cerr << "Stack underflow!" << endl;
+      exit(1);
+    }
+
+    auto rhs = stk.top();
+    parenthesize(rhs, token, false);
+    stk.pop();
+    auto lhs = stk.top();
+    parenthesize(lhs, token, true);
+    stk.top().expr = lhs.expr + ' ' + token + ' ' + rhs.expr;
+    stk.top().op = token;
+  }
+}
+
+string rpn2Infix(const string& src) {
+  stack<Entry> stk;
+
+  for (auto start = src.begin(), p = src.begin(); ; ++p) {
+    if (p == src.end() || *p == ' ') {
+      if (p > start)
+        addToken(stk, string(start, p));
+      if (p == src.end())
+        break;
+
+      start = p+1;
     }
   }
 
-  return (sum_num_right-sum_num_left)/(sum_y_left-sum_y_right);
+  if (stk.size() != 1) {
+    cerr << "Incomplete expression!" << endl;
+    exit(1);
+  }
+
+  return stk.top().expr;
 }
 
 int main(int argc, char** argv) {
-  cout << evaluate("x - (y - (5 + 3y)) = 3y + 2x - 1", 2) << endl;
-  cout << evaluate("5 + 2x - ( 3y + 2x - ( 7 - 2x) - 9 ) = 3 + 4y", 2) << endl;
-  cout << evaluate("2y-(y+5)=3y+6", 2) << endl;
-  cout << evaluate("10x + y = 2y - 10", 2) << endl;
-  cout << evaluate("x + 5 + y = 2y - 3x - 10", 2) << endl;
+  string a[] = {"2","1","+","3","*"};
+  cout << evaluate(a, 5) << endl;
+  string b[] = {"4","13","5","/","+"};
+  cout << evaluate(b, 5) << endl;
 
-  vector<string> v;
-  v.push_back(string("2"));
-  v.push_back(string("1"));
-  v.push_back(string("+"));
-  v.push_back(string("3"));
-  v.push_back(string("*"));
-  cout << evalRPN(v) << endl;
-
-  v.clear();
-  v.push_back(string("4"));
-  v.push_back(string("13"));
-  v.push_back(string("5"));
-  v.push_back(string("/"));
-  v.push_back(string("+"));
-  cout << evalRPN(v) << endl;
+  cout << rpn2Infix("3 4 2 * 1 5 - 2 3 ^ ^ / +") << "\n";
+  cout << rpn2Infix("1 2 + 3 4 + ^ 5 6 + ^") << "\n";
 
   return 0;
 }
