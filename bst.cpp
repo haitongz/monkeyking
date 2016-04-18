@@ -9,14 +9,14 @@
 
 using namespace std;
 
-static const int32_t MAX_LMT = numeric_limits<int32_t>::has_infinity ?
-                               numeric_limits<int32_t>::infinity() : numeric_limits<int32_t>::max();
+static const int MAX_LMT = numeric_limits<int>::has_infinity ?
+                           numeric_limits<int>::infinity() : numeric_limits<int>::max();
 
-static const int32_t MIN_LMT = numeric_limits<int32_t>::has_infinity ?
-                               -1*numeric_limits<int32_t>::infinity() : numeric_limits<int32_t>::min();
+static const int MIN_LMT = numeric_limits<int>::has_infinity ?
+                           -1*numeric_limits<int>::infinity() : numeric_limits<int>::min();
 
 struct BinTreeNode { // binary tree node
-  int32_t value;
+  int value;
   BinTreeNode* left;
   BinTreeNode* right;
 
@@ -25,12 +25,12 @@ struct BinTreeNode { // binary tree node
   }
 };
 
-uint32_t maxHeight_recur(const BinTreeNode* root) {
+uint maxHeight_recur(const BinTreeNode* root) {
   if (!root)
     return 0;
 
-  function<uint32_t(const BinTreeNode*)> solve =
-    [&](const BinTreeNode* curr_root) -> uint32_t {
+  function<uint(const BinTreeNode*)> solve =
+    [&](const BinTreeNode* curr_root) -> uint {
     if (!curr_root)
       return 0;
 
@@ -40,11 +40,11 @@ uint32_t maxHeight_recur(const BinTreeNode* root) {
   return solve(root);
 }
 
-void prettyPrint(const BinTreeNode* root, uint8_t spaces = 2) {
+void prettyPrint(const BinTreeNode* root, uint spaces = 2) {
   deque<const BinTreeNode*> q{root};
-  uint32_t height = maxHeight_recur(root);
-  uint32_t currLvlNodes = 1, nextLvlNodes = 0, level = 1;
-  uint32_t padding = spaces * (pow(2, height-level) - 1);
+  uint height = maxHeight_recur(root);
+  uint currLvlNodes = 1, nextLvlNodes = 0, level = 1;
+  uint padding = spaces * (pow(2, height-level) - 1);
 
   cout << setw(padding/2) << "";
 
@@ -87,8 +87,8 @@ void delTree_iter(BinTreeNode** root) {
   deque<const BinTreeNode*> q{*root};
 
   while (!q.empty()) {
-    const uint32_t cp = q.size();
-    for (uint32_t i = 0; i < cp; ++i) {
+    const uint cp = q.size();
+    for (uint i = 0; i < cp; ++i) {
       const BinTreeNode* nd = q.front();
       q.pop_front();
       if (nd->left)
@@ -121,7 +121,7 @@ void delTree_recur(BinTreeNode** root) {
   solve(root);
 }
 
-bool insert_recur(BinTreeNode** root, const int32_t key) {
+bool insert_recur(BinTreeNode** root, const int key) {
   if (!root)
     return false;
 
@@ -143,7 +143,7 @@ bool insert_recur(BinTreeNode** root, const int32_t key) {
   return solve(root);
 }
 
-const BinTreeNode* search_recur(const BinTreeNode* root, const int32_t target) {
+const BinTreeNode* search_recur(const BinTreeNode* root, const int target) {
   function<const BinTreeNode*(const BinTreeNode*)> solve =
     [&](const BinTreeNode* curr_root) {
     if (!curr_root || curr_root->value == target)
@@ -159,7 +159,7 @@ const BinTreeNode* search_recur(const BinTreeNode* root, const int32_t target) {
 /*
 Given values of two nodes in a Binary Search Tree, find the Lowest Common Ancestor (LCA). You may assume that both the values exist in the tree.
  */
-const BinTreeNode* LCA_recur(const BinTreeNode* root, const int32_t n1, const int32_t n2) {
+const BinTreeNode* LCA_recur(const BinTreeNode* root, const int n1, const int n2) {
   function<const BinTreeNode*(const BinTreeNode*)> solve =
     [&](const BinTreeNode* curr_root) -> const BinTreeNode* {
     if (!curr_root)
@@ -178,7 +178,7 @@ const BinTreeNode* LCA_recur(const BinTreeNode* root, const int32_t n1, const in
   return solve(root);
 }
 
-const BinTreeNode* LCA_iter(const BinTreeNode* root, const int32_t n1, const int32_t n2) {
+const BinTreeNode* LCA_iter(const BinTreeNode* root, const int n1, const int n2) {
   if (!root) {
     return nullptr;
   }
@@ -239,16 +239,16 @@ bool validate(const BinTreeNode* root) {
 }
  */
 bool validate(const BinTreeNode* root) {
-  function<bool(const BinTreeNode*,const int32_t,const int32_t)> solve =
-    [&](const BinTreeNode* curr_root, const int32_t left_max, const int32_t right_min) {
+  function<bool(const BinTreeNode*,const int,const int)> solve =
+    [&](const BinTreeNode* curr_root, const int left_min, const int right_max) {
     if (!curr_root)
       return true;
 
-    if (curr_root->value <= left_max || curr_root->value > right_min)
+    if (curr_root->value <= left_min || curr_root->value > right_max)
       return false;
 
-    if (!solve(curr_root->left, left_max, curr_root->value) ||
-        !solve(curr_root->right, curr_root->value, right_min)) {
+    if (!solve(curr_root->left, left_min, curr_root->value) ||
+        !solve(curr_root->right, curr_root->value, right_max)) {
       return false;
     } else {
       return true;
@@ -261,7 +261,7 @@ bool validate(const BinTreeNode* root) {
 /*
 Given a target number, find closest number in a BST
  */
-int32_t closest_recur(const BinTreeNode* root, const int32_t target) {
+int closest_recur(const BinTreeNode* root, const int target) {
   function<const BinTreeNode*(const BinTreeNode*)> solve = // DFS
     [&](const BinTreeNode* curr_root) -> const BinTreeNode* {
     if (!curr_root)
@@ -295,13 +295,13 @@ int32_t closest_recur(const BinTreeNode* root, const int32_t target) {
     return MIN_LMT;
 }
 
-int32_t closest_iter(const BinTreeNode* root, const int32_t target) { // BFS
+int closest_iter(const BinTreeNode* root, const int target) { // BFS
   if (!root)
     throw exception();
 
   deque<const BinTreeNode*> q = {root};
   const BinTreeNode* ret = nullptr;
-  uint32_t min_diff = MAX_LMT;
+  uint min_diff = MAX_LMT;
 
   while (!q.empty()) {
     const BinTreeNode* curr = q.front();
@@ -309,7 +309,7 @@ int32_t closest_iter(const BinTreeNode* root, const int32_t target) { // BFS
     if (target == curr->value)
       return target;
     else {
-      const uint32_t diff = abs(target-curr->value);
+      const uint diff = abs(target-curr->value);
       if (diff < min_diff) {
         ret = curr;
         min_diff = diff;
@@ -329,11 +329,11 @@ int32_t closest_iter(const BinTreeNode* root, const int32_t target) { // BFS
 /*
 Given k, find k-th smallest element in a BST
  */
-int32_t kthSmallest_recur(const BinTreeNode* root, const uint32_t k) {
+int kthSmallest_recur(const BinTreeNode* root, const uint k) {
   if (!root || !k)
     throw exception();
 
-  int32_t ret = MAX_LMT, cntr = 0;
+  int ret = MAX_LMT, cntr = 0;
 
   function<void(const BinTreeNode*)> solve =
     [&](const BinTreeNode* curr_root) {
@@ -357,11 +357,11 @@ int32_t kthSmallest_recur(const BinTreeNode* root, const uint32_t k) {
 /*
 Given k, find k-th largest element in a BST.
  */
-int32_t kthLargest_recur(const BinTreeNode* root, const uint32_t k) {
+int kthLargest_recur(const BinTreeNode* root, const uint k) {
   if (!root || !k)
     throw exception();
 
-  int32_t ret = MIN_LMT, cntr = 0;
+  int ret = MIN_LMT, cntr = 0;
 
   function<void(const BinTreeNode*)> solve =
     [&](const BinTreeNode* curr_root) {
@@ -383,12 +383,12 @@ int32_t kthLargest_recur(const BinTreeNode* root, const uint32_t k) {
   return ret;
 }
 
-int32_t kthSmallest_iter(const BinTreeNode* root, const uint32_t k) {
+int kthSmallest_iter(const BinTreeNode* root, const uint k) {
   if (!root || !k)
     throw exception();
 
   // simply inorder traversal
-  vector<int32_t> ret;
+  vector<int> ret;
   stack<const BinTreeNode*> stk;
   const BinTreeNode* curr = root;
 
@@ -404,7 +404,7 @@ int32_t kthSmallest_iter(const BinTreeNode* root, const uint32_t k) {
     }
   }
 
-  uint32_t i = 0;
+  uint i = 0;
   for (; i < k && i < ret.size(); ++i);
 
   if (i < k) { // less than k elements in BST
@@ -419,11 +419,11 @@ Iterative inorder traversal, Time complexity: O(n)
 Space complexity: O(h1+h2) where h1 and h2 are heights of first and second BSTs respectively.
  */
 /*
-vector<int32_t> commonNodes(BinTreeNode* r1, BinTreeNode* r2) {
+vector<int> commonNodes(BinTreeNode* r1, BinTreeNode* r2) {
   if (!r1 || !r2)
     return {};
 
-  vector<int32_t> ret;
+  vector<int> ret;
   stack<BinTreeNode*> p, q;
   BinTreeNode* n1 = r1, *n2 = r2;
 
@@ -460,9 +460,9 @@ vector<int32_t> commonNodes(BinTreeNode* r1, BinTreeNode* r2) {
   return ret;
 }
 */
-vector<int32_t>
+vector<int>
 commonNodes_recur(BinTreeNode* r1, BinTreeNode* r2) {
-  set<int32_t> ret;
+  set<int> ret;
 
   function<void(BinTreeNode*,BinTreeNode*)> solve =
     [&](BinTreeNode* curr_root1, BinTreeNode* curr_root2) {
@@ -495,11 +495,11 @@ Your merge function should take O(M+N) time and O(1) space.
 Given a singly linked list where elements are sorted in ascending order, convert it to a height balanced BST.
  */
 struct ListNode {
-  ListNode(const int32_t v)
+  ListNode(const int v)
       : value(v), next(NULL) {
   }
 
-  int32_t value;
+  int value;
   ListNode* next;
 };
 
@@ -535,13 +535,13 @@ BinTreeNode* sortedList2BST(ListNode* head) {
 /*
 Given an array where elements are sorted in ascending order, convert it to a height balanced BST.
  */
-BinTreeNode* sortedArray2BST(const vector<int32_t>& nums) {
-  const uint32_t n = nums.size();
+BinTreeNode* sortedArray2BST(const vector<int>& nums) {
+  const uint n = nums.size();
   if (!n)
     return nullptr;
 
-  function<BinTreeNode*(uint32_t,uint32_t)> solve =
-    [&](const uint32_t start, const uint32_t end) -> BinTreeNode* {
+  function<BinTreeNode*(uint,uint)> solve =
+    [&](const uint start, const uint end) -> BinTreeNode* {
     if (!start || start == end)
       return nullptr;
 
@@ -562,11 +562,11 @@ BinTreeNode* sortedArray2BST(const vector<int32_t>& nums) {
 How about convert a sorted doubly linked list to a binary search tree? You must do it in place without creating any new nodes.
  */
 struct DListNode {
-  int32_t value;
+  int value;
   DListNode* prev;
   DListNode* next;
 
-  DListNode(const int32_t v)
+  DListNode(const int v)
       : value(v), prev(nullptr), next(nullptr) {
   }
 };
@@ -662,7 +662,7 @@ Two BSTs were given, find the largest common BST exists between these two
 struct Item {
   const BinTreeNode* node1;
   const BinTreeNode* node2;
-  uint32_t count;
+  uint count;
 
   Item() :
       node1 {nullptr}, node2 {nullptr}, count {0} {
@@ -715,7 +715,7 @@ Item LCBST_recur(const BinTreeNode* root1, const BinTreeNode* root2) {
 Finds predecessor and successor of key in BST.
  */
 pair<const BinTreeNode*,const BinTreeNode*>
-predecessorAndSuccessor(const BinTreeNode* root, const int32_t key) {
+predecessorAndSuccessor(const BinTreeNode* root, const int key) {
   pair<const BinTreeNode*,const BinTreeNode*> ret;
 
   function<void(const BinTreeNode*)> solve = [&](const BinTreeNode* curr_root) {
@@ -755,7 +755,7 @@ predecessorAndSuccessor(const BinTreeNode* root, const int32_t key) {
 Given a BST, transform it into greater sum tree where each node contains sum of all nodes greater than that node.
  */
 void transformBST2GST(BinTreeNode* root) { // reverse inorder traversal to get decreasing ordered elements
-  int32_t sum = 0;
+  int sum = 0;
 
   function<void(BinTreeNode*)> solve = [&](BinTreeNode* curr_root) {
     if (!curr_root)
@@ -785,10 +785,10 @@ We need to tell whether two BSTs will be identical or not without actually const
 /*
 The main function that checks if two arrays a[] and b[] of size n construct same BST. The two values 'min' and 'max' decide whether the call is made for left subtree or right subtree of a parent element. The indecies idx1 and idx2 are the indecies in (a[] and b[]) after which we search the left or right child. Initially, the call is made for INT_MIN and INT_MAX as 'min' and 'max' respectively, because root has no parent. idx1 and idx2 are just after the indecies of the parent element in a[] and b[].
  */
-bool identicalBSTs(const int32_t a[], const int32_t b[], const uint32_t n) { // O(n)
-  function<bool(const int32_t,const int32_t,const int32_t,const int32_t)> solve =
-    [&](const int32_t idx1, const int32_t idx2, const int32_t min, const int32_t max) {
-    uint32_t i, j;
+bool identicalBSTs(const int a[], const int b[], const uint n) { // O(n)
+  function<bool(const int,const int,const int,const int)> solve =
+    [&](const int idx1, const int idx2, const int min, const int max) {
+    uint i, j;
 
     /* Search for a value satisfying the constraints of min and max in a[] and b[]. If the parent element is a leaf node then there must be some elements in a[] and b[] satisfying constraint. */
     for (i = idx1; i < n; ++i)
@@ -856,19 +856,19 @@ Given a Binary Search Tree (BST) of integer values and a range [low, high],
 return count of nodes where all the nodes under that node
 (or subtree rooted with that node) lie in the given range.
  */
-uint32_t inRangeSubtreeNum(const BinTreeNode* root, const pair<int32_t,int32_t>& range) {
-  function<uint32_t(const BinTreeNode*)> getCount =
-    [&](const BinTreeNode* curr_root) -> uint32_t {
+uint inRangeSubtreeNum(const BinTreeNode* root, const pair<int,int>& range) {
+  function<uint(const BinTreeNode*)> getCount =
+    [&](const BinTreeNode* curr_root) -> uint {
     if (!curr_root)
       return 0;
 
     return getCount(curr_root->left)+getCount(curr_root->right)+1;
   };
 
-  uint32_t ret = 0;
+  uint ret = 0;
 
-  function<void(const BinTreeNode*,int32_t,int32_t)> solve =
-    [&](const BinTreeNode* curr_root, int32_t low, int32_t high) { // returns true if nodes in subtree rooted under 'root' are in range.
+  function<void(const BinTreeNode*,int,int)> solve =
+    [&](const BinTreeNode* curr_root, int low, int high) { // returns true if nodes in subtree rooted under 'root' are in range.
     if (!curr_root)
       return;
 
@@ -912,8 +912,8 @@ The above tree should be modified to following
  */
 // Recursive function to add all greater values in every node
 void modifyBST(BinTreeNode* root) {
-  function<void(BinTreeNode*,int32_t&)> solve =
-    [&](BinTreeNode* curr_root, int32_t& curr_sum) {
+  function<void(BinTreeNode*,int&)> solve =
+    [&](BinTreeNode* curr_root, int& curr_sum) {
     if (!curr_root)
       return;
 
@@ -929,14 +929,14 @@ void modifyBST(BinTreeNode* root) {
     solve(curr_root->left, curr_sum);
   };
 
-  int32_t x = 0;
+  int x = 0;
   solve(root, x);
 }
 
 /*
 Given a Balanced Binary Search Tree and a target sum, write a function that returns true if there is a pair with sum equals to target sum, otherwise return false. Expected time complexity is O(n) and only O(Logn) extra space can be used. Any modification to Binary Search Tree is not allowed. Note that height of a Balanced BST is always O(Logn).
  */
-bool foundPairWithSum(const BinTreeNode* root, const int32_t sum) {
+bool foundPairWithSum(const BinTreeNode* root, const int sum) {
   // Create two stacks. stk1 is used for normal inorder traversal and stk2 is used for reverse inorder traversal
   stack<const BinTreeNode*> stk1; //MAX_SIZE);
   stack<const BinTreeNode*> stk2; //MAX_SIZE);
@@ -946,7 +946,7 @@ bool foundPairWithSum(const BinTreeNode* root, const int32_t sum) {
   // done1, val1 and curr1 are used for normal inorder traversal using s1
   // done2, val2 and curr2 are used for reverse inorder traversal using s2
   bool done1 = false, done2 = false;
-  int32_t val1 = 0, val2 = 0;
+  int val1 = 0, val2 = 0;
   const BinTreeNode* curr1 = root, *curr2 = root;
 
   // The loop will break when we either find a pair or one of the two traversals is complete
@@ -1014,10 +1014,10 @@ bool foundTripletWithSum(BinTreeNode* root) {
 
   bst2DLL_recur(root, &head, &tail);
 
-  function<bool(BinTreeNode*,BinTreeNode*,const int32_t)> foundPairWithSum =
-    [&](BinTreeNode* head, BinTreeNode* tail, const int32_t sum) {
+  function<bool(BinTreeNode*,BinTreeNode*,const int)> foundPairWithSum =
+    [&](BinTreeNode* head, BinTreeNode* tail, const int sum) {
     while (head != tail) {
-      int32_t curr = head->value + tail->value;
+      int curr = head->value + tail->value;
       if (curr == sum)
         return true;
       else if (curr > sum)
@@ -1045,12 +1045,12 @@ bool foundTripletWithSum(BinTreeNode* root) {
 /*
 Given an array that stores a complete Binary Search Tree, write a function that efficiently prints the given array in ascending order.
  */
-void printSorted(int32_t A[], const uint32_t n) {
+void printSorted(int A[], const uint n) {
   if (!n)
     throw exception();
 
-  function<void(const uint32_t,const uint32_t)> solve =
-    [&](const uint32_t start, const uint32_t end) { // inorder, O(n)
+  function<void(const uint,const uint)> solve =
+    [&](const uint start, const uint end) { // inorder, O(n)
     if (start > end)
       return;
 
@@ -1070,45 +1070,45 @@ void printSorted(int32_t A[], const uint32_t n) {
 Given a Binary Tree, write a function that returns the size of the largest subtree which is also a Binary Search Tree (BST). If the complete Binary Tree is BST, then return the size of whole tree.
  */
 /*
-uint32_t largestBSTSize(const BinTreeNode* root) { // O(n2)
+uint largestBSTSize(const BinTreeNode* root) { // O(n2)
   if (validate(root))
     return size(root);
   else
     return max(largestBSTSize(root->left), largestBSTSize(root->right));
 }
 */
-uint32_t largestBSTSize_recur(const BinTreeNode* root) { // O(n)
-  int32_t gmin = MAX_LMT;  // For minimum value in right subtree
-  int32_t gmax = MIN_LMT;  // For maximum value in left subtree
+uint largestBSTSize_recur(const BinTreeNode* root) { // O(n)
+  int gmin = MAX_LMT;  // For minimum value in right subtree
+  int gmax = MIN_LMT;  // For maximum value in left subtree
   bool is_bst = false;
-  uint32_t ret = 0;
+  uint ret = 0;
 
   /* solve updates the size of the largest BST subtree. Also, if the tree rooted with node is non-empty and a BST then returns size of the tree. Otherwise returns 0. */
-  function<uint32_t(const BinTreeNode*)> solve =
-    [&](const BinTreeNode* curr_root) -> uint32_t {//, int *min_ref, int *max_ref, int *max_size_ref, bool *is_bst_ref)
+  function<uint(const BinTreeNode*)> solve =
+    [&](const BinTreeNode* curr_root) -> uint {//, int *min_ref, int *max_ref, int *max_size_ref, bool *is_bst_ref)
     if (!curr_root) {
       is_bst = true; // An empty tree is BST
       return 0;    // Size of the BST is 0
     }
 
- //   int32_t lmin = MAX_LMT;
+ //   int lmin = MAX_LMT;
     /* Following tasks are done by recursive call for left subtree
     a) Get the maximum value in left subtree (Stored in *max_ref)
     b) Check whether Left Subtree is BST or not (Stored in *is_bst_ref)
     c) Get the size of maximum size BST in left subtree (updates *max_size) */
 
     gmax = MIN_LMT;
-    uint32_t left = solve(curr_root->left); //, min_ref, max_ref, max_size_ref, is_bst_ref);
+    uint left = solve(curr_root->left); //, min_ref, max_ref, max_size_ref, is_bst_ref);
     /* A flag variable for left subtree property i.e., max(root->left) < root->data */
     bool left_flag = false;
     if (is_bst && curr_root->value > gmax)
       left_flag = true;
 
     /* Before updating *min_ref, store the min value in left subtree. So that we have the correct minimum value for this subtree */
-    int32_t lmin = gmin;
+    int lmin = gmin;
     /* The following recursive call does similar (similar to left subtree) task for right subtree */
     gmin = MAX_LMT;
-    uint32_t right = solve(curr_root->right); //, min_ref, max_ref, max_size_ref, is_bst_ref);
+    uint right = solve(curr_root->right); //, min_ref, max_ref, max_size_ref, is_bst_ref);
     /* A flag variable for right subtree property i.e., min(root->right) > root->data */
     bool right_flag = false;
     if (is_bst && curr_root->value < lmin)
@@ -1122,7 +1122,7 @@ uint32_t largestBSTSize_recur(const BinTreeNode* root) { // O(n)
     /* If both left and right subtrees are BST. And left and right subtree properties hold for this node, then this tree is BST. So return the size of this tree */
     if (left_flag && right_flag) {
       ret = max(left+right+1, ret);
-      return (uint32_t)left+right+1;
+      return (uint)left+right+1;
     } else {
       //Since this subtree is not BST, set is_bst flag for parent calls
       is_bst = false;
@@ -1164,14 +1164,14 @@ const BinTreeNode* inOrderSuccessor(const BinTreeNode* root, const BinTreeNode* 
   return ret;
 }
 
-BinTreeNode* construct_pre_recur(const int32_t pre[], const uint32_t n) { // from preorder traversal: O(n)
+BinTreeNode* construct_pre_recur(const int pre[], const uint n) { // from preorder traversal: O(n)
   if (!n)
     return nullptr;
 
-  uint32_t pre_idx = 0;
+  uint pre_idx = 0;
 
-  function<BinTreeNode*(const int32_t,const uint32_t,const uint32_t)> solve =
-    [&](const int32_t key, const uint32_t min, const uint32_t max) -> BinTreeNode* {
+  function<BinTreeNode*(const int,const uint,const uint)> solve =
+    [&](const int key, const uint min, const uint max) -> BinTreeNode* {
     if (pre_idx >= n)
       return nullptr;
 
@@ -1201,9 +1201,9 @@ BinTreeNode* construct_pre_recur(const int32_t pre[], const uint32_t n) { // fro
 /*
 Construct all possible BSTs for keys 1 to N
  */
-vector<BinTreeNode*> construct_1ToN(const uint32_t N) {
-  function<vector<BinTreeNode*>(const uint32_t,const uint32_t)> solve =
-    [&](const uint32_t start, const uint32_t end) {
+vector<BinTreeNode*> construct_1ToN(const uint N) {
+  function<vector<BinTreeNode*>(const uint,const uint)> solve =
+    [&](const uint start, const uint end) {
     vector<BinTreeNode*> ret;
 
     if (start > end) {
@@ -1213,14 +1213,14 @@ vector<BinTreeNode*> construct_1ToN(const uint32_t N) {
 
     /* iterating through all values from start to end
        for constructing left and right subtree recursively */
-    for (uint32_t i = start; i < end+1; ++i) {
+    for (uint i = start; i < end+1; ++i) {
       vector<BinTreeNode*> left = solve(start, i-1);
       vector<BinTreeNode*> right = solve(i+1, end);
       /* now loop through all left and right subtrees
          and connect them to i-th root below */
-      for (uint32_t j = 0; j < left.size(); ++j) {
+      for (uint j = 0; j < left.size(); ++j) {
         BinTreeNode* l_root = left[j];
-        for (uint32_t k = 0; k < right.size(); ++k) {
+        for (uint k = 0; k < right.size(); ++k) {
           BinTreeNode* r_root = right[k];
           BinTreeNode* nd = new BinTreeNode(i); // making value i as root
           nd->left = l_root; // connect left subtree
@@ -1237,31 +1237,31 @@ vector<BinTreeNode*> construct_1ToN(const uint32_t N) {
 }
 
 int main(int argc, char** argv) {
-  int32_t a[] = {5, 3, 8, 1, 4, 7, 10, 2, 6, 9, 11, 12, 15};
+  int a[] = {5, 3, 8, 1, 4, 7, 10, 2, 6, 9, 11, 12, 15};
   BinTreeNode* r = nullptr;
 
-  for (uint16_t i = 0; i < 13; ++i) {
+  for (uint i = 0; i < 13; ++i) {
     insert_recur(&r, a[i]);
   }
 
   cout << "The tree just built is" << (validate(r) ? " " : " not ") << "a BST!" << endl;
 
-  int32_t t = 16;
+  int t = 16;
   cout << "Closet node to " << t << " is " << closest_recur(r, t) << endl;
   cout << "Closet node to " << t << " is " << closest_iter(r, t) << endl;
 
-  const uint32_t k = 2;
+  const uint k = 2;
   const string s = (k == 1) ? "st" : ((k == 2) ? "nd" : (k == 3 ? "rd" : "th"));
   cout << k << s << " smallest node in BST: " << kthSmallest_recur(r, k) << endl;
   cout << k << s << " smallest node in BST: " << kthSmallest_iter(r, k) << endl;
   cout << k << s << " largest node in BST: " << kthLargest_recur(r, k) << endl;
 
-  int32_t a1[] = {5, 3, 8, 1, 4, 7, 10, 2, 6, 9, 11, 12, 15};
+  int a1[] = {5, 3, 8, 1, 4, 7, 10, 2, 6, 9, 11, 12, 15};
 
   cout << "BSTs are" << (identicalBSTs(a, a1, 13) ? " " : " not ") << "identical!" << endl;
 
   BinTreeNode* r2 = nullptr;
-  for (uint16_t i = 0; i < 13; ++i) {
+  for (uint i = 0; i < 13; ++i) {
     insert_recur(&r2, a1[i]);
   }
   prettyPrint(r);
@@ -1298,12 +1298,12 @@ int main(int argc, char** argv) {
   insert_recur(&r, 10);
   insert_recur(&r, 10);
 
-  int32_t l = 5, h = 50;
+  int l = 5, h = 50;
   cout << "LCA of " << l << " and " << h << " is " << LCA_recur(r, l, h)->value << endl;
   cout << "LCA of " << l << " and " << h << " is " << LCA_iter(r, l, h)->value << endl;
 
-  //int32_t l = 5;
-  //int32_t h = 45;
+  //int l = 5;
+  //int h = 45;
 
   cout << "Count of subtrees in [" << l << ", " << h << "] is "
     << inRangeSubtreeNum(r, make_pair(l, h)) << endl;
@@ -1326,7 +1326,7 @@ int main(int argc, char** argv) {
   insert_recur(&r2, 4);
   insert_recur(&r2, 9);
 
-  vector<int32_t> res = commonNodes_recur(r, r2);
+  vector<int> res = commonNodes_recur(r, r2);
   for (const auto& i : res)
     cout << i << " ";
   cout << endl;
