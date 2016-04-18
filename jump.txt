@@ -6,7 +6,23 @@
 1.
 用malloc实现alloc (我也不知道是啥，反正是很底层的function，为了优化malloc的memory管理和time)
 2.  leetcode permutation
-我用了这里的第二个解法 http://www.cnblogs.com/grandyang/p/4358848.html
+我用了这里的第二个解法 
+
+vector<vector<int> > permute(vector<int> &num) {
+        vector<vector<int> > res;
+        permuteDFS(num, 0, res);
+        return res;
+    }
+    void permuteDFS(vector<int> &num, int start, vector<vector<int> > &res) {
+        if (start >= num.size()) res.push_back(num);
+        for (int i = start; i < num.size(); ++i) {
+            swap(num[start], num[i]);
+            permuteDFS(num, start + 1, res);
+            swap(num[start], num[i]);
+        }
+    }
+    
+    
 让我说了一遍用dfs怎么做。。
 3. leetcode add two numbers
 followup: 如何加快程序。。用stack不用heap。。减少branch pridiction。。。
