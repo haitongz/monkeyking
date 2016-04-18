@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <set>
 #include <deque>
 #include <algorithm>
 #include <limits>
@@ -8,23 +9,26 @@
 
 using namespace std;
 
-static const int32_t MIN_LMT = numeric_limits<int32_t>::min();
-static const int32_t MAX_LMT = numeric_limits<int32_t>::max();
+static const int MAX_LMT = numeric_limits<int>::has_infinity ?
+                           numeric_limits<int>::infinity() : numeric_limits<int>::max();
+
+static const int MIN_LMT = numeric_limits<int>::has_infinity ?
+                           -1*numeric_limits<int>::infinity() : numeric_limits<int>::min();
 
 /*
 Given an unsorted array, find the largest pair sum in it.
  */
-int32_t largestPairSum(const int32_t a[], const uint32_t n) {
+int largestPairSum(const int a[], const uint n) {
   if (n < 2)
     throw exception();
   if (n == 2)
     return a[0]+a[1];
 
-  int32_t biggest = max(a[0], a[1]);
-  int32_t second = min(a[0], a[1]);
+  int biggest = max(a[0], a[1]);
+  int second = min(a[0], a[1]);
 
   // Traverse remaining array and find biggest and second largest elements in overall array
-  for (uint32_t i = 2; i < n; ++i) {
+  for (uint i = 2; i < n; ++i) {
     if (a[i] > biggest) { /* if greater than biggest then update both biggest and second */
       second = biggest;
       biggest = a[i];
@@ -41,19 +45,20 @@ The function twoSum should return indices of the two numbers such that they add 
 where index1 must be less than index2. Please note that your returned answers (both index1 and index2)
 are not zero-based.
 You may assume that each input would have exactly one solution.
-Input: numbers = {2,7,11,15}, target = 9
+Input: a[] = {2,7,11,15}, target = 9
 Output: index1 = 1, index2 = 2
  */
-pair<int32_t,int32_t> twoSum(const int32_t a[], const uint32_t n, const int32_t target) {
+pair<int,int>
+twoSum(const int a[], const uint n, const int target) {
   if (!n)
     return {-1,-1};
 
-  map<int32_t,int32_t> mem;
-  pair<int32_t,int32_t> ret;
+  map<int,int> mem;
+  pair<int,int> ret;
 
-  for (uint32_t i = 0; i < n; ++i) {
-    int32_t v = a[i];
-    const int32_t remain = target-v;
+  for (uint i = 0; i < n; ++i) {
+    int v = a[i];
+    const int remain = target-v;
     if (mem.count(remain)) {
       ret.first = mem[remain]+1; // index1 and index2 are not zero-based.
       ret.second = i+1;
@@ -69,14 +74,15 @@ pair<int32_t,int32_t> twoSum(const int32_t a[], const uint32_t n, const int32_t 
 /*
 Given a sorted array and a number x, find a pair in array whose sum is closest to x.
  */
-pair<uint32_t,uint32_t> twoSumClosest(int32_t a[], const uint32_t n, const int32_t x) {
+pair<uint,uint>
+twoSumClosest(int a[], const uint n, const int x) {
   if (!n)
     return {};
 
   // Initialize left and right indexes and difference between pair sum and x
-  uint32_t left = 0, right = n-1;
-  int32_t diff = MAX_LMT;
-  pair<uint32_t,uint32_t> ret;
+  uint left = 0, right = n-1;
+  int diff = MAX_LMT;
+  pair<uint,uint> ret;
 
   while (left < right) {
     if (abs(a[left]+a[right]-x) < diff) { // Check if this pair is closer than the closest pair so far
@@ -106,21 +112,25 @@ A solution set is:
 (-1, 0, 1)
 (-1, -1, 2)
  */
-vector<vector<uint32_t>> threeSumTo0(vector<int32_t>& S) {
-  const uint32_t n = S.size();
+struct ThreeIndices {
+  uint first, second, third;
+};
+
+vector<ThreeIndices> threeSumTo0(vector<int>& S) {
+  const uint n = S.size();
   if (n < 3)
     return {};
 
   sort(S.begin(), S.end());
 
-  vector<vector<uint32_t>> ret; // indices
+  vector<ThreeIndices> ret; // indices
 
-  for (uint32_t i = 0; i < n; ++i) {
+  for (uint i = 0; i < n; ++i) {
     if (i > 0 && S[i-1] == S[i]) // since we scan from left to right, all a[i] cases were covered in a[i-1] cases already
       continue;
 
-    for (uint32_t j = i+1, k = n-1; j < k;) {
-      const int32_t sum = S[i]+S[j]+S[k];
+    for (uint j = i+1, k = n-1; j < k;) {
+      const int sum = S[i]+S[j]+S[k];
       if ((j > i+1 && S[j] == S[j-1]) || sum < 0)
         ++j;
       else if ((k < n-1 && S[k] == S[k+1]) || sum > 0)
@@ -141,25 +151,25 @@ You may assume that each input would have exactly one solution.
 Given array S = {-1 2 1 -4}, and target = 1.
 The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
  */
-int32_t threeSumClosest(vector<int32_t>& S, const int32_t target) {
-  const uint32_t n = S.size();
+int threeSumClosest(vector<int>& S, const int target) {
+  const uint n = S.size();
   if (n < 3)
     throw exception();
 
   sort(S.begin(), S.end());
 
-  int32_t ret = 0;
-  uint32_t diff = MAX_LMT;
+  int ret = 0;
+  uint diff = MAX_LMT;
 
-  for (uint32_t i = 0; i < n; ++i) {
+  for (uint i = 0; i < n; ++i) {
     if (i > 0 && S[i-1] == S[i])
       continue;
 
-    uint32_t left = i+1, right = n-1;
+    uint left = i+1, right = n-1;
 
     while (left < right) {
-      int32_t curr_sum = S[i]+S[left]+S[right];
-      uint32_t curr_diff = abs(curr_sum-target);
+      int curr_sum = S[i]+S[left]+S[right];
+      uint curr_diff = abs(curr_sum-target);
       if (curr_diff < diff) {
         diff = curr_diff;
         ret = curr_sum;
@@ -177,40 +187,6 @@ int32_t threeSumClosest(vector<int32_t>& S, const int32_t target) {
   return ret;
 }
 
-vector<vector<uint32_t>> fourSum(vector<int32_t>& S, const int32_t target) { // O(n^3)
-  const uint32_t n = S.size();
-  if (n < 4)
-    return {};
-
-  sort(S.begin(), S.end());
-  vector<vector<uint32_t>> ret;
-
-  for (uint32_t i = 0; i < n-3; ++i) {
-    for (uint32_t j = i+1; j < n-2; ++j) {
-      uint32_t left = j+1, right = n-1;
-
-      // To find the remaining two elements, move the index variables (left &
-      // right) toward each other.
-      while (left < right) {
-        int32_t t_sum = S[i]+S[j]+S[left]+S[right];
-        if (t_sum == target) {
-          vector<uint32_t> indices = {i,j,left,right};
-          ret.push_back(indices);
-          ++left;
-          --right;
-        } else if (t_sum < target)
-          ++left;
-        else
-          --right;
-      } // end of while
-    } // end of inner for loop
-  } // end of outer for loop
-
- // sort(ret.begin(), ret.end());
- // ret.erase(unique(ret.begin(), ret.end()), ret.end());
-  return ret;
-}
-
 /*
 1) Create an auxiliary array aux[] and store sum of all possible pairs in aux[].
 The size of aux[] will be n*(n-1)/2 where n is the size of a[].
@@ -224,19 +200,19 @@ sum of a[2] and a[4], then these two elements of aux[] don't represent four dist
 of input array a[].
  */
 struct PairSum {
-  int32_t sum; // pair sum
-  uint32_t first, second; // indices (in a[]) of elements in pair
+  int sum; // pair sum
+  uint first, second; // indices (in a[]) of elements in pair
 };
 
-vector<vector<uint32_t>>
-fourSum(const int32_t a[], const uint32_t n, const int32_t target) { // O(n^2Logn)
+vector<vector<uint>>
+fourSum(const int a[], const uint n, const int target) { // O(n^2Logn)
   if (n < 4)
     return {};
 
-  const uint32_t size = n*(n-1)/2;
+  const uint size = n*(n-1)/2;
   vector<PairSum> aux(size, PairSum());
-  for (uint32_t i = 0, k = 0; i < n-1; ++i) { // generate all possible pairs from a[] and store sums of all possible pairs in aux[]
-    for (uint32_t j = i+1; j < n; ++j) {
+  for (uint i = 0, k = 0; i < n-1; ++i) { // generate all possible pairs from a[] and store sums of all possible pairs in aux[]
+    for (uint j = i+1; j < n; ++j) {
       aux[k].sum = a[i]+a[j];
       aux[k].first = i;
       aux[k].second = j;
@@ -256,17 +232,17 @@ fourSum(const int32_t a[], const uint32_t n, const int32_t target) { // O(n^2Log
              a.second == b.second);
   };
 
-  vector<vector<uint32_t>> ret;
+  set<vector<uint>> ret;
   // Now start two index variables from two corners of array and move them toward each other.
-  uint32_t i = 0;
-  int32_t j = size-1;
-  while (i <= j ) { //size && j >= 0) {
-    int32_t t_sum = aux[i].sum+aux[j].sum;
+  uint i = 0;
+  int j = size-1;
+  while (i < j+1) { //size && j >= 0) {
+    int t_sum = aux[i].sum+aux[j].sum;
     if (t_sum == target) {
       if (noCommon(aux[i], aux[j])) {
-        vector<uint32_t> indices = {aux[i].first,aux[i].second,aux[j].first,aux[j].second};
+        vector<uint> indices = {aux[i].first,aux[i].second,aux[j].first,aux[j].second};
         sort(indices.begin(), indices.end());
-        ret.push_back(indices);
+        ret.insert(indices);
       }
       ++i;
     } else if (t_sum < target)
@@ -275,8 +251,8 @@ fourSum(const int32_t a[], const uint32_t n, const int32_t target) { // O(n^2Log
       --j;
   }
 
-  sort(ret.begin(), ret.end());
-  return ret;
+  // sort(ret.begin(), ret.end());
+  return {ret.begin(), ret.end()};
 }
 
 /*
@@ -284,15 +260,15 @@ Find longest continous subarray that sum up to zero.
 For example:
 {1, 2 -3, 1, 5, -5, 6} should return {2, -3, 1, 5, -5}
  */
-vector<int32_t> longestSubarraySumsTo0(const int32_t a[], const uint32_t n) {
+vector<int> longestSubarraySumsTo0(const int a[], const uint n) {
   if (!n)
     return {};
 
-  uint32_t max_len = 0;
-  int32_t sum = 0, begin = -1;
-  map<int32_t,uint32_t> mem; // = {{0, -1}};
+  uint max_len = 0;
+  int sum = 0, begin = -1;
+  map<int,uint> mem; // = {{0, -1}};
 
-  for (uint32_t i = 0; i < n; ++i) {
+  for (uint i = 0; i < n; ++i) {
     sum += a[i];
     if (mem.count(sum)) { // if this sum has appeared before, what's in the middle is a subarray with 0 sum
       auto pos = mem[sum];
@@ -308,8 +284,8 @@ vector<int32_t> longestSubarraySumsTo0(const int32_t a[], const uint32_t n) {
   if (begin < 0)
     return {};
   else {
-    vector<int32_t> ret;
-    for (uint32_t i = 0; i < max_len; ++i)
+    vector<int> ret;
+    for (uint i = 0; i < max_len; ++i)
       ret.push_back(a[begin+i]);
 
     return ret;
@@ -320,15 +296,15 @@ vector<int32_t> longestSubarraySumsTo0(const int32_t a[], const uint32_t n) {
 Given an array of unsorted non-negative integers, find if there's a continous subarray
 that sum up to a target.
  */
-pair<int32_t,int32_t>
-subarraySum2Target(const uint32_t a[], const uint32_t n, const uint32_t target) { // sliding window
+pair<int,int>
+subarraySum2Target(const uint a[], const uint n, const uint target) { // sliding window
   if (!n)
     return {};
 
-  deque<uint32_t> q;
-  uint32_t q_sum = 0;
+  deque<uint> q;
+  uint q_sum = 0;
 
-  for (uint32_t i = 0; i < n;) {
+  for (uint i = 0; i < n;) {
     if (a[i] == target) {
       return make_pair(i, i);
     }
@@ -348,10 +324,10 @@ subarraySum2Target(const uint32_t a[], const uint32_t n, const uint32_t target) 
   return {-1,-1};
 }
 
-void subarraySum2Target_2(const uint32_t a[], const uint32_t n, const uint32_t target) {
-  uint32_t curr_sum = a[0], start = 0;
+void subarraySum2Target_2(const uint a[], const uint n, const uint target) {
+  uint curr_sum = a[0], start = 0;
 
-  for (uint32_t i = 1; i < n+1; ++i) {
+  for (uint i = 1; i < n+1; ++i) {
     // If curr_sum exceeds the sum, then remove the starting elements
     while (curr_sum > target && start < i-1) {
       curr_sum -= a[start++];
@@ -376,12 +352,12 @@ void subarraySum2Target_2(const uint32_t a[], const uint32_t n, const uint32_t t
 Given an array of integers and a number x, find the smallest subarray
 with sum greater than the given value.
  */
-int32_t smallestSubarrayBiggerSum(const int32_t a[], const uint32_t n, const int32_t target) {
+int smallestSubarrayBiggerSum(const int a[], const uint n, const int target) {
   if (!n)
     return -1;
 
-  int32_t curr_sum = 0, min_len = n+1;
-  uint32_t start = 0, end = 0;
+  int curr_sum = 0, min_len = n+1;
+  uint start = 0, end = 0;
 
   while (end < n) {
     // Keep adding array elements while current sum is smaller than target
@@ -403,28 +379,28 @@ int32_t smallestSubarrayBiggerSum(const int32_t a[], const uint32_t n, const int
 
 /*
 Find sum of contiguous subarray within a one-dimensional array of numbers which has largest sum.
-int32_t maxSubArraySum(const vector<int32_t>& a) { // this works for all negative a as well
-  const uint32_t n = a.size();
+int maxSubArraySum(const vector<int>& a) { // this works for all negative a as well
+  const uint n = a.size();
   if (!n)
     throw exception();
-  int32_t max_so_far = a[0];
-  int32_t curr_max = a[0];
-  for (uint32_t i = 1; i < n; ++i) {
+  int max_so_far = a[0];
+  int curr_max = a[0];
+  for (uint i = 1; i < n; ++i) {
     curr_max = max(a[i], curr_max+a[i]);
     max_so_far = max(max_so_far, curr_max);
   }
   return max_so_far;
 }
  */
-int32_t maxSubarraySum(const int32_t a[], const uint32_t n) {
+int maxSubarraySum(const int a[], const uint n) {
   if (!n)
     throw exception();
 
-  int32_t ret = MIN_LMT;
-  int32_t i_sum = 0;
-  uint32_t start = 0, end = 0;
+  int ret = MIN_LMT;
+  int i_sum = 0;
+  uint start = 0, end = 0;
 
-  for (uint32_t i = 0; i < n; ++i) {
+  for (uint i = 0; i < n; ++i) {
     // i_sum: sum of contiguous subarray before i, either starting from 0 or not
     i_sum += a[i]; // expands to i-th element
     if (i_sum < ret) {
@@ -451,8 +427,8 @@ int32_t maxSubarraySum(const int32_t a[], const uint32_t n) {
 Given an array and an integer k, find the maximum for each and every contiguous subarray of size k.
 Sliding window
  */
-int32_t maxSizeKSubarraySum(const vector<int32_t>& a) {
-  const uint32_t n = a.size();
+int maxSizeKSubarraySum(const vector<int>& a) {
+  const uint n = a.size();
 }
 
 /*
@@ -460,25 +436,25 @@ Given a pair-sum array and size of the original array (n), construct the origina
 A pair-sum array for an array is the array that contains sum of all pairs in ordered form. For example pair-sum array for a[] = {6, 8, 3, 4} is {14, 9, 10, 11, 12, 7}.
 In general, pair-sum array for a[0..n-1] is {a[0]+a[1], a[0]+a[2], ..., a[1]+a[2], a[1]+a[3], ..., a[2]+a[3], a[2]+a[4], ..., a[n-2]+a[n-1}.
  */
-void construct(int32_t a[], const int32_t pair[], const uint32_t n) {
+void construct(int a[], const int pair[], const uint n) {
   if (!n)
     return;
 
   a[0] = (pair[0]+pair[1]-pair[n-1])/2;
-  for (uint32_t i = 1; i < n; ++i)
+  for (uint i = 1; i < n; ++i)
     a[i] = pair[i-1]-a[0];
 }
 
 /*
-vector<vector<int32_t> >
-zeroSumInSorted_recur(const vector<int32_t>& a, const uint32_t begin, const uint32_t count, const int32_t target) {
-  vector<vector<int32_t> > res;
-  vector<int32_t> tuple;
-  set<int32_t> visited;
+vector<vector<int> >
+zeroSumInSorted_recur(const vector<int>& a, const uint begin, const uint count, const int target) {
+  vector<vector<int> > res;
+  vector<int> tuple;
+  set<int> visited;
   if (count == 2) {
-    uint32_t i = begin, j = a.size()-1;
+    uint i = begin, j = a.size()-1;
     while (i < j) {
-      int32_t sum = a[i]+a[j];
+      int sum = a[i]+a[j];
       if (sum == target && visited.find(a[i]) == visited.end()) {
         tuple.clear();
         visited.insert(a[i]);
@@ -495,12 +471,12 @@ zeroSumInSorted_recur(const vector<int32_t>& a, const uint32_t begin, const uint
       }
     }
   } else {
-    for (uint32_t i = begin; i < a.size(); ++i) {
+    for (uint i = begin; i < a.size(); ++i) {
       if (visited.find(a[i]) == visited.end()) {
         visited.insert(a[i]);
-        vector<int32_t> sub_res = zeroSumInSorted_recur(a, i+1, count-1, target-a[i]);
+        vector<int> sub_res = zeroSumInSorted_recur(a, i+1, count-1, target-a[i]);
         if (!sub_res.empty()) {
-          for (uint32_t j = 0; j < sub_res.size(); ++j) {
+          for (uint j = 0; j < sub_res.size(); ++j) {
             sub_res[j].insert(sub_res[j].begin(), a[i]);
           }
           res.insert(res.end(), sub_res.begin(), sub_res.end());
@@ -510,11 +486,11 @@ zeroSumInSorted_recur(const vector<int32_t>& a, const uint32_t begin, const uint
   }
   return res;
 }
-vector<int32_t> threeSum3(const vector<int32_t>& a) {
+vector<int> threeSum3(const vector<int>& a) {
   sort(a.begin(), num.end());
   return zeroSumInSorted(a, 0, 3, 0);
 }
-vector<int32_t> fourSum(vector<int32_t>& a, const int32_t target) {
+vector<int> fourSum(vector<int>& a, const int target) {
   sort(a.begin(), a.end());
   return zeroSumInSorted(a, 0, 4, target);
 }
@@ -536,14 +512,14 @@ Moreover you can make any number in the range candidate to candidate+a[k], inclu
 because you can start with any number in the range from 1 to a[k], inclusive,
 and then add candidate-1 to it. Therefore, set candidate to candidate+a[k] and increment k.
  */
-uint32_t smallestUnrepresentable(const uint32_t a[], const uint32_t n) {
+uint smallestUnrepresentable(const uint a[], const uint n) {
   if (!n)
     throw exception();
 
-  uint32_t ret = 1;
+  uint ret = 1;
 
   // Traverse the array and increment 'ret' if a[i] is smaller than or equal to 'ret'.
-  for (uint32_t i = 0; i < n && a[i] <= ret; ++i)
+  for (uint i = 0; i < n && a[i] <= ret; ++i)
     ret += a[i];
 
   return ret;
@@ -553,25 +529,25 @@ uint32_t smallestUnrepresentable(const uint32_t a[], const uint32_t n) {
 Determine whether a given set can be partitioned into two subsets such that the sum of elements
 in both subsets is same.
  */
-bool partition(const int32_t a[], const uint32_t n) {
+bool partition(const int a[], const uint n) {
   if (n < 2)
     return false;
 
-  int32_t sum = 0;
-  for (uint32_t i = 0; i < n; ++i)
+  int sum = 0;
+  for (uint i = 0; i < n; ++i)
     sum += a[i];
   if (sum%2 != 0)
     return false;
 
   bool part[sum/2+1][n+1];
-  for (uint32_t i = 0; i < n+1; ++i)
+  for (uint i = 0; i < n+1; ++i)
     part[0][i] = true;
-  for (uint32_t i = 1; i < sum/2+1; ++i)
+  for (uint i = 1; i < sum/2+1; ++i)
     part[i][0] = false;
 
   // Fill the partition table in botton up manner
-  for (uint32_t i = 1; i < sum/2+1; ++i) {
-    for (uint32_t j = 1; j < n+1; ++j) {
+  for (uint i = 1; i < sum/2+1; ++i) {
+    for (uint j = 1; j < n+1; ++j) {
       part[i][j] = part[i][j-1];
       if (i >= a[j-1])
         part[i][j] = part[i][j] || part[i-a[j-1]][j-1];
@@ -588,9 +564,9 @@ another array only at common elements.
 Expected time complexity is O(m+n) where m is the number of elements in a1[] and n is the number of
 elements in a2[].
  */
-int32_t maxPathSum(int32_t a1[], int32_t a2[], const uint32_t m, const uint32_t n) {
-  int32_t ret = 0, sum1 = 0, sum2 = 0;
-  uint32_t i = 0, j = 0;
+int maxPathSum(int a1[], int a2[], const uint m, const uint n) {
+  int ret = 0, sum1 = 0, sum2 = 0;
+  uint i = 0, j = 0;
 
   // Below 3 loops are similar to merge in merge sort
   while (i < m && j < n) {
@@ -634,14 +610,14 @@ the constraint that no two numbers in the sequence should be adjacent in the arr
 3 2 5 10 7 should return 15 (15 = 3 + 5 + 7)
 1 5 4 3 2 should return 8 (8 = 5 + 3)
  */
-uint32_t maxNoAdjSubseqSum(uint32_t a[], const uint32_t n) {
+uint maxNoAdjSubseqSum(uint a[], const uint n) {
   if (!n)
     return 0;
 
-  uint32_t incl = a[0], excl = 0;
-  uint32_t excl_new;
+  uint incl = a[0], excl = 0;
+  uint excl_new;
 
-  for (uint32_t i = 1; i < n; ++i) {
+  for (uint i = 1; i < n; ++i) {
     /* current max excluding i */
     excl_new = (incl > excl) ? incl: excl;
 
@@ -654,26 +630,26 @@ uint32_t maxNoAdjSubseqSum(uint32_t a[], const uint32_t n) {
   return ((incl > excl) ? incl : excl);
 }
 
-uint32_t maxNoAdjSubseqSum2(uint32_t a[], const uint32_t n) {
+uint maxNoAdjSubseqSum2(uint a[], const uint n) {
   if (!n)
     return 0;
 
-  uint32_t ret = 0;
+  uint ret = 0;
 
-  function<void(const uint32_t,uint32_t)> solve =
-    [&](const uint32_t idx, uint32_t curr_sum) {
+  function<void(const uint,uint)> solve =
+    [&](const uint idx, uint curr_sum) {
     if (idx >= n) {
       return;
     }
 
     curr_sum += a[idx];
     ret = max(ret, curr_sum);
-    for (uint32_t i = idx+2; i < n; ++i) {
+    for (uint i = idx+2; i < n; ++i) {
       solve(i, curr_sum);
     }
   };
 
-  for (uint32_t i = 0; i < n; ++i)
+  for (uint i = 0; i < n; ++i)
     solve(i, 0);
 
   return ret;
@@ -693,17 +669,17 @@ sum of elements at higher indices.
    c) leftsum += a[i] // update leftsum for next iteration.
 4) return -1 // If we come out of loop without returning then there is no equilibrium index
  */
-int32_t equilibrium(int32_t a[], const uint32_t n) {
+int equilibrium(int a[], const uint n) {
   if (!n)
     return -1;
 
-  int32_t sum = 0;     // initialize sum of whole array
-  int32_t leftsum = 0; // initialize leftsum
+  int sum = 0;     // initialize sum of whole array
+  int leftsum = 0; // initialize leftsum
 
-  for (uint32_t i = 0; i < n; ++i)
+  for (uint i = 0; i < n; ++i)
     sum += a[i];
 
-  for (uint32_t i = 0; i < n; ++i) {
+  for (uint i = 0; i < n; ++i) {
     sum -= a[i]; // sum is now right sum for index i
     if (leftsum == sum)
       return i;
@@ -719,10 +695,10 @@ Given n numbers (both +ve and -ve), arranged in a circle, fnd the maximum sum of
  */
 // Standard Kadane's algorithm to find maximum subarray sum
 // See http://www.geeksforgeeks.org/archives/576 for details
-int32_t kadane(const int32_t a[], const uint32_t n) {
-  int32_t max_so_far = 0, max_ending_here = 0;
+int kadane(const int a[], const uint n) {
+  int max_so_far = 0, max_ending_here = 0;
 
-  for (uint32_t i = 0; i < n; ++i) {
+  for (uint i = 0; i < n; ++i) {
     max_ending_here += a[i];
     if (max_ending_here < 0)
       max_ending_here = 0;
@@ -732,13 +708,13 @@ int32_t kadane(const int32_t a[], const uint32_t n) {
   return max_so_far;
 }
 
-int32_t maxCircularSum(int32_t a[], const uint32_t n) {
+int maxCircularSum(int a[], const uint n) {
   // Case 1: get the maximum sum using standard kadane's algorithm
-  int32_t max_kadane = kadane(a, n);
+  int max_kadane = kadane(a, n);
 
   // Case 2: Now find the maximum sum that includes corner elements.
-  int32_t max_wrap = 0;
-  for (uint32_t i = 0; i < n; ++i) {
+  int max_wrap = 0;
+  for (uint i = 0; i < n; ++i) {
     max_wrap += a[i]; // Calculate array-sum
     a[i] = -a[i];  // invert the array (change sign)
   }
@@ -751,33 +727,20 @@ int32_t maxCircularSum(int32_t a[], const uint32_t n) {
 }
 
 int main(int argc, char** argv) {
-  int32_t a[] = {2,7,1,5};
-  pair<uint32_t,uint32_t> indices = twoSum(a, 4, 9);
+  int a[] = {2,7,1,5};
+  pair<uint,uint> indices = twoSum(a, 4, 9);
   cout << "Two sum:" << endl;
   cout << indices.first << "," << indices.second << endl;
 
-  vector<int32_t> v = {-1,0,0,0,1,2,-1,-4};
-  vector<vector<uint32_t>> res = threeSumTo0(v);
+  vector<int> v = {-1,0,0,0,1,2,-1,-4};
+  vector<ThreeIndices> res0 = threeSumTo0(v);
   cout << "Three sum indices:" << endl;
-  for (const auto& i : res) {
-    for (const auto j : i) {
-      cout << j << " ";
-    }
-    cout << endl;
+  for (const auto& i : res0) {
+    cout << i.first << " " << i.second << " " << i.third << endl;
   }
 
-  v = {2,3,4,5,6,7,8,9,8,7,6,5};
-  res = fourSum(v, 26); // issues?
-  cout << "Four sum indices:" << endl;
-  for (const auto& i : res) {
-    for (const auto j : i) {
-      cout << j << " ";
-    }
-    cout << endl;
-  }
-
-  int32_t b[] = {2,3,4,5,6,7,8,9,8,7,6,5};
-  res = fourSum(b, 12, 26);
+  int b[] = {2,3,4,5,6,7,8,9,8,7,6,5};
+  vector<vector<uint>> res = fourSum(b, 12, 26);
   cout << "Four sum 2 indices:" << endl;
   for (const auto& i : res) {
     for (const auto j : i) {
@@ -786,25 +749,25 @@ int main(int argc, char** argv) {
     cout << endl;
   }
 
-  int32_t c[] = {-2,-3,-4,-1,-2,-1,-5,-3};
+  int c[] = {-2,-3,-4,-1,-2,-1,-5,-3};
   maxSubarraySum(c, 8);
 
-  int32_t d[] = {1, 2 -3, 1, 5, -5, 6};
-  vector<int32_t> res1 = longestSubarraySumsTo0(d, 7);
+  int d[] = {1, 2 -3, 1, 5, -5, 6};
+  vector<int> res1 = longestSubarraySumsTo0(d, 7);
   cout << "Longest subarray with sum 0: ";
   for (const auto& i : res1)
     cout << i << " ";
   cout << endl;
 
-  uint32_t e[] = {1,2,3,4,5,6,7,8,9};
-  const uint32_t target = 11;
-  pair<int32_t,int32_t> indices1 = subarraySum2Target(e, 9, target);
+  uint e[] = {1,2,3,4,5,6,7,8,9};
+  const uint target = 11;
+  pair<int,int> indices1 = subarraySum2Target(e, 9, target);
   cout << "Subarray: " << indices1.first << " to " << indices1.second << endl;
   subarraySum2Target_2(e, 9, target);
 
-  int32_t f[] = {1, 4, 45, 6, 10, 19};
-  int32_t target1 = 51;
-  uint32_t n = sizeof(f)/sizeof(f[0]);
+  int f[] = {1, 4, 45, 6, 10, 19};
+  int target1 = 51;
+  uint n = sizeof(f)/sizeof(f[0]);
   cout << "Length of smallest subarray with sum bigger than " << target1 << ": " << smallestSubarrayBiggerSum(f, n, target1) << endl;
    /* int arr2[] = {1, 10, 5, 2, 7};
     int n2 = sizeof(arr2)/sizeof(arr2[0]);
@@ -815,23 +778,23 @@ int main(int argc, char** argv) {
     x  = 280;
     cout << smallestSubWithSum(arr3, n3, x);
  */
- //   vector<int32_t> a = {-2, -3, 4, -1, -2, 1, 5, -3};
+ //   vector<int> a = {-2, -3, 4, -1, -2, 1, 5, -3};
  // subarrayMaxSum(a); //, n);
- // vector<int32_t> b = {-2, -3, -4, -1, -2, -1, -5, -3};
+ // vector<int> b = {-2, -3, -4, -1, -2, -1, -5, -3};
 //  subarrayMaxSum(b); //, n); // indices don't work
 
-  int32_t g[10] = {-10,-9,-3,0,2,3,6,7,8,9};
-  int32_t h[6] = {-8,-2,0,2,10,11};
+  int g[10] = {-10,-9,-3,0,2,3,6,7,8,9};
+  int h[6] = {-8,-2,0,2,10,11};
   cout << "Max path sum between two arrays: " << maxPathSum(g, h, 10, 6) << endl;
 
-  uint32_t i[] = {3,2,7,10};
+  uint i[] = {3,2,7,10};
   cout << "Max subsequence sum w/o adjacents: " << maxNoAdjSubseqSum(i, 4) << endl;
-/*  uint32_t a6[] = {3,2,5,10,7};
+/*  uint a6[] = {3,2,5,10,7};
   cout << maxNoAdjSubseqSum(a6, 5) << endl;
-  uint32_t a7[] = {1,5,4,3,2};
+  uint a7[] = {1,5,4,3,2};
   cout << maxNoAdjSubseqSum(a7, 5) << endl;
  */
-  uint32_t j[] = {1, 3, 4, 5};
+  uint j[] = {1, 3, 4, 5};
   n = sizeof(j)/sizeof(j[0]);
   cout << "Smallest unrepresentable number: " << smallestUnrepresentable(j, n) << endl;
 
