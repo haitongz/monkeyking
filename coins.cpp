@@ -1,11 +1,11 @@
 #include <iostream>
-#include <vector>
 #include <limits>
 #include <functional>
 
 using namespace std;
 
-static const uint32_t MAX_LMT = numeric_limits<uint32_t>::max();
+static const uint MAX_LMT = numeric_limits<uint>::has_infinity ?
+                            numeric_limits<uint>::infinity() : numeric_limits<uint>::max();
 
 /*
 Given a value N, if we want to make change for N cents,
@@ -16,12 +16,14 @@ For example, for N = 4 and S = {1,2,3}, there are four solutions: {1,1,1,1},{1,1
 So output should be 4. For N = 10 and S = {2,5,3,6}, there are five solutions:
 {2,2,2,2,2}, {2,2,3,3}, {2,2,6}, {2,3,5} and {5,5}. So the output should be 5.
  */
-uint32_t makeChange_recur(const uint8_t coins[], const uint32_t n, const uint32_t V) {
+/*
+   these 2 don't work
+uint makeChange_recur(const uint coins[], const uint n, const uint V) {
   if (!n || !V)
     return 0;
 
-  function<uint32_t(const uint32_t,const uint32_t)> solve =
-    [&](const uint32_t remain, const uint32_t coin_num) -> uint32_t {
+  function<uint(const uint,const uint)> solve =
+    [&](const uint remain, const uint coin_num) -> uint {
     if (!remain) {
       return 1;
     }
@@ -36,42 +38,42 @@ uint32_t makeChange_recur(const uint8_t coins[], const uint32_t n, const uint32_
   return solve(V, n);
 }
 
-uint32_t makeChange_dp2(const uint8_t coins[], const uint32_t n, const uint32_t V) {
+uint makeChange_dp(const uint coins[], const uint n, const uint V) {
   if (!V || !n)
     return 0;
 
-  uint32_t dp[V+1];
+  uint dp[V+1];
   for (auto& i : dp)
     i = 0;
   dp[0] = 1;
 
   // Pick all coins one by one and update dp values after index >= the value of the picked coin
-  for (uint32_t i = 0; i < V; ++i) {
-    const uint8_t i_value = coins[i];
-    for (uint32_t j = i_value; j < n+1; ++j)
+  for (uint i = 0; i < V; ++i) {
+    const uint i_value = coins[i];
+    for (uint j = i_value; j < n+1; ++j)
       dp[j] += dp[j-i_value];
   }
 
   return dp[n];
 }
-
-uint32_t makeChange_dp(const uint8_t coins[], const uint32_t n, const uint32_t V) {
+ */
+uint makeChange_dp(const uint coins[], const uint n, const uint V) {
   if (!V || !n)
     return 0;
 
   // We need V+1 rows as the table is consturcted in bottom up manner using the
   // base case 0 value case (V = 0)
-  uint32_t dp[V+1][n];
-  for (uint32_t i = 0; i < n; ++i)
+  uint dp[V+1][n];
+  for (uint i = 0; i < n; ++i)
     dp[0][i] = 1;
 
-  for (uint32_t i = 1; i < V+1; ++i) {
-    for (uint32_t j = 0; j < n; ++j) {
+  for (uint i = 1; i < V+1; ++i) {
+    for (uint j = 0; j < n; ++j) {
       // Count of solutions excluding coin S[j]
-      const uint32_t s1 = (j >= 1) ? dp[i][j-1] : 0;
+      const uint s1 = (j >= 1) ? dp[i][j-1] : 0;
       // Count of solutions including S[j]
-      const int32_t left = i-coins[j];
-      const uint32_t s2 = (left >= 0) ? dp[left][j] : 0;
+      const int left = i-coins[j];
+      const uint s2 = (left >= 0) ? dp[left][j] : 0;
       dp[i][j] = s1+s2;
     }
   }
@@ -88,18 +90,18 @@ Input: coins[] = {25, 10, 5}, V = 30
 Output: Minimum 2 coins required
 We can use one coin of 25 cents and one of 5 cents
  */
-uint32_t minCoinNum(const uint8_t coins[], const uint32_t n, const uint32_t V) { // O(nV)
+uint minCoinNum(const uint coins[], const uint n, const uint V) { // O(nV)
   if (!V || !n)
     return 0;
 
-  uint32_t dp[V+1];
+  uint dp[V+1];
   dp[0] = 0;
 
-  for (uint32_t i = 1; i < V+1; ++i) {
-    uint32_t v = MAX_LMT; // cannot use -1 here, why?
+  for (uint i = 1; i < V+1; ++i) {
+    uint v = MAX_LMT; // cannot use -1 here, why?
 
-    for (uint32_t j = 0; j < n; ++j) {
-      const int32_t left = i-coins[j];
+    for (uint j = 0; j < n; ++j) {
+      const int left = i-coins[j];
       if (left >= 0) { // coin value should not exceed the amount itself
         v = min(v, dp[left]);
       }
@@ -122,15 +124,14 @@ Example:
 {5, 3, 7, 10} return 15
 {8, 15, 3, 7} return 22
  */
-uint32_t coinsInALine(const vector<uint32_t>& nums) {
-  const uint32_t n = nums.size();
+uint coinsInALine(const uint nums[], const uint n) {
   if (!n)
     return 0;
 
-  uint32_t dp[n][n];
+  uint dp[n][n];
 
-  for (uint32_t k = 0; k < n; ++k) {
-    for (uint32_t i = 0, j = k; j < n; ++i, ++j) {
+  for (uint k = 0; k < n; ++k) {
+    for (uint i = 0, j = k; j < n; ++i, ++j) {
       if (i == j) {
         dp[i][j] = nums[i];
       } else if (i+1 == j) {
@@ -157,48 +158,47 @@ There are following 4 ways to reach 20
 (5, 5, 5, 5)
 (3, 3, 3, 3, 3, 5)
  */
-uint32_t count(const uint32_t n) {
-  uint32_t dp[n+1];
+uint count(const uint n) {
+  uint dp[n+1];
   for (auto& i : dp)
     i = 0;
   dp[0] = 1; // if n is 0
 
   // One by one consider given 3 moves and update the table[]
   // values after the index greater than or equal to the value of the picked move
-  for (uint32_t i = 3; i < n+1; ++i)
+  for (uint i = 3; i < n+1; ++i)
     dp[i] += dp[i-3];
-  for (uint32_t i = 5; i < n+1; ++i)
+  for (uint i = 5; i < n+1; ++i)
     dp[i] += dp[i-5];
-  for (uint32_t i = 10; i< n+1; ++i)
+  for (uint i = 10; i< n+1; ++i)
     dp[i] += dp[i-10];
 
   return dp[n];
 }
 
 int main(int argc, char** argv) {
-  const uint8_t coins[] = {2, 3, 5, 6};
-  uint32_t n = sizeof(coins)/sizeof(coins[0]);
-  uint32_t V = 25;
+  const uint coins[] = {2, 3, 5, 6};
+  uint n = sizeof(coins)/sizeof(coins[0]);
+  uint V = 25;
 
-  //cout << "There are " << makeChange_recur(N, S) << " ways to represent " << N << " cents!" << endl;
   cout << "There are " << makeChange_dp(coins, n, V) << " ways for changes!" << endl;
 
-  const uint8_t coins2[] = {1, 5, 10, 25};
+  const uint coins2[] = {1, 5, 10, 25};
   n = sizeof(coins2)/sizeof(coins2[0]);
   cout << "There are " << makeChange_dp(coins2, n, V) << " ways to represent " << V << " cents!" << endl;
 
-  const uint8_t coins3[] =  {9, 6, 5, 1};
+  const uint coins3[] = {9, 6, 5, 1};
   n = sizeof(coins3)/sizeof(coins3[0]);
   V = 11;
   cout << "Minimum coins required is " << minCoinNum(coins3, n, V) << endl;
 
-  vector<uint32_t> nums = {5, 3, 7, 10};
-  cout << "Max sum: " << coinsInALine(nums) << endl;
-  nums = {8, 15, 3, 7};
-  cout << "Max sum: " << coinsInALine(nums) << endl;
+  const uint coins4[] = {5, 3, 7, 10};
+  cout << "Max sum: " << coinsInALine(coins4, 4) << endl;
+  const uint coins5[] = {8, 15, 3, 7};
+  cout << "Max sum: " << coinsInALine(coins5, 4) << endl;
 
   n = 20;
   cout << "There are " << count(n) << " ways to reach " << n << endl;
-  
+
   return 0;
 }
