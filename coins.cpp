@@ -1,204 +1,189 @@
 #include <iostream>
-#include <limits>
+#include <vector>
+#include <set>
+#include <algorithm>
 #include <functional>
 
 using namespace std;
 
-static const uint MAX_LMT = numeric_limits<uint>::has_infinity ?
-                            numeric_limits<uint>::infinity() : numeric_limits<uint>::max();
-
 /*
-Given a value N, if we want to make change for N cents,
-and we have infinite supply of each of S = {S1,S2,...,Sm} valued coins,
-how many ways can we make the change? The order of coins doesn't matter.
+A string of length n has n! permutation.
 
-For example, for N = 4 and S = {1,2,3}, there are four solutions: {1,1,1,1},{1,1,2},{2,2},{1,3}.
-So output should be 4. For N = 10 and S = {2,5,3,6}, there are five solutions:
-{2,2,2,2,2}, {2,2,3,3}, {2,2,6}, {2,3,5} and {5,5}. So the output should be 5.
+Below are the permutations of string ABC.
+ABC, ACB, BAC, BCA, CAB, CBA
  */
-/*
-   these 2 don't work
-uint makeChange_recur(const uint coins[], const uint n, const uint V) {
-  if (!n || !V)
-    return 0;
+set<string> stringPermus_recur(string s) {
+  const uint len = s.length();
+  if (!len)
+    return {};
 
-  function<uint(const uint,const uint)> solve =
-    [&](const uint remain, const uint coin_num) -> uint {
-    if (!remain) {
-      return 1;
+  set<string> ret;
+
+  function<void(const uint,const uint)> solve =
+    [&](const uint start, const uint end) {
+    if (start == end) {
+      ret.insert(s);
+      return;
     }
-    if (!coin_num) // && remaining >= 1)
-      return 0;
 
-    // count is sum of solutions (i) including S[m-1] (ii) excluding S[m-1]
-    return solve(remain, coin_num-1) +
-           solve(remain-coins[coin_num-1], coin_num);
+    for (uint i = start; i < end+1; ++i) { // backtracking
+      swap(s[start], s[i]);
+      solve(start+1, end);
+      swap(s[start], s[i]);
+    }
   };
 
-  return solve(V, n);
-}
-
-uint makeChange_dp(const uint coins[], const uint n, const uint V) {
-  if (!V || !n)
-    return 0;
-
-  uint dp[V+1];
-  for (auto& i : dp)
-    i = 0;
-  dp[0] = 1;
-
-  // Pick all coins one by one and update dp values after index >= the value of the picked coin
-  for (uint i = 0; i < V; ++i) {
-    const uint i_value = coins[i];
-    for (uint j = i_value; j < n+1; ++j)
-      dp[j] += dp[j-i_value];
-  }
-
-  return dp[n];
-}
- */
-uint makeChange_dp(const uint coins[], const uint n, const uint V) {
-  if (!V || !n)
-    return 0;
-
-  // We need V+1 rows as the table is consturcted in bottom up manner using the
-  // base case 0 value case (V = 0)
-  uint dp[V+1][n];
-  for (uint i = 0; i < n; ++i)
-    dp[0][i] = 1;
-
-  for (uint i = 1; i < V+1; ++i) {
-    for (uint j = 0; j < n; ++j) {
-      // Count of solutions excluding coin S[j]
-      const uint s1 = (j >= 1) ? dp[i][j-1] : 0;
-      // Count of solutions including S[j]
-      const int left = i-coins[j];
-      const uint s2 = (left >= 0) ? dp[left][j] : 0;
-      dp[i][j] = s1+s2;
-    }
-  }
-
-  return dp[V][n-1];
+  solve(0, len-1);
+  return ret;
 }
 
 /*
-Given a value V, if we want to make change for V cents, and we have infinite
-supply of each of S = {S1,S2,...,Sm} valued coins, what is the minimum number
-of coins to make the change?
-
-Input: coins[] = {25, 10, 5}, V = 30
-Output: Minimum 2 coins required
-We can use one coin of 25 cents and one of 5 cents
+The set [1,2,3,...,n] contains a total of n! unique permutations.
+By listing and labeling all of the permutations in order, we get the following sequence (ie, for n = 3):
+"123"
+"132"
+"213"
+"231"
+"312"
+"321"
+Given n and k, return the kth permutation sequence.
+Note: Given n will be between 1 and 9 inclusive.
  */
-uint minCoinNum(const uint coins[], const uint n, const uint V) { // O(nV)
-  if (!V || !n)
-    return 0;
+string kthPermu(const uint n, uint k) {
+  function<uint(const uint)> factorial =
+    [](const uint n) {
+    uint ret = 1;
 
-  uint dp[V+1];
-  dp[0] = 0;
+    for (uint i = 2; i < n+1; ++i)
+      ret *= i;
 
-  for (uint i = 1; i < V+1; ++i) {
-    uint v = MAX_LMT; // cannot use -1 here, why?
+    return ret;
+  };
 
-    for (uint j = 0; j < n; ++j) {
-      const int left = i-coins[j];
-      if (left >= 0) { // coin value should not exceed the amount itself
-        v = min(v, dp[left]);
+  uint total = factorial(n);
+  string candidate = string("123456789").substr(0, n);
+  string ret(n, ' ');
+
+  for (uint i = 0; i < n; ++i) {
+    total /= (n-i);
+    const uint idx = (k-1)/total;
+    ret[i] = candidate[idx];
+    candidate.erase(idx, 1);
+    k -= idx*total;
+  }
+
+  return ret;
+}
+
+/*
+Given a collection of numbers, return all possible permutations.
+
+For example,
+[1,2,3] have the following permutations:
+[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2] and [3,2,1].
+ */
+vector<vector<int>> numberPermus_recur(vector<int>& nums) {
+  const uint n = nums.size();
+  if (n <= 1)
+    return {nums};
+
+  vector<vector<int>> ret;
+
+  function<void(const uint)> solve =
+    [&](const uint idx) {
+    if (idx == n) {
+      ret.push_back(nums);
+      return;
+    }
+
+    for (uint i = idx; i < n; ++i) { // backtracking
+      swap(nums[i], nums[idx]);
+      solve(idx+1);
+      swap(nums[i], nums[idx]);
+    }
+  };
+
+  solve(0);
+  return ret;
+}
+
+/*
+Given a collection of numbers that might contain duplicates, return all possible unique permutations.
+For example,
+[1,1,2] have the following unique permutations:
+[1,1,2], [1,2,1], [2,1,1].
+ */
+vector<vector<int>> uniquePermus(vector<int>& nums) {
+  const uint n = nums.size();
+  if (n <= 1)
+    return {nums};
+
+  sort(nums.begin(), nums.end());
+
+  function<bool()> nextPermu = [&](){
+    uint first = 0, last = n;
+    uint pre_last = last-1;
+
+    while (first < pre_last) {
+      uint t = pre_last;
+      if (nums[--pre_last] < nums[t]) {
+        uint l = last;
+        while (nums[--l] <= nums[pre_last]);
+
+        swap(nums[l], nums[pre_last]);
+        reverse(nums.begin()+t, nums.end());
+        return true;
+      }
+
+      if (!pre_last) {
+        reverse(nums.begin(), nums.end());
+        return false;
       }
     }
+  };
 
-    if (v != MAX_LMT)
-      dp[i] = v+1;
-    else
-      dp[i] = MAX_LMT;
-  }
+  vector<vector<int>> ret;
 
-  return dp[V];
-}
+  do {
+    ret.push_back(nums);
+  } while (nextPermu());
 
-/*
-Given a list of numbers, you and another player pick a number in turn. Both of players
-can only pick left most or right most number and you get to pick first, how should you max your sum?
-
-Example:
-{5, 3, 7, 10} return 15
-{8, 15, 3, 7} return 22
- */
-uint coinsInALine(const uint nums[], const uint n) {
-  if (!n)
-    return 0;
-
-  uint dp[n][n];
-
-  for (uint k = 0; k < n; ++k) {
-    for (uint i = 0, j = k; j < n; ++i, ++j) {
-      if (i == j) {
-        dp[i][j] = nums[i];
-      } else if (i+1 == j) {
-        dp[i][j] = max(nums[i], nums[j]);
-      } else {
-        dp[i][j] = max(nums[i]+min(dp[i+1][j-1], dp[j+2][j]),
-                       nums[j]+min(dp[i][j-2], dp[i+1][j-1]));
-      }
-    }
-  }
-
-  return dp[0][n-1];
-}
-
-/*
-Consider a game where a player can score 3 or 5 or 10 points in a move.
-Given a total score n, find number of ways to reach the given score.
-
-Input: n = 20
-Output: 4
-There are following 4 ways to reach 20
-(10, 10)
-(5, 5, 10)
-(5, 5, 5, 5)
-(3, 3, 3, 3, 3, 5)
- */
-uint count(const uint n) {
-  uint dp[n+1];
-  for (auto& i : dp)
-    i = 0;
-  dp[0] = 1; // if n is 0
-
-  // One by one consider given 3 moves and update the table[]
-  // values after the index greater than or equal to the value of the picked move
-  for (uint i = 3; i < n+1; ++i)
-    dp[i] += dp[i-3];
-  for (uint i = 5; i < n+1; ++i)
-    dp[i] += dp[i-5];
-  for (uint i = 10; i< n+1; ++i)
-    dp[i] += dp[i-10];
-
-  return dp[n];
+  return ret;
 }
 
 int main(int argc, char** argv) {
-  const uint coins[] = {2, 3, 5, 6};
-  uint n = sizeof(coins)/sizeof(coins[0]);
-  uint V = 25;
+  string s = "ABC";
+  cout << "All permutations of " << s << " are: ";
+  set<string> permus = stringPermus_recur(s);
+  for (const auto& i : permus) {
+    cout << i << " ";
+  }
+  cout << endl;
 
-  cout << "There are " << makeChange_dp(coins, n, V) << " ways for changes!" << endl;
+  uint n = 3;
+  uint k = 5;
+  cout << k << "th permutation of [1,..." << n << "]:" << endl;
+  cout << kthPermu(3, 5) << endl;
 
-  const uint coins2[] = {1, 5, 10, 25};
-  n = sizeof(coins2)/sizeof(coins2[0]);
-  cout << "There are " << makeChange_dp(coins2, n, V) << " ways to represent " << V << " cents!" << endl;
+  vector<int> nums = {1,2,3};
+  vector<vector<int>> res = numberPermus_recur(nums);
 
-  const uint coins3[] = {9, 6, 5, 1};
-  n = sizeof(coins3)/sizeof(coins3[0]);
-  V = 11;
-  cout << "Minimum coins required is " << minCoinNum(coins3, n, V) << endl;
+  cout << "All permutations of {1,2,3}:" << endl;
+  for (auto& i : res) {
+    for (auto j : i)
+      cout << j << " ";
+    cout << endl;
+  }
 
-  const uint coins4[] = {5, 3, 7, 10};
-  cout << "Max sum: " << coinsInALine(coins4, 4) << endl;
-  const uint coins5[] = {8, 15, 3, 7};
-  cout << "Max sum: " << coinsInALine(coins5, 4) << endl;
+  nums = {1,1,2};
+  res = uniquePermus(nums);
 
-  n = 20;
-  cout << "There are " << count(n) << " ways to reach " << n << endl;
+  cout << "Unique permutations of {1,1,2}:" << endl;
+  for (auto& i : res) {
+    for (auto j : i)
+      cout << j << " ";
+    cout << endl;
+  }
 
   return 0;
 }
