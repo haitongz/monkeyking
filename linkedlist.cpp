@@ -5,12 +5,12 @@
 using namespace std;
 
 struct ListNode {
-  ListNode(const int32_t v)
+  ListNode(const int v)
     : value(v)
     , next(nullptr) {
   }
 
-  int32_t value;
+  int value;
   ListNode* next;
 };
 
@@ -31,7 +31,7 @@ do {\
   a ^= b;\
 } while (0)
 
-void push(ListNode** head, const int32_t v) {
+void push(ListNode** head, const int v) {
   if (!head) {
 #ifdef _DEBUG_
     cerr << "Null head!" << endl;
@@ -61,8 +61,8 @@ ListNode* pop(ListNode** head) {
   return ret;
 }
 
-uint32_t length_iter(const ListNode* head) {
-  uint32_t ret = 0;
+uint length_iter(const ListNode* head) {
+  uint ret = 0;
   auto curr = head;
   while (curr) {
     ++ret;
@@ -71,9 +71,9 @@ uint32_t length_iter(const ListNode* head) {
   return ret;
 }
 
-uint32_t length_recur(const ListNode* head) {
-  function<uint32_t(const ListNode*)> solve =
-    [&](const ListNode* curr_head) -> uint32_t {
+uint length_recur(const ListNode* head) {
+  function<uint(const ListNode*)> solve =
+    [&](const ListNode* curr_head) -> uint {
     if (!curr_head)
       return 0;
 
@@ -83,7 +83,7 @@ uint32_t length_recur(const ListNode* head) {
   return solve(head);
 }
 
-bool search_iter(const ListNode* head, const int32_t target) {
+bool search_iter(const ListNode* head, const int target) {
   auto curr = head;
   while (curr) {
     if (curr->value == target)
@@ -93,7 +93,7 @@ bool search_iter(const ListNode* head, const int32_t target) {
   return false;
 }
 
-bool search_recur(const ListNode* head, const int32_t target) {
+bool search_recur(const ListNode* head, const int target) {
   function<bool(const ListNode*)> solve =
     [&](const ListNode* curr_head) {
     if (!curr_head)
@@ -115,7 +115,7 @@ void print(const ListNode* head) {
     return;
   }
 
-  uint32_t i = 0;
+  uint i = 0;
   while (head) {
     cout << "Node[" << i++ << "] = " << head->value << endl;
     head = head->next;
@@ -319,14 +319,14 @@ Note:
 Given m, n satisfy the following condition:
 1 <= m <= n <= length of list.
  */
-void reverseM2N(ListNode* head, const uint32_t m, const uint32_t n) {
+void reverseM2N(ListNode* head, const uint m, const uint n) {
   if (!head || !head->next)
     return;
 
   ListNode* prev = nullptr;
   auto curr = head;
 
-  int32_t cnt = m;
+  int cnt = m;
   while (cnt >= 0) { // && curr) no need 2 check curr
     prev = curr;
     curr = curr->next;
@@ -334,7 +334,7 @@ void reverseM2N(ListNode* head, const uint32_t m, const uint32_t n) {
   }
 
   auto cp = prev;
-  for (uint32_t i = n+1; i <= m; ++i) {
+  for (uint i = n+1; i <= m; ++i) {
     auto next = curr->next;
     curr->next = prev;
     prev = curr;
@@ -345,7 +345,7 @@ void reverseM2N(ListNode* head, const uint32_t m, const uint32_t n) {
   cp->next = curr;
 }
 
-ListNode* getNth(ListNode* head, const uint32_t N) {
+ListNode* getNth(ListNode* head, const uint N) {
   if (!head) {
 #ifdef _DEBUG_
     cerr << "Null head!" << endl;
@@ -354,7 +354,7 @@ ListNode* getNth(ListNode* head, const uint32_t N) {
   }
 
   auto ret = head;
-  int32_t count = N;
+  int count = N;
   while (ret && count >= 0) {
     ret = ret->next;
   }
@@ -365,7 +365,7 @@ ListNode* getNth(ListNode* head, const uint32_t N) {
     return ret;
 }
 
-ListNode* nth2End(ListNode* head, const uint32_t N) {
+ListNode* nth2End(ListNode* head, const uint N) {
   if (!head) {
 #ifdef _DEBUG_
     cerr << "Null head!" << endl;
@@ -373,7 +373,7 @@ ListNode* nth2End(ListNode* head, const uint32_t N) {
     return nullptr;
   }
 
-  uint32_t i = 0;
+  uint i = 0;
   auto end = head;
   while (end->next && i < N-1) {
     end = end->next;
@@ -419,7 +419,7 @@ void sort(ListNode* head) {
   }
 }
 
-ListNode* sortedInsert(ListNode** head, const int32_t v) {
+ListNode* sortedInsert(ListNode** head, const int v) {
   if (!head) {
 #ifdef _DEBUG_
     cerr << "Null head!" << endl;
@@ -662,7 +662,7 @@ void quickSort(ListNode** head_ref) {
   *head_ref = solve(*head_ref, getTail(*head_ref));
 }
 
-uint32_t delNodes(ListNode** head, const int32_t target) {
+uint delNodes(ListNode** head, const int target) {
   if (!head) {
 #ifdef _DEBUG_
     cerr << "Null head!" << endl;
@@ -672,7 +672,7 @@ uint32_t delNodes(ListNode** head, const int32_t target) {
     return 0;
   }
 
-  uint32_t cnt = 0;
+  uint cnt = 0;
   auto curr = *head;
   ListNode* prev = nullptr;
 
@@ -756,15 +756,15 @@ You may assume there are no cycles anywhere in the entire linked structure.
 Your code should preferably run in O(n) time and use only O(1) memory.
 */
 const ListNode* intersection(const ListNode* head1, const ListNode* head2) {
-  const uint32_t len1 = length_iter(head1);
-  const uint32_t len2 = length_iter(head2);
+  const uint len1 = length_iter(head1);
+  const uint len2 = length_iter(head2);
 
-  function<const ListNode*(const uint32_t,const ListNode*,const ListNode*)> solve =
-    [](const uint32_t diff, const ListNode* longer_head, const ListNode* shorter_head) -> const ListNode* {
+  function<const ListNode*(const uint,const ListNode*,const ListNode*)> solve =
+    [](const uint diff, const ListNode* longer_head, const ListNode* shorter_head) -> const ListNode* {
     auto curr1 = longer_head;
     auto curr2 = shorter_head;
 
-    for (uint32_t i = 0; i < diff; ++i) {
+    for (uint i = 0; i < diff; ++i) {
       if (!curr1) {
         return nullptr;
       }
@@ -797,13 +797,13 @@ Given this linked list: 1->2->3->4->5
 For k = 2, you should return: 2->1->4->3->5
 For k = 3, you should return: 3->2->1->4->5
  */
-ListNode* reverseKGroup_iter(ListNode* head, const uint32_t k) { // O(n2)
+ListNode* reverseKGroup_iter(ListNode* head, const uint k) { // O(n2)
   ListNode dummy(0);
   dummy.next = head;
   auto prev = &dummy;
 
   while (head) {
-    uint32_t i = 1;
+    uint i = 1;
     for ( ; i < k && head->next; ++i) {
       head = head->next;
     }
@@ -825,13 +825,13 @@ ListNode* reverseKGroup_iter(ListNode* head, const uint32_t k) { // O(n2)
   return dummy.next;
 }
 
-ListNode* reverseKGroup_recur(ListNode* head, const uint32_t k) {
+ListNode* reverseKGroup_recur(ListNode* head, const uint k) {
   function<ListNode*(ListNode*)> solve = // O(n)
     [&](ListNode* curr_head) {
     auto curr = curr_head;
     ListNode* next = nullptr;
     auto prev = next;
-    uint32_t cnt = 0;
+    uint cnt = 0;
 
     /*reverse first k nodes of the linked list */
     while (curr && cnt < k) {
@@ -863,13 +863,13 @@ Inputs:   1->2->3->4->5->6->7->8->9->NULL and k = 3
 Output:   3->2->1->4->5->6->9->8->7->NULL.
  */
 /* Reverses alternate k nodes and returns the pointer to the new head node */
-ListNode* kAltReverse_recur(ListNode* head, const uint32_t k) { // O(n)
+ListNode* kAltReverse_recur(ListNode* head, const uint k) { // O(n)
   function<ListNode*(ListNode*)> solve =
     [&](ListNode* curr_head) {
     auto curr = curr_head;
     ListNode* next = nullptr;
     auto prev = next;
-    uint32_t cnt = 0;
+    uint cnt = 0;
 
     /*1) reverse first k nodes of the linked list */
     while (curr && cnt < k) {
@@ -1158,7 +1158,7 @@ void removeLoop(ListNode* loop_node, ListNode* head) {
   ptr2->next = nullptr;
 }
 
-uint8_t detectAndRemoveLoop(ListNode* head) {
+uint detectAndRemoveLoop(ListNode* head) {
   auto slow_p = head, fast_p = head;
 
   while (slow_p && fast_p && fast_p->next) {
@@ -1190,11 +1190,11 @@ ListNode* addTwoNums(const ListNode* l1, const ListNode* l2) {
   ListNode* sumList = new ListNode(-1);
   ListNode* curr = sumList;
 
-  uint8_t carry = 0;
+  uint carry = 0;
   while (l1 || l2 || carry) {
-    int32_t l1val = !l1 ? 0 : l1->value;
-    int32_t l2val = !l2 ? 0 : l2->value;
-    int32_t sum = l1val+l2val+carry;
+    int l1val = !l1 ? 0 : l1->value;
+    int l2val = !l2 ? 0 : l2->value;
+    int sum = l1val+l2val+carry;
     carry = sum/10; // 0 or 1
     sum %= 10;
 
@@ -1240,7 +1240,7 @@ Time complexity: linked lists b and c can be sorted in O(nLogn) time using Merge
 So the overall time complexity is O(nlogn)+O(nlogn)+O(n*n) = O(n*n)
  */
 bool isSumSorted(ListNode* ahead, ListNode* bhead,
-                 ListNode* chead, const int32_t target) {
+                 ListNode* chead, const int target) {
   ListNode* a = ahead;
 
   // Traverse through all nodes of a
@@ -1251,7 +1251,7 @@ bool isSumSorted(ListNode* ahead, ListNode* bhead,
     // For every node of list a, prick two nodes from lists b abd c
     while (b && c) {
       // If this a triplet with given sum, print it and return true
-      int32_t sum = a->value+b->value+c->value;
+      int sum = a->value+b->value+c->value;
       if (sum == target) {
         cout << "Triplet Found: " << a->value << " " << b->value << " " << c->value << endl;
         return true;
@@ -1272,13 +1272,13 @@ bool isSumSorted(ListNode* ahead, ListNode* bhead,
 Given a list, rotate the list to the right by k places, where k is non-negative.
 For example, given 1->2->3->4->5->NULL and k = 2, return 4->5->1->2->3->NULL.
  */
-ListNode* rightRotateByK(ListNode* head, uint32_t k) {
+ListNode* rightRotateByK(ListNode* head, uint k) {
   if (!head || !head->next || !k)
     return head;
 
   ListNode dummy(-1);
   dummy.next = head;
-  const uint32_t n = length_iter(head);
+  const uint n = length_iter(head);
   k %= n; // note: k can become 0
   while (k > 1 && head->next) {
     head = head->next;
@@ -1345,7 +1345,7 @@ ListNode* finalMaxSumList(ListNode* a, ListNode* b) {
   while (curr1 || curr2) {
     // Keeping 2 local variables at the start of every loop run to keep track
     // of the sum between prev and curr pointer elements.
-    int32_t sum1 = 0, sum2 = 0;
+    int sum1 = 0, sum2 = 0;
 
     // Calculating sum by traversing the nodes of linked list as the merging of two linked list.
     // The loop stops at a common node
