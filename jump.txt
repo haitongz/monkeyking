@@ -126,3 +126,115 @@ Binary search to find the first occurrance of the target element
 
 
 http://massivealgorithms.blogspot.com/2015/12/leetcode-322-coin-change.html
+
+
+
+decimal-zip:
+
+int solve(int A, int B) {
+        if (A < 0 || A > 100000000) return -1;
+        if (B < 0 || B > 100000000) return -1;
+        if (!A && !B)
+            return 0;
+        else if (!A)
+            return B;
+        else if (!B) {
+            int n = reverse(A);
+            int ret = n%10 * 10; // append 0 from B
+            n /= 10;
+            A /= 10;
+            
+            do {
+                ret = ret*10 + n%10;
+                n /= 10;
+                A /= 10;
+            } while (A);
+            
+            return ret > 100000000 ? -1 : ret;
+        }
+
+        int rA = reverse(A);
+        int rB = reverse(B);
+
+        int zipped = 0;
+        // complexity: O(log(A)+log(B))
+        do {
+            if (A > 0) {
+                zipped = zipped*10 + rA%10;
+                rA /= 10;
+                A /= 10;
+            }
+
+            if (B > 0) {
+                zipped = zipped*10 + rB%10;
+                rB /= 10;
+                B /= 10;
+            }
+        } while (A > 0 || B > 0);
+
+        if (zipped > 100000000) return -1;
+
+        return zipped;
+    }
+
+private:
+    // complexity: O(log(n)) time, O(1) space
+    // precondition: n >= 0
+    int reverse(int n) {
+        int reversed = 0;
+        while(n > 0) {
+            reversed = reversed*10 + n%10;
+            n /= 10;
+        }
+
+        return reversed;
+    }
+};
+
+comforting numbers:
+http://stackoverflow.com/questions/23397829/codility-condition-in-comfort
+
+
+#define CHECKBIT(var,pos) ((var) & (1<<(pos)))
+
+function<uint(int)> count0s = [&](int n) {
+    uint ret;
+    for (ret = 0; n; n>>= 1) {
+        if (!(n&1)) {
+            ++ret;
+        }
+    }
+    
+    return ret;
+};
+
+int a = pow(2, count0s(A));
+int b = pow(2, count0s(B));
+int c = pow(2, count0s(C));
+uint ab0s = 0;
+uint ac0s = 0;
+uint bc0s = 0;
+uint abc0s = 0;
+
+for (uint i = 0; i < 30; ++i) {
+    if (!CHECKBIT(A,i) && !CHECKBIT(B,i)) { // check case A|B
+        ++ab0s;
+    }
+    if (!CHECKBIT(A,i) && !CHECKBIT(C,i)) { // check case A|C
+        ++ac0s;
+    }
+    if (!CHECKBIT(C,i) && !CHECKBIT(B,i)) { // check case C|B
+        ++bc0s;
+    }
+    if (!CHECKBIT(A,i) && !CHECKBIT(B,i) && !CHECKBIT(C,i)) { // check case A|B|C
+        ++abc0s;
+    }
+}
+
+int ab = pow(2, ab0s);
+int ac = pow(2, ac0s);
+int bc = pow(2, bc0s);
+int abc = pow(2, abc0s);
+
+return a+b+c-ab-ac-bc+abc;
+}
