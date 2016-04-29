@@ -111,6 +111,8 @@ void afree(char *p) /* free storage pointed to by p */
     allocp = p;
 }
 
+https://msdn.microsoft.com/en-us/library/dd998050.aspx
+
 2.  leetcode permutation
 我用了这里的第二个解法 
 
