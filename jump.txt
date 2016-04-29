@@ -91,6 +91,26 @@ print(rectilinear(-4,1, 2, 6, 0, -1, 4, 3))
     
 1.
 用malloc实现alloc (我也不知道是啥，反正是很底层的function，为了优化malloc的memory管理和time)
+#define ALLOCSIZE 10000 /* size of available space */
+ 
+static char allocbuf[ALLOCSIZE]; /* storage for alloc */
+static char *allocp = allocbuf; /* next free position */
+ 
+char *alloc(int n) /* return pointer to n characters */
+{
+    if (allocbuf + ALLOCSIZE - allocp >= n) { /* it fits */
+        allocp += n;
+        return allocp - n; /* old p */
+    } else /* not enough room */
+        return 0;
+}
+ 
+void afree(char *p) /* free storage pointed to by p */
+{
+    if (p >= allocbuf && p < allocbuf + ALLOCSIZE)
+    allocp = p;
+}
+
 2.  leetcode permutation
 我用了这里的第二个解法 
 
@@ -134,9 +154,7 @@ decimal-zip:
 int solve(int A, int B) {
         if (A < 0 || A > 100000000) return -1;
         if (B < 0 || B > 100000000) return -1;
-        if (!A && !B)
-            return 0;
-        else if (!A)
+        if (!A)
             return B;
         else if (!B) {
             int n = reverse(A);
