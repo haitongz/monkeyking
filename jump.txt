@@ -258,3 +258,106 @@ int abc = pow(2, abc0s);
 
 return a+b+c-ab-ac-bc+abc;
 }
+
+
+
+
+
+
+
+Node *getUnionList(Node *head1, Node *head2) {
+	Node *head3 = NULL;
+	Node *node1 = head1;
+	Node *node2 = head2;
+	Node *lastNode = NULL;
+	Node *prev1 = NULL,*prev2 = NULL;
+ 
+	while(node1 && node2) {
+		if(node1->data == node2->data) {
+			if(prev1 == NULL)
+				insertAtEndOfLL(&head3,&lastNode,node1->data);
+			else {
+				if(prev1->data != node1->data)
+					insertAtEndOfLL(&head3,&lastNode,node1->data);
+			}
+			prev1 = node1;
+			prev2= node2;
+			node1 = node1->next;
+			node2 = node2->next;
+		}
+		else if(node1->data < node2->data) {
+			if(prev1 == NULL)
+				insertAtEndOfLL(&head3,&lastNode,node1->data);
+			else {
+				if(prev1->data != node1->data)
+					insertAtEndOfLL(&head3,&lastNode,node1->data);
+			}
+			prev1 = node1;
+			node1 = node1->next;
+		}
+		else {
+			if(prev2 == NULL)
+				insertAtEndOfLL(&head3,&lastNode,node2->data);
+			else {
+				if(prev2->data != node2->data)
+					insertAtEndOfLL(&head3,&lastNode,node2->data);
+			}
+			prev2 = node2;
+			node2 = node2->next;
+		}
+	}
+ 
+	if(node1 == NULL) {
+		while(node2) {
+			if(prev2 == NULL)
+				insertAtEndOfLL(&head3,&lastNode,node2->data);
+			else {
+				if(prev2->data != node2->data)
+					insertAtEndOfLL(&head3,&lastNode,node2->data);
+			}
+			prev2 = node2;
+			node2 = node2->next;
+		}
+	}
+	else if(node2 == NULL) {
+		while(node1) {
+			if(prev1 == NULL)
+				insertAtEndOfLL(&head3,&lastNode,node1->data);
+			else {
+				if(prev1->data != node1->data)
+					insertAtEndOfLL(&head3,&lastNode,node1->data);
+			}
+			prev1 = node1;
+			node1 = node1->next;
+		}
+	}
+ 
+	return head3;
+}
+ 
+Node *getIntersectionList(Node *head1, Node *head2) {
+	Node *head3 = NULL;
+	Node *node1 = head1;
+	Node *node2 = head2;
+	Node *lastNode = NULL;
+ 
+	if(head1 == NULL)
+		return NULL;
+ 
+	if(head2 == NULL)
+		return NULL;
+ 
+	while(node1 && node2) {
+		if(node1->data == node2->data) {	
+			insertAtEndOfLL(&head3,&lastNode,node1->data);
+			node1 = node1->next;
+			node2 = node2->next;
+		}
+		else if(node1->data < node2->data)
+			node1 = node1->next;
+		else
+			node2 = node2->next;
+	}
+ 
+	return head3;
+}
