@@ -3,6 +3,25 @@
 
 #include <type_traits>
 
+// K&R impl
+void itoa(int n, char s[]) {
+  int sign = n;
+  if (sign < 0) // record sign
+    n = -n;     // make n positive
+
+  int i = 0;
+  do { // generate digits in reverse order
+    s[i++] = n % 10 + '0'; // get next digit
+  } while ((n /= 10) > 0); /* delete it */
+
+  if (sign < 0)
+    s[i++] = '-';
+
+  s[i] = '\0';
+  reverse(s);
+}
+
+/* bad impl
 char* itoa(int32_t value, char* buffer, const uint8_t base = 10) {
   if (base < 2 || base > 36) {
     *buffer = '\0';
@@ -31,7 +50,9 @@ char* itoa(int32_t value, char* buffer, const uint8_t base = 10) {
 
   return buffer;
 }
+ */
 
+// Speedway impl
 namespace meta {
 
 template <uint64_t _base_, uint8_t _n_>
