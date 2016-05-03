@@ -259,115 +259,72 @@ int abc = pow(2, abc0s);
 return a+b+c-ab-ac-bc+abc;
 }
 
+void unionList( struct node *p, struct node *q, struct node **s )
+{
+struct node *z ;
 
-void findintersect(struct node *p, struct node *q, struct node **intersect)
+z = NULL ;
+
+/* if both lists are empty */
+if ( p == NULL && q == NULL )
+return ;
+
+/* traverse both linked lists till the end. If end of any one list is reached loop is terminated */
+while ( p != NULL && q != NULL )
 {
-    struct node *ptemp, *qtemp, *itemp, *irear, *ifront;
- 
-    ptemp = p;
-    while (ptemp != NULL)
-    {
-        qtemp = q;
-        ifront = *intersect;
-        while (qtemp != NULL && ptemp->num != qtemp->num)
-        {
-            qtemp = qtemp->next;
-        }
-        if (qtemp != NULL)
-        {
-            if (ifront != NULL)
-            {
-                if (ifront->num == qtemp->num)
-                {
-                    ptemp = ptemp->next;
-                    continue;
-                }
-                ifront = ifront->next;
-            }
-            itemp = (struct node *)malloc(sizeof(struct node));
-            itemp->num = qtemp->num;
-            itemp->next = NULL;
-            if (*intersect == NULL)
-            {
-                *intersect = itemp;
-            }
-            else
-            {
-                irear->next = itemp;
-            }
-            irear = itemp;
-        }
-        ptemp = ptemp->next;
-    }
-}
- 
-void findunion(struct node *p, struct node *q, struct node **unionlist)
+/* if node being added in the first node */
+if ( *s == NULL )
 {
-    struct node *utemp, *ufront, *urear;
-    int flag = 0;
- 
-    while (p != NULL)
-    {
-        ufront = *unionlist;
-        while (ufront != NULL)
-        {
-            if (ufront->num == p->num)
-            {
-                flag = 1;
-            }
-            ufront = ufront->next;
-        }
-        if (flag)
-        {
-            flag = 0;
-        }
-        else
-        {
-            utemp = (struct node *)malloc(sizeof(struct node));
-            utemp->num = p->num;
-            utemp->next = NULL;
-            if (*unionlist == NULL)
-            {
-                *unionlist = utemp;
-            }
-            else
-            {
-                urear->next = utemp;
-            }
-            urear = utemp;
-        }
-        p = p->next;
-    }
-    while (q != NULL)
-    {
-        ufront = *unionlist;
-        while (ufront != NULL)
-        {
-            if (ufront->num == q->num)
-            {
-                flag = 1;
-            }
-            ufront = ufront->next;
-        }
-        if (flag)
-        {
-            flag = 0;
-        }
-        else
-        {
-            utemp = (struct node *)malloc(sizeof(struct node));
-            utemp->num = q->num;
-            utemp->next = NULL;
-            if (*unionlist == NULL)
-            {
-                *unionlist = utemp;
-            }
-            else
-            {
-                urear->next = utemp;
-            }
-            urear = utemp;
-        }
-        q = q->next;
-    }
+*s = malloc ( sizeof ( struct node ) ) ;
+z = *s ;
 }
+else
+{
+z -> link = malloc ( sizeof ( struct node ) ) ;
+z = z -> link ;
+}
+
+if ( p -> data < q -> data )
+{
+z -> data = p -> data ;
+p = p -> link ;
+}
+else
+{
+if ( q -> data < p ->data)
+{
+z -> data = q -> data ;
+q = q -> link ;
+}
+else
+{
+if ( p -> data == q -> data )
+{
+z -> data = q -> data ;
+p = p -> link ;
+q = q -> link ;
+}
+}
+}
+}
+
+/* if end of first list has not been reached */
+while ( p != NULL )
+{
+z -> link = malloc ( sizeof ( struct node ) ) ;
+z = z -> link ;
+z -> data = p -> data ;
+p = p -> link ;
+}
+
+/* if end of second list has been reached */
+while ( q != NULL )
+{
+z -> link = malloc ( sizeof ( struct node ) ) ;
+z = z -> link ;
+z -> data = q -> data ;
+q = q -> link ;
+}
+z -> link = NULL ;
+}
+//iterate  over both lists once to determine the minimum and maximum value. From these values we create a vector. With this vector we iterate over both lists again. For each number n in the list we increase the value in the vector on position n with 1. This makes sure that elements that are in the intersection will have a value of 2 in the vector, elements that are in the union will then have a value of 1. Elements that are absent will have a value of 0. Then the only thing we need to do is iterate over the vector and add the indices that have a value of 2 to the intersection and add the indices that have a value of 1 to the union. And done.
