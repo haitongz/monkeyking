@@ -258,3 +258,6 @@ int abc = pow(2, abc0s);
 
 return a+b+c-ab-ac-bc+abc;
 }
+
+
+http://blog.csdn.net/linhuanmars/article/details/39546025
