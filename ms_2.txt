@@ -1,0 +1,192 @@
+
+cmake ../..   -DCMAKE_CXX_COMPILER=/ms/dist/fsf/PROJ/gcc/4.8g++ -DCMAKE_CC_COMPILER=gcc   -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=true
+
+MsgRouter server:
+sudo ./scripts/router.pl start example
+
+MsgRouter client:
+
+
+
+./bin/msgrouter -DAPP=TestClientArcaDirect4Mlnx -Dtuning%.INCLUDE=file:./conf/client.conf %tuning -DCONFIG_FILE=./conf/client.conf
+
+
+
+./bin/msgrouter -DAPP=TestClientUTPDirectMlnx -Dtuning%.INCLUDE=file:./conf/client.conf %tuning -DCONFIG_FILE=./conf/client.conf
+
+
+b 'e23g11::apps::ProtoUTPDirect<e23g11::sys_linux::Mlnx4DirectAccessTraits>::handleLogon(e23g11::sys_linux::DirectAccessStreamSocket<e23g11::sys_linux::Mlnx4DirectAccessTraits>::Connection&, e23g11::apps::MessageRouterTCP<e23g11::sys_linux::Mlnx4DirectAccessTraits>::session_t&, e23g11::market::nyse::utpdirect::Logon const&)'
+
+
+b 'e23g11::apps::ProtoUTPDirect<e23g11::sys_linux::Mlnx4DirectAccessTraits>::handleLogon(e23g11::sys_linux::DirectAccessStreamSocket<e23g11::sys_linux::Mlnx4DirectAccessTraits>::Connection&, e23g11::apps::MessageRouterTCP<e23g11::sys_linux::Mlnx4DirectAccessTraits>::session_t&, e23g11::market::nyse::utpdirect::Logon const&)'
+
+
+/ms/dist/mstk/PROJ/rhdevtoolset/2.0-beta-1-rhel5/bin/g++ -Wno-unused-local-typedefs -O0 -ggdb3 -fno-inline -D__1123_ASSERT_TYPE=11 -UNDEBUG -D__1123_NONPOLLING_LOGGER=0 -D__MONITOR_LATENCY=0 -D__ENHANCED_RISK_CHECKS=0 -D__SPIN=0 -D__SPIN_2PATHS=0  -fPIC -Wl,-rpath,./../speedway CMakeFiles/msgrouter.dir/manifest.cpp.o CMakeFiles/msgrouter.dir/app.cpp.o CMakeFiles/msgrouter.dir/src/apps/main.cpp.o  -o msgrouter -rdynamic -lpthread -lrt -ldl  -L/ms/dist/fsf/PROJ/icu/4.6.1/exec/gcc41_64/lib -licuuc -licui18n -licudata -L/ms/dist/fsf/PROJ/boost/1.53.0\-1/exec/lib/ -lboost_regex ../../../speedway/libspeedway.a
+
+
+/ms/dist/intel/PROJ/icc/13.0-Update4/exec/bin/intel64/icpc   -Wno-unused-but-set-variable -xAVX -O3 -DNDEBUG -fvisibility-inlines-hidden -fno-stack-protector -D__1123_LOG_LEVEL=1 -D__1123_NONPOLLING_LOGGER=0 -D__MONITOR_LATENCY=0 -D__ENHANCED_RISK_CHECKS=0  -D__SPIN=0 -D__SPIN_2PATHS=0  -fPIC -Wl,-rpath,./../speedway CMakeFiles/msgrouter.dir/manifest.cpp.o CMakeFiles/msgrouter.dir/app.cpp.o CMakeFiles/msgrouter.dir/src/apps/main.cpp.o  -o msgrouter -rdynamic -lpthread -lrt -ldl -L/ms/dist/fsf/PROJ/icu/4.6.1/exec/gcc41_64/lib -licuuc -licui18n -licudata -L/ms/dist/fsf/PROJ/boost/1.53.0\-1/exec/lib/ -lboost_regex ../../../speedway/libspeedway.a
+
+
+./hhdownload.pl -p np -s 152700  -e 153100  -f '!(ether[14:2] & 0xfff == 150)' -o singleorder.pcap
+
+./sw3test.pl icc.pcap > icc.numbers
+
+
+scripts/generateFixParser.pl -xml src/market/cme.cmefix/cmefix.xml -outdir src/autogen/market/cme.cmefix --aggregate Logon OrderBaseline
+
+
+
+
+
+
+
+
+
+module load etscfg
+gm tmp
+
+/tmp/pengx/
+
+.lastrelease
+gm p4release
+gm p4install
+gm p4dist
+
+
+etsdiff nyspeedway3 dist 3.15 dist 2.16 feias321
+tmp trunk feasi321
+
+epic create review --novalidate
+
+
+
+module load 3rd/autosys/NYT
+
+
+
+
+/ms/dist/OR/PROJ/fixTools/4.0/.exec/ia32.linux.2.4.lib6/bin/FixShell -d”;” -a nyqdma6:acdc_app1 -A -f cme.fix -s test -t test
+
+
+
+
+grep 'Message Received in ACDC Service' *log* | cut -d" " -f8 | cut -d"." -f1 | uniq -c | sort -rn | head
+
+
+
+/ms/dist/mstk/PROJ/rhdevtoolset/4.1-rhel6/bin/g++ -g -O0 -o t -std=c++11
+
+
+
+
+/ms/dev/3rd/perforce/2014.2.1003436/install/exec/p4v&
+
+
+
+
+
+module load msde/traincli/prod
+module load msde/premake
+gmake --silent -C /d/d1/shared/pengx/premake/etscg -j8 install
+
+
+premake --solution=./common/etscg.lua clean
+premake --solution=./common/etscg.lua gmake
+gmake --silent -C /d/d1/shared/pengx/premake/etscg clean
+
+
+
+ ./TestPlan.py --tests :FIX_BadOrigClOrdID:
+ ./TestPlan.py --tests :FIX_cancelAndReplaceWithoutProductTags:
+ ./TestPlan.py --tests :FIX_CG_basic_fix_standard:
+ ./TestPlan.py --tests :FIX_dupClOrdID:
+ ./TestPlan.py --tests :FIX_dupExecID:
+ ./TestPlan.py --tests :FIX_FixIntegrity:
+ ./TestPlan.py --tests :FIX_invalidSymbol:
+ ./TestPlan.py --tests :FIX_massActionCxl:
+ ./TestPlan.py --tests :FIX_multiSession:
+ ./TestPlan.py --tests :FIX_out_of_band_cancel:
+ ./TestPlan.py --tests :FIX_overfill:
+ ./TestPlan.py --tests :FIX_pending_integrity:
+ ./TestPlan.py --tests :FIX_pendings:
+ ./TestPlan.py --tests :FIX_sessionIds:
+ ./TestPlan.py --tests :FIX_ssLocate:
+ ./TestPlan.py --tests :FIX_tagValidation:
+ ./TestPlan.py --tests :FIX_testcases:
+
+
+ netAdminCmd nyqvlcg1n1:cg1 ETSApp info
+ netAdminCmd nyqvlcg1n1:cg1 App
+ netAdminCmd nyqvlcg1n1:cg1 App
+ netAdminCmd nyqvlcg1n1:cg1 App disp_limits
+ netAdminCmd nyqvlcg1n1:cg1 App disp_limits --id TN000081980
+
+ 
+ 
+
+\\ms\dist\ied\PROJ\cfm\testable\bin\ClientFlowManager.exe -forcelogin
+
+zeybeke/zeybeke
+
+module load appmw/netadmin/static
+netAdminCmd nyqvlcg1n1:cg1 fixsession.cleanup SIERRA_NEW 
+netAdminCmd nyqvlcg1n1:cg1 fixsession.seqno SIERRA_NEW IN 0
+netAdminCmd nyqvlcg1n1:cg1 fixsession.seqno SIERRA_NEW ACKED 0
+netAdminCmd nyqvlcg1n1:cg1 fixsession.seqno SIERRA_NEW OUT 0
+
+
+
+
+
+/ms/dist/OR/PROJ/fixTools/4.0/exec/bin/FixShell -d';'  -s SIERRA_NEW_AMIT -t MSCO_CG -S -a nyqvlcg1n1:cg_app1 -l 1 -v FIX.4.2 -E -F /tmp/5
+
+
+
+module unload python/core/2.6.4
+module load python/core/2.7.3-64
+module load msde/traincli/prod
+
+train build --type code_format_integrate; train build --debug 2>&1|tee a
+
+
+clean build:
+rm -rf /d/d1/shared/pengx/premake/etscg/trunk2-1130
+
+train create branch --source-branch ets/cg/trunk2 --name trunk2-1130 --jira-job CG2-1130
+train update workspace -w cg2.sprint17 -a ets/cg/trunk2-1309
+train create ci --mpb ets/cg/trunk2-1130 --ci-server train-jenkins4 --platforms MPB --job-name trunk2-1130 --job-types release
+
+
+
+
+../install/.exec/x86_64.linux.2.6.glibc.2.12/bin/gtest_os-g --gtest_filter=TestImbalanceOrder.NewThenCancel 2>&1|tee a
+
+
+
+export TERM=vt100
+lynx -cfg=.lynx/lynx.cfg
+
+
+
+
+
+/ms/dist/mstk/PROJ/rhdevtoolset/4.1-rhel6/bin/gcc -DDATA_FILE=\"/var/tmp/pengx/ouchtcp.probes\" -I/ms/dev/mstk/utune/0.9.727.master.160316-1639/install/common/include  -o ./ouchtcp_probes.o -c /ms/dist/mstk/PROJ/utune/dev/include/utune/debug_info.S
+
+
+
+/ms/dist/aquilon/PROJ/aqd/prod/bin/aq show host --hostname ilab70.one-nyp.ms.com | egrep "Host Personality:|Build Status:|Version"
+
+
+sudo su -
+
+
+/tmp/camluk_utune/install/.exec/x86_64.linux.2.6.glibc.2.12/utune --report-dir /var/tmp/pmu_report --config conf/pmu-config.xml -- bin/msgrouter -Dtuning%.INCLUDE=file:conf/router_eth6.conf%tuning -DCONFIG_FILE=conf/router_eth6.conf -DAPP=MessageRouterTCPMlnx 2>&1|tee a
+
+
+echo $$ >/dev/cpuset/tasks 
+
+
+/tmp/camluk_utune/install/.exec/x86_64.linux.2.6.glibc.2.12/utune -b --report-dir /var/tmp/bts_report --config ./conf/bts-config.xml -- bin/msgrouter -Dtuning%.INCLUDE=file:conf/router_eth6.conf%tuning -DCONFIG_FILE=conf/router_eth6.conf -DAPP=MessageRouterTCPMlnx 2>&1|tee a
+
+
+/ms/dist/mstk/PROJ/utune/dev/utune -b --report-dir /var/tmp/bts_report --config /opt/MessageRouter/conf/bts-config.xml -- /opt/MessageRouter/bin/msgrouter -Dtuning%.INCLUDE=file:/opt/MessageRouter/conf/router_eth6.conf%tuning -DCONFIG_FILE=/opt/MessageRouter/conf/router_eth6.conf -DAPP=MessageRouterTCPMlnx&
