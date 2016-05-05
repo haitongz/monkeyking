@@ -1,3 +1,32 @@
+(gdb) bt
+#0  e23g11::sys_linux::ReorderBuffer::getBufferReordering (this=0x1995a70, seqnum=@0x7fffffffde38,
+    size=@0x7fffffffde3c)
+    at /var/user/pengx/sw31_20130422_NY2.7.6-1_ArcaDirectSpin/MessageRouter/src/platform/os.linux/platform/DirectAccessStreamSocket.h:250
+#1  0x0000000000bc623b in e23g11::sys_linux::DirectAccessStreamSocket<e23g11::sys_linux::Mlnx4DirectAccessTraits>::Connection::getReadBuffer (this=0x1995a30, r=..., size=@0x7fffffffde2c)
+    at /var/user/pengx/sw31_20130422_NY2.7.6-1_ArcaDirectSpin/MessageRouter/src/platform/os.linux/platform/DirectAccessStreamSocket.h:652
+
+
+#0  e23g11::sys_linux::Mlnx4MAC<e23g11::sys_linux::Mlnx4DirectAccessTraits>::getNextReadBuffer (this=0x10b64d8)
+    at /var/user/pengx/sw31_20130422_NY2.7.6-1_ArcaDirectSpin/MessageRouter/src/platform/os.linux/platform/BaseDirectAccessSocket.h:1308
+#1  0x0000000000c3dc5d in e23g11::sys_linux::DirectAccessStreamSocket<e23g11::sys_linux::Mlnx4DirectAccessTraits>::read<true> (this=0x10b6450, now=...)
+    at /var/user/pengx/sw31_20130422_NY2.7.6-1_ArcaDirectSpin/MessageRouter/src/platform/os.linux/platform/DirectAccessStreamSocket.h:1149
+#2  0x0000000000c32a9e in e23g11::apps::MessageRouterTCP<e23g11::sys_linux::Mlnx4DirectAccessTraits>::run (
+    this=0x100e240)
+    at /var/user/pengx/sw31_20130422_NY2.7.6-1_ArcaDirectSpin/MessageRouter/src/apps/router/MessageRouterTCP.h:488
+#3  0x0000000000c31447 in e23g11::apps::MessageRouterTCP<e23g11::sys_linux::Mlnx4DirectAccessTraits>::main (
+    this=0x100e240, argc=1, argv=0x10aa1c0)
+    at /var/user/pengx/sw31_20130422_NY2.7.6-1_ArcaDirectSpin/MessageRouter/src/apps/router/MessageRouterTCP.h:585
+#4  0x0000000000c312f1 in e23g11::apps::MessageRouterTCPLauncher<e23g11::sys_linux::Mlnx4DirectAccessTraits>::main (this=0x100dd98, argc=1, argv=0x10aa1c0)
+    at /var/user/pengx/sw31_20130422_NY2.7.6-1_ArcaDirectSpin/MessageRouter/src/apps/router/MessageRouterTCP.h:402
+#5  0x0000000000d0f41f in e23g11::main::runApplication (name="MessageRouterTCPMlnx", runner=0x100dd98, argc=1,
+    argv=0x10aa1c0) at /var/user/pengx/sw31_20130422_NY2.7.6-1_ArcaDirectSpin/MessageRouter/src/apps/main.cpp:193
+#6  0x0000000000d0ff8d in e23g11::main::Initializer::M_main (this=0x1010800, app="MessageRouterTCPMlnx", argc=1,
+    argv=0x10aa1c0) at /var/user/pengx/sw31_20130422_NY2.7.6-1_ArcaDirectSpin/MessageRouter/src/apps/main.cpp:281
+#7  0x0000000000d12f5e in e23g11::main::Initializer::main (app="MessageRouterTCPMlnx", argc=1, argv=0x10aa1c0)
+    at /var/user/pengx/sw31_20130422_NY2.7.6-1_ArcaDirectSpin/MessageRouter/src/apps/main.cpp:173
+#8  0x0000000000d124d1 in main (argc=1, argv=0x10aa1c0)
+    at /var/user/pengx/sw31_20130422_NY2.7.6-1_ArcaDirectSpin/MessageRouter/src/apps/main.cpp:573
+
 
 cmake ../..   -DCMAKE_CXX_COMPILER=/ms/dist/fsf/PROJ/gcc/4.8g++ -DCMAKE_CC_COMPILER=gcc   -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE=true
 
@@ -190,3 +219,276 @@ echo $$ >/dev/cpuset/tasks
 
 
 /ms/dist/mstk/PROJ/utune/dev/utune -b --report-dir /var/tmp/bts_report --config /opt/MessageRouter/conf/bts-config.xml -- /opt/MessageRouter/bin/msgrouter -Dtuning%.INCLUDE=file:/opt/MessageRouter/conf/router_eth6.conf%tuning -DCONFIG_FILE=/opt/MessageRouter/conf/router_eth6.conf -DAPP=MessageRouterTCPMlnx&
+
+
+Liquid resume:
+
+Liquid Capital Management is an independent, self-funding and agile team trading: Futures; FX; and Kospi Options. Trading from London and Sydney. We had trading engines collocated at CBOT, CME, Hotspot, Currenex, Eurex, Xetra, Hong Kong, ICE, NASDAQ, KOREA Futures, LIFFE, NYMEX, MATIF, Osaka, Sydney Futures, Singapore and Tokyo.
+
+The complete system of trading engines and simulation environment was built entirely from scratch on LINUX using C++. I designed and extended the trading engine’s functionality in parallel with a continuous program of performance enhancements. The role grew into project management of all HFT infrastructure and trading engine development deliverables (internal and external), culminating in line management of the two trading engine developers and responsibility for technical and architectural direction.
+
+Head of high frequency Equity technology for Europe, project manager, architect and lead developer. I was responsible for: leading, coaching and line management of the team of three developers and two support specialists. The team provided algorithmic and black box trading via exchange memberships for: Borsa Italiana, BATS Europe, Chi-X, Euronext, LSE, OMX, NASDAQ OMX Europe, Virt-X/SWX, Xetra and FIX brokers. The algorithmic and black box trading was completely automated and co-located at the exchange (where possible).
+
+Project manager, architect and lead developer for Market Data Renovation and FX Electronic Pricing. I was responsible for: project deliverables; leading, coaching and line management of the team of five developers, one Quality Assurance specialist; and collaborating with the BU’s Quantative Analysts.
+
+I was responsible for the global e-trade architecture, application and library design, project and line management for the London broker-to-client developers. The design consisted of market specific gateways, message normalisation handlers, common order enrichment, dynamic order router, order state management, order persistence, auto accept/reject/price, deal and customer specific pricing, trader GUI, pre-trade vetting and trade capture. The software was deployed in London, Tokyo and New York across 6 desks and 50 traders, for Bloomberg, Bond Vision, TradeWeb and Yensai.
+
+Technical architect, team leader and senior developer for the Pool Rate Calculator. I was responsible for design and coding the calculation engine that: parsed the rules and equations; processed the trades; and logged all failures. I lead two contractors tasked with producing the PowerBuilder front end, and trade feeds.
+
+Designed and developed a number of interfaces to a Derivatives trading system.
+
+Recommended and implemented the UNIX World Wide Web proxy server application providing financial services information for a life assurance company.
+
+Provided Open Systems design skills in the development of the AIX platform and system services for RAF LITS (a logistics, engineering and management system) as a Technical Platform System Design Professional.
+
+Represented the interests of a major Scottish electricity utility to the company wide Infrastructure Project, while working on a pilot project for data replication.
+
+Designed and developed applications for the London Stock Market based around Oracle products and UNIX (HP-UX). Specialised in background processes that performed much of the trade communication to external systems, such as TALISMAN and CREST. 
+
+Investigation into the technology required for the Electronic Stock Interchange project.
+
+A member of the development team for a complete factory management suite (UNIX and Informix). Responsible for the financial interface to the accounting package, Sun, and co-developed the production control system that included job control, health and safety information, manufacturing operations, and resource allocation.
+
+
+
+Instructions for Interviewer				
+"This screen is split into 2 sections
+
+Section 1: Tech
+- 20 min on tech questions. HOP AROUND but work DOWN the list
+- The candidate should nail ALL questions not labeled hard
+- They need to complete at least 25-30 in 15 min. Better candidates get farther.
+- The interview ends if they get a bunch wrong. 
+- 3 is a good rule of thumb, but will depend on their experience.
+- Be sure to ask at least 1-2 advanced Qs
+
+Section 2: Open-ended Experience Questions
+- Intended to verify domain-specific knowledge (e.g. FIX)
+- Be sure to note questions asked
+
+While screening, note of who should do in-person interviews"				
+				
+Instructions to Candidate				
+"We're going to spend 20min going over C++ and related topics
+The first few minutes will be spent on quick Qs
+- they are simple
+- we expect short answers, most are 1-word or 1liners
+- if you think these questions are simple, great, this should be real quick
+- towards the end we'll do 1 or 2 meatier topics, like exceptions
+Last, we'll also spend some time talking about your experience
+Please hold questions about role and similar details until we get there"				
+				
+Core Language				
+What are some c/c++ differences	Objects, Polymorphism, STL, Overloading, new vs malloc, …			Slow
+Follow up: is there anything I can do in C I cannot do in C++	No, extern C			Slow
+Follow up: can I do inheritance and polymorphism in C	"No is acceptable
+Awesome answer is yes, but you need to impl something like a vtable with fn pointers"			
+What is the static kw used for in C	File and fn scope variables			
+What is the difference between malloc and new	Allocation is done by both, only new does object construction (and traps+deletes on exceptions)			
+How do you call a C library from C++ code	Need to use 'extern C'			
+What is the difference between a ptr and a ref	Pointer can point to >1 location in its lifetime and requires explicit dereferencing			
+What is the difference bw the heap and the stack	Heap = dynamic allocation (malloc, new); stack for locals			
+Follow up: what is the lifetime of an object on each	stack has block scope; heap objects live until deleted			
+Follow up: what direction does the stack grow / how would you find out	Platform dependent / allocate 2 locals and print their address to stdout			
+Name a few differences between struct vs class	Only 1 - visibility: struct public vs class private			
+Follow up: what fns are added by compiler for an empty struct/class	Ctor, Copy-ctor, Assignment, Dtor			
+Follow up: what does the compiler do when I add a virtual fn	Adds vtable, and entry for the fn			
+Follow up: what is the size of an empty class, and why	"Acceptable to know 1B without rationale
+Awesome answer is at least 1B to ensure that unique objects have unique addresses"			
+What is an initialization list	Code used to init members requiring explicit initialization (ie primitives) prior to the ctor body			
+Follow up: what types must be initialized with an initializer list	Primitives, objects, base types without default constructors, const/reference data members			
+Follow up: does the order or init in an initializer list matter	No, they are init'ed in order of declaration			
+What is the difference bw polymorphism and overloading	Polymorphism=runtime/late binding; Overloading=compile-time/static binding			
+How is function overloading implemented	Name mangling. Look for candidates that know this kw.			
+Follow up: what are you allowed to overload on	"Args, const, volatile (bonus points)
+Bonus points for template fn return types
+Follow up through all of these if candidate omits any (""are you sure, what about x"")"			
+Follow up: can I overload on const? 	Yes			
+Follow up: what about volatile (obscure)	Same rules as const. Only really used in threading code, niche expertise. 			
+Follow up: can I overload on return types	"No is acceptable
+Awesome answer is yes, but only with templates and it will require explicit instantiation"			
+Why would you need a v. destructor	To ensure resource cleanup in derived classes when handled by base class pointer			
+Follow up: does use of inheritance require a v. destructor	No, POD types, don't need them, for example			
+What is the difference between an inline fn and a macro	"Inline fn is compiled and checked by the compiler for things like type safety of args
+Macros are a string substitution mechanism handled by the preprecessor"			
+What is RTTI used for	"Runtime type info, among other things it is used for dynamic_cast
+Implemented as a vtable entry pointing to a type_info object"			
+Name the C++ casting operators	Static, const, dynamic, reinterpret cast			
+Follow up: which would I use for pFruit=pApple?	None. Bonus points if candidate is cautious and asks for relationship			
+Follow up: what happens when dynamic_cast fails?	Null pointer for pointers. Exception for references (acceptable to overlook this / not widely used)			
+Follow up: what is reinterpret case for (hard)	"For nasty tricks, Like
+- hashing on ptr addresses
+- storing and retrieving data as an opaque type in a vendor lib (as void*, for example)
+- or other crazy things, need to think on your feet for this one"			
+Follow up: how do you cast away volatile-ness (hard)	Use const_cast, volatile is a "cv" or "const volatile" qualifier			
+What happens to the stack when an exception is thrown	Unwind			
+Follow up: is divide by zero an exception	No. Lots of people get confused w Java, this weeds them out.			
+Follow up: how do you raise an exception	You throw it			
+Follow up: what types are throwable	"All types, incl primitives, objects, strings (lots of people confuse this)
+Awesome answer: for objects, copy constructor must be defined & accessible; exception specifications can effectively limit throwable types"			
+What is the difference between prefix and postfix operators	Prefix returns ref to changed var, postfix returns changed temp by value			
+What is a 'thunk' (hard)	Code injected into classes for late binding / runtime dispatch of virtual functions			
+				
+Templates				
+What is the difference between complete and partial specialization	Complete specialized on all template parameters			
+What is a member template function	Template function inside a class			
+Follow up: what is a virtual member template function	"Trick question, no such thing
+Member templates are only instantiated when used, does not work for virtual functions"			
+Follow up: do member templates need to be in template classes	No			
+Follow up: what type of specialization is permitted for member templates	"Complete specialization. 
+If awesome, adds you are not allowed to specialize inside a non-specialized template class "			
+What does SFINAE - pronounced "essfinay" - mean (super-hard, ok to skip)	Substitution Failure Is Not An Error, it is the backbone for most template metaprogamming			
+				
+STL				
+What are the type requirements for an STL container (e.g. vector)	"Public copy ctor, dtor, and assignment
+Default ctor needed for associative containers for op[] return value
+Awesome candidates will suggest writing/friending an allocator to make this work"			
+What are some differences bw std::vector and std::list	"Vector is dynamic array, contiguous, O(1) lookups, insert+delete require shifts
+List is linked, O(n) access, faster deletes, sometimes faster insert"			
+Follow up: if candidate doesn't know, what would you expect it to be and why	Any n-log-n sort, e.g. merge sort			
+sema	"Map implemented as balanced rb tree, log-N operations, sorted
+Hashmap a table with hash, O(1) operations (sensitive to hash, good guys note this), unordered"			
+Follow up: what is the signature for the bracket operator in a map	value_type& operator[](const key_type&)			
+Follow up: why is there no const version	Implicit insert wouldn’t work for keys not in the map (should be able to reason through this)			
+What is an std::multi_map	Like a map, but permits multiple values for the same key			
+Follow up: why does multi_map have no bracket operator	It needs to return multiple values for a single key			
+Name some types of iterator (require 3)	Acceptable: forward_, reverse_, bidirectional_, random_access_, awesome: trivial_ and output_			
+When is an iterator invalidated	Container dependent, generally when memory it points to moves (e.g. resize, tree rebalance, etc)			
+Why is using an std::vector<auto_ptr<T>> a bad idea	Vector is copyable, but auto_ptr will transfer ownership on a copy, which is unintended			
+				
+Boost				
+What have you used in boost (no right answer, scoping)	Just trying to see what he's used			
+Smart Pointers				
+Name some types of smart pointer (require 2)	Full list: shared_ptr, scoped_ptr, weak_ptr, intrusive_ptr, shared_array, scoped_array			
+What is the difference bw auto_ptr and shared_ptr	Copy constructibility and assignability, auto_ptr implements ownership and is good for RAII			
+What is difference bw scoped_ptr and auto_ptr	A scoped_ptr is non-copyable and does not transfer ownership on assignment			
+What is a weak pointer	Pointer used to avoid cycles but keep a reference, which is an edge case for shared pointer use			
+What happens when the last ref of a shared_ptr goes out of scope	"The object is deleted is acceptable
+Awesome candidate will note that its deleter is called which is not necessarily 'delete'"			
+Functions and Bind				
+How would you declare a void 0-arg boost::function	boost::function<void()> / boost::function0<void> (portable syntax)			
+What would you use boost::bind for	Changing a function signature			
+Follow up: when would you use boost::ref with boost::bind	"When you want to take a ref, it copies by default 
+Candidate should note default behavior - ask ""why is this needed"" if not"			
+				
+Threading and System Programming				
+What is the difference between thread and a process	"Threads share resources (global vars, files, heap, each has its own stack and TLS)
+Process has no sharing"			
+What is the difference between a mutex and a sempaphore	Mutex is exclusive, equivalent to a binary semaphore without signaling and IPC			
+Follow up: what is a use case for either one	"Mutex: protect a counter variable
+Semaphore: signaling mechanism for a pc queue"			
+Application deadlocks, what do you do now	Drop a stack with gstack / Generate a core file with gcore / attach gdb to look at the backtraces			
+Follow up: can we get backtraces without gdb	[fgp]stack			
+Follow up: how do you get a backtrace in gdb	bt			
+What would you use strace/truss for (low level programmer)	Trace system calls			
+Your 32bit process is 3.2GB in size. It just core dumped due to bad_alloc. Why.	"Candidate must
+- identify 4GB process size limit for 32b processes
+- explain why we cored at 3.2GB and not 4GB (fragmentation)
+- if they ask if the process restarted, it did with a footprint of 3.1GB (ask to explain)"			
+				
+Advanced / Problem Solving				
+You're reviewing code, you see "delete this", what is your reaction	"Possibly ok. It depends on situation. Candidate should name some ok/not-ok cases:
+- If they ask, there is no comment with the code
+- Ok for managed pointer or self-managed resources like a ref-counted object
+- Also ok if the object has overloaded new/delete
+- Generally bad and should not be used, especially in non-infra app code.
+- Bonus points if they would fire or maim the developer that wrote that code"			
+"Consider class ‘Parent’
+- with a constructor that prints ‘hello parent’
+- and a destructor that prints ‘goodbye parent’
+Class ‘Child’ derives from 'Parent'
+- has a constructor that prints ‘hello child’ 
+- and a destructor that prints ‘goodbye child’
+I instantiate an instance of ‘Child’ on the stack
+What is the output of the program and why"	"hello parent
+hello child
+goodbye child
+goodbye parent
+
+Order of construction is base then derived. 
+Order of destruction is derived then base."			
+Follow up: what if the destructor was virtual	Same output			
+Follow up: what if I instantiated the Child instance on the heap	"hello parent
+hello child
+(no goodbyes because nobody called delete)"			
+How would you implement a singleton	"Candidate must explain
+- that a singleton only permits one instance of its type
+- to prevent errant construction use a non-public ctor and copy ctor
+- initialization: user calls initializer of some sort or provide lazy-init (ptr or fn static)
+- clean up: auto_ptr or static dtor sequence
+- bonus if candidate highlights it as an ""anti-patten"" b/c of it's testing complications
+- some candidates will try and dodge w above argument, need to complete other points"			
+"Lets talk about exceptions and exception safety
+- what does 'exception safe' mean
+- give an example of something that is exception safe
+- what happens when you throw an exception from a ctor
+- why do you catch exceptions by ref?"	"Answers
+- the state of the object is left in the same state after throw
+- STL containers
+- the object is discarded, and memory freed
+- to avoid slicing (e.g. throw MyException but catch std::exception)"			
+People always say never to throw in your dtor, why	"There are many many reasons for this.
+1. Exception propapagtion issues
+- if stack is unwinding due to throw, this means you'll be propagating 2 exceptions
+- this is cleary in violation of the C++ standard, as it means catch is useless
+
+2. It breaks RAII
+- if you throw in a derived class dtor, you interrupt destruction
+- this leaves half-destructed zombie objects with unclaimed resources from base types
+
+3. Caveat: you technically are allowed to throw from a dtor
+- awesome candidates will quote a case where this is safe
+- you need to avoid the two cases above
+
+See http://www.parashift.com/c++-faq-lite/exceptions.html#faq-17.9 for full discussion"			
+"You are writing a new widget library for use in 3 binaries in production. These binaries compile against v1.0 headers and link with your v1.0. It is currently running in production. There is exactly 1 copy of the headers and the library in a highly-available fault-resistant global filesystem that everyone uses.
+
+One day you find a bug in WidgetAdapter code that is used to connect widgets to DooHickeys. You need to get a patch out to production quickly because we are losing 1 BILLION dollars every day this bug is not fixed. We don't have time to recompile all the applications using this library to use v2.0 so you you decide you want to patch the implementation of the WidgetAdapter in-place.
+
+What changes are you allowed and not allowed to make to the WidgetAdapter class? (It is exposed to other libraries and it is passed across compilation units, if they ask.)"	"This is a nice way of asking, what changes are and are not binary compatible.
+
+Binary compatible
+- change code in the .C
+- addition of a new typedef
+- addition of a new enum type
+- addition of a new nested type
+- addition of a new enum value to the end of the enum set
+- addition of a new friend class/function declaration
+- addition of a non-virtual method
+- addition of a static method to a class/namespace
+- addition of a static data member to a class
+
+You may not
+- add or override a virtual method (changes size of vtable)
+- add a non-static data member (changes size of the object)
+- add new template specialization for a class/function (symbols will resolve to different sized objects)
+
+Anything that changes the size of the object is not allowed. See also: http://msparts/CppBinaryCompatibility"			
+				
+Experience Discussion (PAY ATTENTION TO)				
+Is candidate writing production code. What level (infra, app, bugfix).				
+We vs. I / Did they manage someone who did all the heavy dev lifting				
+Who made technology decisions. Ask about concrete criteria used.				
+Detail details details. Compiler, language, impl nuances. Dig in.				
+Speaks clearly / do you need to repeat				
+IMPORTANT: Who should do domain-specific interviews	MAKE SURE TO NOTE THESE WELL!!!			
+
+
+Building Construction Complain Letter:
+
+December 17, 2013
+Derek Lee, RA
+Commissioner
+New York City Department of Buildings
+120-55 Queens Boulevard, 1st Floor
+Kew Gardens, NY 11424
+
+Dear Commissioner: 
+This is regarding an ongoing construction at 3930 223 Street, Bayside NY 11361 (Job #: 420885643). The site plan diagram false-declares basement as cellar and excludes it from residential floor area to conduct second story vertical addition. With basement area included the FAR exceeds 0.5, which is the limit set in R2A zoning regulations. We’d like to request an audit on this job because of this violation and no further work on the premises.
+
+The certification of occupancy document of this property confirms that there is a basement instead of a cellar. As an addition proof, documents and surveys of our own property with same construction structures declare a similar basement, not a cellar. Please see the attached site plan diagram for the false declaration of a 1262 square feet cellar, which was exempt from FAR.
+
+If you have any questions about this request, please feel free to contact us at 718-600-9323.
+
+Respectfully submitted,
+A Queens Resident
