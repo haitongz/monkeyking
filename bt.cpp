@@ -142,8 +142,8 @@ void delTree_iter(BinTreeNode** root) {
   deque<const BinTreeNode*> q{*root};
 
   while (!q.empty()) {
-    const uint cp = q.size();
-    for (uint i = 0; i < cp; ++i) {
+    const uint sz = q.size();
+    for (uint i = 0; i < sz; ++i) {
       const BinTreeNode* nd = q.front();
       q.pop_front();
       if (nd->left)
@@ -160,16 +160,15 @@ void delTree_iter(BinTreeNode** root) {
 }
 
 void delTree_recur(BinTreeNode** root) {
-  function<void(BinTreeNode**)> solve =
-    [&](BinTreeNode** ndp) { // DFS, postorder
-    if (!ndp)
-      throw exception();
-    else if (*ndp) {
+  function<void(BinTreeNode**)> solve = [&](BinTreeNode** ndp) { // DFS, postorder
+    if (!ndp) {
+      return; //throw exception();
+    } else if (*ndp) {
       BinTreeNode* nd = *ndp;
       solve(&(nd->left));
       solve(&(nd->right));
       delete nd;
-      nd = NULL;
+      nd = nullptr;
     }
   };
 
@@ -185,7 +184,7 @@ Find number of nodes in a binary tree
  */
 uint count_recur(const BinTreeNode* root) {
   function<uint(const BinTreeNode*)> solve =
-    [&](const BinTreeNode* curr_root) -> uint {
+    [&](const BinTreeNode* curr_root) -> uint { // postorder
     if (!curr_root)
       return 0;
 
@@ -258,9 +257,9 @@ uint maxDepth_recur(const BinTreeNode* root) {
 Mirror of a tree is another binary tree with
 left and right children of all non-leaf nodes interchanged.
  */
-void mirror(BinTreeNode* root) { // postorder
+void mirror(BinTreeNode* root) {
   function<void(BinTreeNode*)> solve =
-    [&](BinTreeNode* curr_root) {
+    [&](BinTreeNode* curr_root) { // postorder
     if (!curr_root)
       return;
 
@@ -364,7 +363,7 @@ r2lPathsWithSum_recur(const BinTreeNode* root, const int sum) {
 
   // use backtracking here because we need to collect ALL paths, not just to
   // find out whether there is an existing path
-  function<void(const BinTreeNode*,const int)> solve = // backtracking
+  function<void(const BinTreeNode*,const int)> solve =
     [&](const BinTreeNode* curr_root, const int remain) {
     if (!curr_root)
       return;
@@ -378,8 +377,8 @@ r2lPathsWithSum_recur(const BinTreeNode* root, const int sum) {
     }
 
     to_ext.push_back(curr_root->value);
-    solve(curr_root->left, remain - curr_root->value);
-    solve(curr_root->right, remain - curr_root->value);
+    solve(curr_root->left, remain-curr_root->value);
+    solve(curr_root->right, remain-curr_root->value);
     to_ext.pop_back();
   };
 
@@ -391,10 +390,12 @@ r2lPathsWithSum_recur(const BinTreeNode* root, const int sum) {
 Find the distance between two keys in a binary tree, no parent pointers are given.
  */
 int distance(const BinTreeNode* root,
-                 const BinTreeNode* first,
-                 const BinTreeNode* second) {
+             const BinTreeNode* first,
+             const BinTreeNode* second) {
   int d1 = -1, d2 = -1, ret = -1;
 
+  // find possible lowest common ancestor in top-down style: start from root with
+  // distance 0, update distances on the way till there's an LCA found
   function<const BinTreeNode*(const BinTreeNode*,const int)> lca =
     [&](const BinTreeNode* curr_root, const int curr_d) -> const BinTreeNode* {
     if (!curr_root)
@@ -451,7 +452,7 @@ int maxL2LPathSum(const BinTreeNode* root) {
   int ret = MIN_LMT;
 
   function<int(const BinTreeNode*)> solve =
-    [&](const BinTreeNode* curr_root) { // post order
+    [&](const BinTreeNode* curr_root) { // postorder
     if (!curr_root)
       return 0;
 
@@ -464,10 +465,9 @@ int maxL2LPathSum(const BinTreeNode* root) {
     // Find the maximum path sum passing through current root.
     // Note that every path will pass through some node and
     // recursive function is called for every node
-    int curr_sum = lsum+rsum+curr_root->value;
-
+    int curr_sum = lsum + rsum + curr_root->value;
     ret = max(ret, curr_sum);
-    return max(lsum, rsum)+curr_root->value;
+    return curr_sum;
   };
 
   solve(root);
@@ -589,10 +589,10 @@ bool isSymmetric(const BinTreeNode* root) {
   deque<const BinTreeNode*> q{root};
 
   while (!q.empty()) {
-    const uint cp = q.size();
+    const uint sz = q.size();
     stack<int> values;
 
-    for (uint i = 0; i < cp; ++i) {
+    for (uint i = 0; i < sz; ++i) {
       const BinTreeNode* nd = q.front();
       q.pop_front();
 
@@ -1552,9 +1552,9 @@ vector<vector<int>> levelorder(const BinTreeNode* root) { // a.k.a., BFS
   deque<const BinTreeNode*> q = {root};
 
   while (!q.empty()) {
-    const uint cp = q.size();
+    const uint sz = q.size();
     ret.push_back(vector<int>());
-    for (uint i = 0; i < cp; ++i) {
+    for (uint i = 0; i < sz; ++i) {
       const BinTreeNode* node = q.front();
       q.pop_front();
       ret.back().push_back(node->value);
@@ -1895,8 +1895,8 @@ vector<vector<int>> bottomupLevelorder(const BinTreeNode* root) {
 
   while (!q.empty()) {
     ret.push_back(vector<int>());
-    const uint cp = q.size();
-    for (uint i = 0; i < cp; ++i) {
+    const uint sz = q.size();
+    for (uint i = 0; i < sz; ++i) {
       const BinTreeNode* nd = q.front();
       q.pop_front();
       //ostringstream oss;
@@ -2653,11 +2653,6 @@ Modified tree:
        / \  / \  / \  / \
       o  n m  l k  j  i  h
 
-A simple solution is to do following steps.
-1) Access nodes level by level.
-2) If current level is odd, then store nodes of this level in an array.
-3) Reverse the array and store elements back in tree.
-
 A tricky solution is to do two inorder traversals. Following are steps to be followed.
 1) Traverse the given tree in inorder fashion and store all odd level nodes in an auxiliary array. For the above example given tree, contents of array become {h, i, b, j, k, l, m, c, n, o}
 
@@ -2665,7 +2660,6 @@ A tricky solution is to do two inorder traversals. Following are steps to be fol
 
 3) Traverse the tree again inorder fashion. While traversing the tree, one by one take elements from array and store elements from array to every odd level traversed node.
  */
-// The main function to reverse alternate nodes of a binary tree
 #define MAX 500
 
 void reverseAlternate(BinTreeNode* root) {
@@ -2733,7 +2727,7 @@ Print all nodes between two levels
  */
 void twoLevels(const BinTreeNode* root, const uint low, const uint high) {
   BinTreeNode* marker = new BinTreeNode(MIN_LMT); // Marker node to indicate end of level
-  uint level = 1;   // Initialize level number
+  uint level = 1;
 
   // Enqueue the only first level node and marker node for end of level
   deque<const BinTreeNode*> q = {root, marker};
@@ -2923,8 +2917,8 @@ const BinTreeNode* nextRight(const BinTreeNode* root, const int target) {
   deque<const BinTreeNode*> q = {root};
 
   while (!q.empty()) {
-    const uint cp = q.size();
-    for (uint i = 0; i < cp; ++i) {
+    const uint sz = q.size();
+    for (uint i = 0; i < sz; ++i) {
       const BinTreeNode* curr = q.front();
       q.pop_front();
       if (curr->value == target)
