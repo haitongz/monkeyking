@@ -1,7 +1,3 @@
-/*
-Daily pass costs $2 and Weekly pass consts $7. Given days in a month that you have to take bus, find minimum bus fare.
- */
-
 #include <iostream>
 #include <sstream>
 #include <vector>
@@ -14,13 +10,13 @@ using namespace std;
 static const uint DAILY = 2;
 static const uint WEEKLY = 7;
 
-vector<uint> getValidDays(const vector<string>& strs) {
-    if (strs.empty())
+vector<uint> getValidDays(const vector<string>& days) { // utility method to get valid days in a month
+    if (days.empty())
         return {};
 
     set<uint> ret;
 
-    for (const auto& s : strs) {
+    for (const auto& s : days) {
         if (s.empty() ||
             s.length() > 2 ||
             !isdigit(s[0]) ||
@@ -42,23 +38,25 @@ vector<uint> getValidDays(const vector<string>& strs) {
     return {ret.begin(), ret.end()};
 }
 
-pair<int,uint> biggestWindow(const vector<uint>& days, const uint idx) {
-    int i = idx-1;
-    uint len = 1;
-
-    while (i >= 0 && days[idx]-days[i] < 7) {
-        ++len;
-        --i;
-    }
-
-    return {i,len}; // i can be -1
-}
-
 uint minBusFare(const vector<uint>& days) {
     const uint n = days.size();
     if (n < 4) {
         return n*DAILY;
     }
+
+    // this method finds window that's most days in same week ending at day idx
+    function<pair<int,uint>(const uint)> sameWeekDays =
+        [&](const uint idx) -> pair<int,uint> {
+        int i = idx-1;
+        uint len = 1;
+
+        while (i >= 0 && days[idx]-days[i] < 7) {
+            ++len;
+            --i;
+        }
+
+        return {i,len}; // i can be -1
+    };
 
     uint ret = 0;
 
@@ -67,8 +65,8 @@ uint minBusFare(const vector<uint>& days) {
             return;
         }
 
-        pair<int,uint> win = biggestWindow(days, idx);
-        uint len = win.second; // length of biggest window
+        pair<int,uint> wk = sameWeekDays(idx);
+        uint len = wk.second; // number of days in same week
         int next = idx-1;
 
         if (len <= 3) { // not worth buying a weekly pass
@@ -77,26 +75,26 @@ uint minBusFare(const vector<uint>& days) {
             ret += WEEKLY;
             next = idx-7;
         } else {
-            next = win.first;
+            next = wk.first;
             if (next < 0) { // optimization: cannot shift left anymore
                 ret += WEEKLY;
                 return;
             }
 
             for (uint j = idx-1; j > next; --j) {
-                pair<int,uint> win2 = biggestWindow(days, j);
-                if (win2.second > len) {
+                pair<int,uint> j_wk = sameWeekDays(j);
+                if (j_wk.second > len) { // choose a week that covers more days than current one
                     next = j;
                     for (uint l = idx; l > j; --l) {
                         ret += DAILY;
                     }
                     break;
-                } else if (win2.first < 0) { // optimization: cannot shift left anymore
+                } else if (j_wk.first < 0) { // optimization: cannot shift left anymore
                     break;
                 }
             }
 
-            if (next == win.first) {
+            if (next == win.first) { // no previous week covers more days than current one
                 ret += WEEKLY;
             }
         }
