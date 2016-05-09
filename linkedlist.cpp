@@ -1,8 +1,16 @@
 #include <iostream>
 #include <functional>
 #include <stack>
+#include <limits>
+#include <vector>
 
 using namespace std;
+
+static const int MAX_LMT = numeric_limits<int>::has_infinity ?
+                           numeric_limits<int>::infinity() : numeric_limits<int>::max();
+
+static const int MIN_LMT = numeric_limits<int>::has_infinity ?
+                           -1*numeric_limits<int>::infinity() : numeric_limits<int>::min();
 
 struct ListNode {
   ListNode(const int v)
@@ -172,29 +180,16 @@ ListNode* reverse_iter(ListNode** head) {
     return prev;
   }
 }
-/*
-template <typename T>
-ListNode* reverse_recur(ListNode* curr, ListNode* prev = NULL) {
-  if (!curr)
-    return nullptr;
 
-  ListNode* orig_next = curr->next;
-  curr->next = prev;
-  if (!orig_next)
-    return curr;
-
-  return reverse_recur(orig_next, curr);
-}
- */
 ListNode* reverse_recur(ListNode* head) {
   function<ListNode*(ListNode*,ListNode*)> solve =
     [&](ListNode* curr_head, ListNode* prev) {
     ListNode* new_head = nullptr;
 
     if (curr_head) {
-      auto orig_next = curr_head->next;
+      auto next = curr_head->next;
       curr_head->next = prev;
-      new_head = orig_next ? solve(orig_next, curr_head) : curr_head;
+      new_head = next ? solve(next, curr_head) : curr_head;
     }
 
     return new_head;
@@ -215,9 +210,9 @@ bool compareLists(const ListNode* head1, const ListNode* head2) {
     if (tmp1->value == tmp2->value) {
       tmp1 = tmp1->next;
       tmp2 = tmp2->next;
-    }
-    else
+    } else {
       return false;
+    }
   }
 
   if (!tmp1 && !tmp2)
@@ -269,21 +264,6 @@ bool isPalindrome_iter(ListNode* head) {
 }
 
 bool isPalindrome_recur(ListNode* head) {
-/*  function<bool(ListNode*&,ListNode*)> solve =
-    [](ListNode*& left, ListNode* right) {
-    if (!right) {
-      return true;
-    }
-
-    bool ret = solve(left, right->next); // this reaches the end of list
-    if (ret) {
-      ret = (left->value == right->value);
-    }
-
-    left = left->next;
-    return ret;
-  };
-*/
   stack<ListNode*> prevs;
   prevs.push(nullptr);
 
@@ -301,7 +281,7 @@ bool isPalindrome_recur(ListNode* head) {
     auto prev = prevs.top();
     prevs.pop();
 
-    if (start->next == prev || start == prev) // odd or even number of nodes
+    if (start->next == prev || start == prev) // only 2 or 3 nodes left
       return start->value == end->value;
 
     return (start->value == end->value) ? solve(start->next, prev) : false;
@@ -477,6 +457,9 @@ void sortedRemoveDup(ListNode* head) {
   }
 }
 
+/*
+Merge two sorted lists
+ */
 void move(ListNode** dst_ref, ListNode** src_ref) {
   auto new_nd = *src_ref;
   //assert(new_nd);
@@ -486,9 +469,6 @@ void move(ListNode** dst_ref, ListNode** src_ref) {
   *dst_ref = new_nd;
 }
 
-/*
-Merge two sorted lists
- */
 ListNode* merge2Sorted_iter(ListNode* a, ListNode* b) {
   ListNode* ret = nullptr;
   auto last_ref = &ret;
@@ -588,9 +568,9 @@ ListNode* mergeSort_recur(ListNode* head) {
 Quick sort linked list
  */
 ListNode* partition(ListNode* head,
-                        ListNode* end,
-                        ListNode** new_head,
-                        ListNode** new_end) {
+                    ListNode* end,
+                    ListNode** new_head,
+                    ListNode** new_end) {
   auto pivot = end;
   ListNode* prev = nullptr;
   auto curr = head;
@@ -672,7 +652,7 @@ uint delNodes(ListNode** head, const int target) {
     return 0;
   }
 
-  uint cnt = 0;
+  uint ret = 0;
   auto curr = *head;
   ListNode* prev = nullptr;
 
@@ -685,7 +665,7 @@ uint delNodes(ListNode** head, const int target) {
       } else {
         prev->next = next;
       }
-      ++cnt;
+      ++ret;
     } else {
       prev = curr;
     }
@@ -693,7 +673,7 @@ uint delNodes(ListNode** head, const int target) {
     curr = next;
   }
 
-  return cnt;
+  return ret;
 }
 
 /**
@@ -727,14 +707,15 @@ void delList_recur(ListNode** head) {
 
   function<void(ListNode*&)> solve =
     [&](ListNode*& curr_head) {
-    if (!curr_head)
+    if (!curr_head) {
       return;
-    else if (!curr_head->next) {
+    } else if (!curr_head->next) {
       delete curr_head;
       curr_head = nullptr;
       return;
-    } else
+    } else {
       solve(curr_head->next);
+    }
   };
 
   solve(*head);
@@ -754,35 +735,93 @@ If the two linked lists have no intersection at all, return null.
 The linked lists must retain their original structure after the function returns.
 You may assume there are no cycles anywhere in the entire linked structure.
 Your code should preferably run in O(n) time and use only O(1) memory.
-*/
-const ListNode* intersection(const ListNode* head1, const ListNode* head2) {
-  const uint len1 = length_iter(head1);
-  const uint len2 = length_iter(head2);
+ */
+/*
+Two pointer solution (O(n+m) running time, O(1) memory):
+Maintain two pointers pA and pB initialized at the head of A and B, respectively.
+Then let them both traverse through the lists, one node at a time.
+When pA reaches the end of a list, then redirect it to the head of B; similarly when pB reaches the end of a list, redirect it the head of A.  If at any point pA meets pB, then pA/pB is the intersection node.
+ */
+const ListNode* intersection(const ListNode* l1, const ListNode* l2) {
+  if (!l1 || !l2) {
+    return nullptr;
+  }
 
-  function<const ListNode*(const uint,const ListNode*,const ListNode*)> solve =
-    [](const uint diff, const ListNode* longer_head, const ListNode* shorter_head) -> const ListNode* {
-    auto curr1 = longer_head;
-    auto curr2 = shorter_head;
+  const ListNode* curr1 = l1;
+  const ListNode* curr2 = l2;
+  bool reached1 = false, reached2 = false;
 
-    for (uint i = 0; i < diff; ++i) {
-      if (!curr1) {
+  while (curr1 && curr2) {
+    if (curr1 == curr2) {
+      return curr1;
+    } else if (!curr1->next) {
+      if (!reached1) { // first list is shorter and this is first iteration
+        curr1 = l2;
+        reached1 = true;
+      } else {
         return nullptr;
       }
-      curr1 = curr1->next;
-    }
-
-    while (curr1 && curr2) {
-      if (curr1 == curr2)
-        return curr1;
+    } else if (!curr2->next) {
+      if (!reached2) { // second list is shorter and this is first iteration
+        curr2 = l1;
+        reached2 = true;
+      } else {
+        return nullptr;
+      }
+    } else {
       curr1 = curr1->next;
       curr2 = curr2->next;
     }
+  }
+}
 
-    return nullptr;
-  };
+// Find union list of two linked lists: iterate over both lists once to determine the minimum and maximum value. From these values we create a vector. With this vector we iterate over both lists again. For each number n in the list we increase the value in the vector on position n with 1. This makes sure that elements that are in the intersection will have a value of 2 in the vector, elements that are in the union will then have a value of 1. Elements that are absent will have a value of 0. Then the only thing we need to do is iterate over the vector and add the indices that have a value of 2 to the intersection and add the indices that have a value of 1 to the union.
+const ListNode* unionList(const ListNode* l1, const ListNode* l2) {
+  int /*minVal = MAX_LMT, */maxVal = MIN_LMT;
+  ListNode* curr = const_cast<ListNode*>(l1);
 
-  return (len1 > len2) ?
-    solve(len1-len2, head1, head2) : solve(len2-len1, head2, head1);
+  while (curr) {
+    //minVal = min(minVal, curr->value);
+    maxVal = max(maxVal, curr->value);
+    curr = curr->next;
+  }
+
+  curr = const_cast<ListNode*>(l2);
+  while (curr) {
+    //minVal = min(minVal, curr->value);
+    maxVal = max(maxVal, curr->value);
+    curr = curr->next;
+  }
+
+  vector<uint> v(maxVal+1, 0);
+
+  curr = const_cast<ListNode*>(l1);
+  while (curr) {
+    ++v[curr->value];
+    curr = curr->next;
+  }
+  curr = const_cast<ListNode*>(l2);
+  while (curr) {
+    ++v[curr->value];
+    curr = curr->next;
+  }
+
+  ListNode* ret = nullptr;
+
+  for (uint i = 0; i < v.size(); ++i) {
+    if (v[i] >= 1) { // union including intersection
+      ListNode* ptr = new ListNode(i);
+      if (!ret) {
+        curr = ptr;
+        ret = curr;
+      } else {
+        curr->next = ptr;
+        curr = ptr;
+      }
+    }
+  }
+
+  return ret;
 }
 
 /*
@@ -804,7 +843,7 @@ ListNode* reverseKGroup_iter(ListNode* head, const uint k) { // O(n2)
 
   while (head) {
     uint i = 1;
-    for ( ; i < k && head->next; ++i) {
+    for (; i < k && head->next; ++i) {
       head = head->next;
     }
     if (i == k) {
@@ -818,8 +857,9 @@ ListNode* reverseKGroup_iter(ListNode* head, const uint k) { // O(n2)
       }
       prev = last;
       last->next = head;
-    } else
+    } else {
       break;
+    }
   }
 
   return dummy.next;
@@ -996,7 +1036,7 @@ ListNode* swapPairs_recur(ListNode* head) {
 }
 
 /*
-Given a Singly Linked List, starting from the second node delete all alternate nodes of it.
+Given a singly linked list, starting from the second node delete all alternate nodes of it.
 
 Given linked list 1->2->3->4->5 then your function should convert it to 1->3->5;
 if the given linked list is 1->2->3->4 then convert it to 1->3.
@@ -1187,45 +1227,25 @@ Input: (2 -> 4 -> 3) + (5 -> 6 -> 4)
 Output: 7 -> 0 -> 8
  */
 ListNode* addTwoNums(const ListNode* l1, const ListNode* l2) {
-  ListNode* sumList = new ListNode(-1);
+  ListNode* sumList = new ListNode(-1); // temporary holder
   ListNode* curr = sumList;
-
   uint carry = 0;
+
   while (l1 || l2 || carry) {
-    int l1val = !l1 ? 0 : l1->value;
-    int l2val = !l2 ? 0 : l2->value;
-    int sum = l1val+l2val+carry;
+    uint val1 = !l1 ? 0 : (uint)l1->value;
+    uint val2 = !l2 ? 0 : (uint)l2->value;
+    uint sum = val1+val2+carry;
     carry = sum/10; // 0 or 1
     sum %= 10;
 
     curr->next = new ListNode(sum);
     curr = curr->next;
-    l1 = !l1 ? NULL : l1->next;
-    l2 = !l2 ? NULL : l2->next;
+    l1 = !l1 ? nullptr : l1->next;
+    l2 = !l2 ? nullptr : l2->next;
   }
 
   ListNode* ret = sumList->next;
   delete sumList;
-  return ret;
-}
-
-ListNode* Union(ListNode* head1, ListNode* head2) {
-  auto t1 = head1, t2 = head2;
-  ListNode* ret = nullptr;
-
-  // Insert all elements of list1 to the result list
-  while (t1) {
-    push(&ret, t1->value);
-    t1 = t1->next;
-  }
-
-  // Insert those elements of list2 which are not present in result list
-  while (t2) {
-    if (!isPresent(ret, t2->value))
-      push(&ret, t2->value);
-    t2 = t2->next;
-  }
-
   return ret;
 }
 
@@ -1489,8 +1509,18 @@ int main(int argc, char** argv) {
   const ListNode* l2 = &h2;
   const ListNode* res = addTwoNums(&h1, &h2);
   while (res) {
-    cout << res->value;
+    cout << res->value << " -> ";
     res = res->next;
+  }
+  cout << endl;
+
+  const ListNode* i = intersection(const_cast<const ListNode*>(&h1),
+                                   const_cast<const ListNode*>(&h2));
+  cout << "Two lists ";
+  if (i) {
+    cout << "intersect at " << i->value;
+  } else {
+    cout <<"don't intersect.";
   }
   cout << endl;
 
@@ -1509,6 +1539,36 @@ int main(int argc, char** argv) {
   while (p) {
     cout << p->value << " ";
     p = p->next;
+  }
+  cout << endl;
+
+  ListNode a1(1), a2(2), c1(3), c2(4), c3(5);
+  a1.next = &a2;
+  a2.next = &c1;
+  c1.next = &c2;
+  c2.next = &c3;
+  c3.next = nullptr;
+  ListNode b1(6), b2(7), b3(8);
+  b1.next = &b2;
+  b2.next = &b3;
+  b3.next = &c1;
+  fou.next = nullptr;
+
+  i = intersection(const_cast<const ListNode*>(&a1),
+                   const_cast<const ListNode*>(&b1));
+  cout << "Two lists ";
+  if (i) {
+    cout << "intersect at " << i->value;
+  } else {
+    cout <<"don't intersect.";
+  }
+  cout << endl;
+
+  cout << "Union of two lists are: " << endl;
+  i = unionList(&a1, &b1);
+  while (i) {
+    cout << i->value << " ";
+    i = i->next;
   }
   cout << endl;
 
