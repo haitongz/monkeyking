@@ -1,15 +1,20 @@
 #pragma once
 
 #include <limits>
-#include <deque>
+#include <queue>
+#include <iomanip>
+#include <algorithm>
 
 using namespace std;
 
-static const int MAX_LMT = numeric_limits<int>::has_infinity ?
-                           numeric_limits<int>::infinity() : numeric_limits<int>::max();
+static const int SIGNED_MAX = numeric_limits<int>::has_infinity ?
+                              numeric_limits<int>::infinity() : numeric_limits<int>::max();
 
-static const int MIN_LMT = numeric_limits<int>::has_infinity ?
-                           -1*numeric_limits<int>::infinity() : numeric_limits<int>::min();
+static const int SIGNED_MIN = numeric_limits<int>::has_infinity ?
+                              -1*numeric_limits<int>::infinity() : numeric_limits<int>::min();
+
+static const uint UNSIGNED_MAX = numeric_limits<uint>::has_infinity ?
+                                 numeric_limits<uint>::infinity() : numeric_limits<int>::max();
 
 struct BinTreeNode { // binary tree node
   int value;
@@ -102,4 +107,53 @@ void prettyPrint(const BinTreeNode* root, uint spaces = 2) {
       cout << endl << setw(padding/2) << "";
     }
   }
+}
+
+void delTree_iter(BinTreeNode** root) {
+  if (!root) {
+#ifdef _DEBUG_
+    cerr << "Null root!" << endl;
+#endif
+    return;
+  }
+
+  deque<const BinTreeNode*> q{*root};
+
+  while (!q.empty()) {
+    const uint sz = q.size();
+    for (uint i = 0; i < sz; ++i) {
+      const BinTreeNode* nd = q.front();
+      q.pop_front();
+      if (nd->left)
+        q.push_back(nd->left);
+      if (nd->right)
+        q.push_back(nd->right);
+
+      delete nd;
+      nd = nullptr;
+    }
+  }
+
+  *root = nullptr;
+}
+
+void delTree_recur(BinTreeNode** root) {
+  function<void(BinTreeNode**)> solve =
+    [&](BinTreeNode** currroot_p) { // DFS, postorder
+    if (!currroot_p) {
+      return; //throw exception();
+    } else if (*currroot_p) {
+      BinTreeNode* curr_root = *currroot_p;
+      solve(&(curr_root->left));
+      solve(&(curr_root->right));
+      delete curr_root;
+      curr_root = nullptr;
+    }
+  };
+
+  solve(root);
+}
+
+bool isLeaf(const BinTreeNode* nd) {
+  return (nd && !nd->left && !nd->right);
 }
