@@ -673,3 +673,12 @@ By way of analogy, if you hide a criminal under a lawful disguise, he can then e
 Thankfully C++ prevents you from doing this: the line q = &p is flagged by the C++ compiler as a compile-time error. Reminder: please do not pointer-cast your way around that compile-time error message. Just Say No!
 
 (Note: there is a conceptual similarity between this and the prohibition against converting Derived** to Base**.)
+
+
+
+RBC phone:
+1. what is thread local storage? how is __thread implemented by GCC?
+2. what are the differences between vector and deque?
+3. how to get O(1) or armotized push_back() in vector when it needs to dynamically grow? (use pooled allocator?)
+4. how can u know at compile time whether objects can be memcpy-ed or not? (is_trivially_copyable::value)
+5. how can compiler know what objects to destruct when there are exceptions thrown? (http://www.stroustrup.com/except89.pdf)
