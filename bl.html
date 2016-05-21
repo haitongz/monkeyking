@@ -1,0 +1,629 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="mstk/binlog/doc/gendoc.py" />
+    <title>User Guide | Binlog</title>
+    <link rel="stylesheet" type="text/css" href="bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="pygments.css" />
+  </head>
+  <body>
+    <div class="navbar-wrapper">
+      <div class="container">
+
+        <div class="navbar navbar-static-top" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <a class="navbar-brand" href="index.html">Binlog</a>
+            </div>
+              <ul class="nav navbar-nav">
+                <li><a href="http://train-portal-prod.ms.com/train/portal/webapp/view/mstk/binlog">Train</a></li>
+                <li><a href="http://stashblue.ms.com:11990/atlassian-stash/projects/MSTK_BINLOG/repos/binlog/browse">Stash</a></li>
+                <li><a href="UserGuide.html">Documentation</a></li>
+                <li><a href="IntegratorsHandbook.html">Embedding</a></li>
+                <li><a href="DeveloperManual.html">Internals</a></li>
+                <li><a href="doxygen/annotated.html">@API</a></li>
+              </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="container">
+      <h1>Binlog User Guide</h1>
+      <div class="toc">
+<ul>
+<li><a href="#first-glance">First Glance</a></li>
+<li><a href="#features">Features</a><ul>
+<li><a href="#logging">Logging</a></li>
+<li><a href="#logging-pointers">Logging pointers</a></li>
+<li><a href="#logging-containers">Logging containers</a></li>
+<li><a href="#logging-enums">Logging Enums</a></li>
+<li><a href="#logging-structures">Logging Structures</a></li>
+<li><a href="#logging-third-party-structures">Logging Third-Party Structures</a></li>
+<li><a href="#performance">Performance</a></li>
+<li><a href="#control-flow-tracking">Control Flow tracking</a><ul>
+<li><a href="#named-threads">Named threads</a></li>
+</ul>
+</li>
+<li><a href="#data-flow-tracking">Data Flow tracking</a><ul>
+<li><a href="#explicit-flow-boundaries">Explicit Flow boundaries</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#tools">Tools</a><ul>
+<li><a href="#logchecker">Logchecker</a></li>
+<li><a href="#using-the-reader">Using the Reader</a></li>
+<li><a href="#crash-recovery">Crash recovery</a></li>
+</ul>
+</li>
+<li><a href="#severity-guide">Severity Guide</a></li>
+<li><a href="#limitations">Limitations</a></li>
+<li><a href="#reader-api">Reader API</a><ul>
+<li><a href="#concepts">Concepts</a></li>
+</ul>
+</li>
+<li><a href="#faq">FAQ</a><ul>
+<li><a href="#compile-errors">Compile errors</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>A quick tour to a high-throughput low-latency logging library.</p>
+<h1 id="first-glance"><a class="toclink" href="#first-glance">First Glance</a></h1>
+<p>This is how usage looks like:</p>
+<div class="codehilite"><pre><span class="cp">#include &lt;binlog/Binlog.H&gt;</span>
+
+<span class="n">BINLOG_INIT</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">binlog</span><span class="o">::</span><span class="n">openLogFile</span><span class="p">(</span><span class="s">&quot;/tmp/binlog.log&quot;</span><span class="p">);</span>
+  <span class="n">BINLOG_CRITICAL</span><span class="p">(</span><span class="s">&quot;This is the {0}st log entry&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>This example program &mdash; compiled appropriately &mdash; will produce a binary file <code>/tmp/binlog.log</code>, containing a single event.
+This file is not a text file but a special binary file; one can't use a traditional pager or text editor to read it.</p>
+<p>To read the log file, <em>execute</em> it:</p>
+<div class="codehilite"><pre><span class="nv">$ </span>/tmp/binlog.log
+<span class="c"># Will produce something like:</span>
+<span class="c"># CRIT [04/09 14:03:57] 1234 main This is the 1st log entry</span>
+</pre></div>
+
+
+<p>Execution of the log file will launch the reader program in the background which will reconstruct the logged events.
+Why such binary format is required after all? To save significant amount of CPU and disk space, Binlog does not store
+static information of events: category, severity, format string and location data is only stored once in the log file;
+they are extracted directly from the executable and saved on startup. Dynamic information (date, thread id, arguments) are stored
+verbatim -- no to-string conversation happens online.</p>
+<p>To achieve the best latency characteristic, Binlog uses asynchronous logging -- This means, events are not directly
+written to the log file but stored in a buffer for some time. Counter-intuitive it is, but this results in a much better
+relative order of events; the consumer of the log file is able to reorder the events based on fine grained <code>TSC</code> timestamps
+and no file-locking hinders the producer threads, creating confusing implicit synchronization between threads.</p>
+<h1 id="features"><a class="toclink" href="#features">Features</a></h1>
+<p>This section describes basic library features in no particular order.</p>
+<h2 id="logging"><a class="toclink" href="#logging">Logging</a></h2>
+<ul>
+<li>Out of the box, fundamental types are loggable: every integral type, float and double, string types;
+   regardless the const or volatile classifiers. Product, sum and compound types are also loggable, as presented below.</li>
+<li>Available log macros are: <code>BINLOG_TRACE</code>, <code>BINLOG_DEBUG</code>, <code>BINLOG_INFO</code>, <code>BINLOG_WARNING</code>, <code>BINLOG_ERROR</code>, <code>BINLOG_CRITICAL</code>, one for each severity.</li>
+<li>
+<p>Format strings resemble the printf style, but placeholders require no explicit type specification.</p>
+<div class="codehilite"><pre><span class="n">BINLOG_INFO</span><span class="p">(</span><span class="s">&quot;First argument: {0}, second argument: {1}&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Curly braces must be escaped by curly braces: <code>{{</code> and <code>}}</code> result in <code>{</code> and <code>}</code></p>
+</li>
+<li>
+<p>Argument reordering is possible:</p>
+<div class="codehilite"><pre><span class="n">BINLOG_INFO</span><span class="p">(</span><span class="s">&quot;Second argument: {1}, first argument: {0}&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+<span class="c1">// Outputs: Second argument: 2, first argument: 1</span>
+</pre></div>
+
+
+</li>
+<li>
+<p>Argument single capture is also supported:</p>
+<div class="codehilite"><pre><span class="n">BINLOG_INFO</span><span class="p">(</span><span class="s">&quot;Log the same argument: {0}, twice: {0}&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">);</span>
+<span class="c1">// `a` will be saved only once</span>
+</pre></div>
+
+
+</li>
+<li>
+<p>If a severity or category is disabled (compile or runtime), the arguments are not evaluated.</p>
+</li>
+</ul>
+<h2 id="logging-pointers"><a class="toclink" href="#logging-pointers">Logging pointers</a></h2>
+<p>Logging pointers and smart pointers is fairly trivial:</p>
+<div class="codehilite"><pre><span class="kt">int</span><span class="o">*</span> <span class="n">pointer</span> <span class="o">=</span> <span class="o">&amp;</span> <span class="n">value</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">unique</span><span class="p">(</span><span class="k">new</span> <span class="kt">int</span><span class="p">(</span><span class="mi">124</span><span class="p">));</span>
+<span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">shared</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">125</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">weak_ptr</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">weak</span><span class="p">(</span><span class="n">shared</span><span class="p">);</span>
+<span class="n">BINLOG_INFO</span><span class="p">(</span><span class="s">&quot;Pointers: {0} {1} {2} {3}&quot;</span><span class="p">,</span> <span class="n">pointer</span><span class="p">,</span> <span class="n">unique</span><span class="p">,</span> <span class="n">shared</span><span class="p">,</span> <span class="n">weak</span><span class="p">);</span>
+<span class="c1">// Outputs: Pointers: 123 124 125 125</span>
+</pre></div>
+
+
+<p>If the pointer is a <code>nullptr</code> or the smart pointer is empty, no value will be saved
+and <code>{null}</code> will be printed later, otherwise the pointer is dereferenced and logged as usual.</p>
+<h2 id="logging-containers"><a class="toclink" href="#logging-containers">Logging containers</a></h2>
+<p>Logging standard containers is trivial:</p>
+<div class="codehilite"><pre><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span>   <span class="n">vec</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">};</span>
+<span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="mi">3</span><span class="o">&gt;</span> <span class="n">arr</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">};</span>
+<span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span>      <span class="n">set</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">};</span>
+<span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span>    <span class="n">list</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">};</span>
+<span class="n">BINLOG_INFO</span><span class="p">(</span><span class="s">&quot;Containers: {0} {1} {2} {3}&quot;</span><span class="p">,</span> <span class="n">vec</span><span class="p">,</span> <span class="n">arr</span><span class="p">,</span> <span class="n">set</span><span class="p">,</span> <span class="n">list</span><span class="p">);</span>
+<span class="c1">// Outputs: Containers: [1, 2, 3] [1, 2, 3] [1, 2, 3] [1, 2, 3]</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">map</span><span class="p">{{</span><span class="mi">13</span><span class="p">,</span> <span class="s">&quot;foo&quot;</span><span class="p">},</span> <span class="p">{</span><span class="mi">37</span><span class="p">,</span> <span class="s">&quot;bar&quot;</span><span class="p">}};</span>
+<span class="n">BINLOG_INFO</span><span class="p">(</span><span class="s">&quot;Map: {0}&quot;</span><span class="p">,</span> <span class="n">map</span><span class="p">);</span>
+<span class="c1">// Outputs: Map: [(13, foo), (37, bar)]</span>
+</pre></div>
+
+
+<p>Not only standard containers, but any <em>loggable container</em> is supported. A container is loggable if</p>
+<ul>
+<li>it has a standard like <code>begin()</code> and <code>end()</code></li>
+<li>it has a loggable <code>value_type</code></li>
+</ul>
+<p>Logging a pair or a tuple is also possible:</p>
+<div class="codehilite"><pre><span class="k">auto</span> <span class="n">pair</span>  <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_pair</span> <span class="p">(</span><span class="mi">257</span><span class="p">,</span> <span class="s">&quot;foobar&quot;</span><span class="p">);</span>
+<span class="k">auto</span> <span class="n">tuple</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_tuple</span><span class="p">(</span><span class="mi">257</span><span class="p">,</span> <span class="s">&quot;foobar&quot;</span><span class="p">,</span> <span class="mf">1.5f</span><span class="p">);</span>
+<span class="n">BINLOG_INFO</span><span class="p">(</span><span class="s">&quot;pair: {0}, tuple: {1}&quot;</span><span class="p">,</span> <span class="n">pair</span><span class="p">,</span> <span class="n">tuple</span><span class="p">);</span>
+<span class="c1">// Outputs: pair: (257, foobar), tuple: (257, foobar, 1.5)</span>
+</pre></div>
+
+
+<p>C style arrays need a bit of hint, because pointers to arrays do not have size information:</p>
+<div class="codehilite"><pre><span class="kt">int</span> <span class="n">iarray</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">};</span>
+<span class="n">BINLOG_INFO</span><span class="p">(</span><span class="s">&quot;Let&#39;s see an array: {0}&quot;</span><span class="p">,</span> <span class="n">binlog</span><span class="o">::</span><span class="n">array</span><span class="p">(</span><span class="n">iarray</span><span class="p">,</span> <span class="mi">3</span><span class="p">));</span>
+</pre></div>
+
+
+<p>The <code>binlog::array</code> function expects a pointer to an array of a loggable type and the
+size of this array.</p>
+<p>Using <code>binlog::transform</code>, you can apply a transformation to a single value or a range:</p>
+<div class="codehilite"><pre><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">data</span><span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">};</span>
+
+<span class="k">auto</span> <span class="n">plus_one</span> <span class="o">=</span> <span class="p">[](</span><span class="k">const</span> <span class="kt">int</span><span class="o">&amp;</span> <span class="n">i</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="p">};</span>
+<span class="n">BINLOG_INFO</span><span class="p">(</span><span class="s">&quot;Incremented data: {0}&quot;</span><span class="p">,</span> <span class="n">binlog</span><span class="o">::</span><span class="n">transform</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">plus_one</span><span class="p">));</span>
+<span class="c1">// Outputs: Incremented data: [2, 3, 4]</span>
+<span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="n">plus_one</span><span class="p">;</span> <span class="c1">// avoid -Wunused-variable if INFO is disabled compile time</span>
+</pre></div>
+
+
+<p>The first argument of <code>transform</code> is the object to be transformed, a single value or a container like object.
+The second argument is a callable, taking the object and transforming it to something loggable.
+If the source is a container like object, the callable takes its value type, transforming a single item at a time.
+It's not possible to specify a lambda expression inline, because
+<em>"A lambda-expression shall not appear in an unevaluated operand"</em> (C++11 5.1.2)</p>
+<h2 id="logging-enums"><a class="toclink" href="#logging-enums">Logging Enums</a></h2>
+<p>To make an enum loggable, you have to enumerate its possible values:</p>
+<div class="codehilite"><pre><span class="k">enum</span> <span class="n">Tristate</span> <span class="p">{</span> <span class="n">YES</span><span class="p">,</span> <span class="n">NO</span><span class="p">,</span> <span class="n">MAYBE</span> <span class="p">};</span>
+
+<span class="n">BINLOG_MAKE_ENUM_LOGGABLE</span><span class="p">(</span><span class="n">Tristate</span><span class="p">,</span> <span class="n">YES</span><span class="p">,</span> <span class="n">NO</span><span class="p">,</span> <span class="n">MAYBE</span><span class="p">)</span>
+
+<span class="n">BINLOG_INFO</span><span class="p">(</span><span class="s">&quot;Ever heard about the slow yes? {0}&quot;</span><span class="p">,</span> <span class="n">MAYBE</span><span class="p">);</span>
+<span class="c1">// Outputs: Ever heard about the slow yes? MAYBE</span>
+</pre></div>
+
+
+<p>The macro expands to a template specialization: put this into a header file and outside
+of any namespace. If you log a value omitted from this enumeration, "N/A" will appear
+in the log event. Up to 60 possible values are supported for any enum, limited by
+the internal <a href="http://stashblue.ms.com:11990/atlassian-stash/projects/MSTK_BINLOG/repos/binlog/browse/lib/binlog/detail/generated/ForeachMacro.H">Foreach macro</a> implementation.</p>
+<h2 id="logging-structures"><a class="toclink" href="#logging-structures">Logging Structures</a></h2>
+<p>It's possible to log custom compound types (structures and classes) in a very convenient way.
+Assuming the following user defined structure:</p>
+<div class="codehilite"><pre><span class="k">struct</span> <span class="n">CustomLoggableType</span>
+<span class="p">{</span>
+  <span class="kt">int</span> <span class="n">alpha</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">bravo</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">size_t</span> <span class="n">charlie</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">mutex</span><span class="p">;</span> <span class="c1">// transient field</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>First, make the structure loggable:</p>
+<div class="codehilite"><pre><span class="n">BINLOG_MAKE_LOGGABLE</span><span class="p">(</span><span class="n">CustomLoggableType</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">bravo</span><span class="p">,</span> <span class="n">charlie</span><span class="p">)</span>
+</pre></div>
+
+
+<p>This macro expands to a template specialization: put this into a header file and outside
+of any namespace. Please note, the mutex field is omitted intentionally. The order of the
+fields does not matter. Logging of nested structures is supported, as long as the nested structure
+is also loggable. (The deeper a structure is nested, the sooner you have to make it loggable)
+Specifying a non-existent field results in a compile error.
+Up to 60 fields are supported for any structure.</p>
+<p>After the definition, the structure is loggable like anything else:</p>
+<div class="codehilite"><pre><span class="n">CustomLoggableType</span> <span class="n">clt</span><span class="p">{</span><span class="mi">13</span><span class="p">,</span> <span class="s">&quot;foo&quot;</span><span class="p">,</span> <span class="mi">37</span><span class="p">,</span> <span class="p">{}};</span>
+<span class="n">BINLOG_INFO</span><span class="p">(</span><span class="s">&quot;Look at this: {0}&quot;</span><span class="p">,</span> <span class="n">clt</span><span class="p">);</span>
+<span class="c1">// Outputs: Look at this: CustomLoggableType{ alpha: 13, bravo: foo, charlie: 37 }</span>
+</pre></div>
+
+
+<p>This plays well with containers, tuples and arrays.
+If you want to log private fields, friend our field accessor:</p>
+<div class="codehilite"><pre><span class="k">class</span> <span class="nc">MyPrivate</span>
+<span class="p">{</span>
+  <span class="kt">int</span> <span class="n">secret</span> <span class="o">=</span> <span class="mi">2471</span><span class="p">;</span>
+  <span class="k">friend</span> <span class="k">class</span> <span class="nc">binlog</span><span class="o">::</span><span class="n">detail</span><span class="o">::</span><span class="n">LoggableDescriptor</span><span class="o">&lt;</span><span class="n">MyPrivate</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+
+
+<p>If you are using the pImpl idiom or have derived fields, you can specify getters:</p>
+<div class="codehilite"><pre><span class="k">struct</span> <span class="n">LotteryResults</span>
+<span class="p">{</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">short</span><span class="o">&gt;</span> <span class="n">numbers</span><span class="p">;</span>
+
+  <span class="c1">// This is a getter, const and takes no arguments.</span>
+  <span class="c1">// Important: Logging is not allowed in getters.</span>
+  <span class="kt">int</span> <span class="n">sum</span><span class="p">()</span> <span class="k">const</span>
+  <span class="p">{</span>
+    <span class="k">return</span> <span class="n">std</span><span class="o">::</span><span class="n">accumulate</span><span class="p">(</span><span class="n">numbers</span><span class="p">.</span><span class="n">begin</span><span class="p">(),</span> <span class="n">numbers</span><span class="p">.</span><span class="n">end</span><span class="p">(),</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">BINLOG_MAKE_LOGGABLE</span><span class="p">(</span><span class="n">LotteryResults</span><span class="p">,</span> <span class="n">numbers</span><span class="p">,</span> <span class="n">sum</span><span class="p">)</span>
+
+<span class="n">BINLOG_INFO</span><span class="p">(</span><span class="s">&quot;The numbers: {0}&quot;</span><span class="p">,</span> <span class="n">res</span><span class="p">);</span>
+<span class="c1">// Outputs: The numbers: LotteryResults{ numbers: [4, 8, 15, 16, 23, 42], sum: 108 }</span>
+</pre></div>
+
+
+<p>The getter must be const qualified and nullary.
+<em>It is NOT allowed to log in a getter. Logging in a getter while the enclosing object is being logged
+invokes undefined behaviour (event loss, corrup logfile or crash).</em>
+To log a derived class of <code>LotteryResults</code>, you have to upcast it first or make it loggable
+in the same way, because template specializations do not respect inheritance.
+It's okay to overload the getters, non-conforming overloads will be simply ignored.</p>
+<p>To make a class template loggable, a little sport is required:</p>
+<div class="codehilite"><pre><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T0</span><span class="p">,</span> <span class="k">typename</span> <span class="n">T1</span><span class="p">,</span> <span class="k">typename</span> <span class="n">T2</span><span class="o">&gt;</span>
+<span class="k">struct</span> <span class="n">CustomTemplate</span> <span class="p">{</span> <span class="n">T0</span> <span class="n">t0</span><span class="p">;</span> <span class="n">T1</span> <span class="n">t1</span><span class="p">;</span> <span class="n">T2</span> <span class="n">t2</span><span class="p">;</span> <span class="p">};</span>
+
+<span class="k">namespace</span> <span class="n">binlog</span> <span class="p">{</span> <span class="k">namespace</span> <span class="n">detail</span> <span class="p">{</span>
+
+<span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">A</span><span class="p">,</span> <span class="k">typename</span> <span class="n">B</span><span class="o">&gt;</span>
+<span class="n">BINLOG_UNQUALIFIED_MAKE_LOGGABLE</span><span class="p">((</span><span class="n">CustomTemplate</span><span class="o">&lt;</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">),</span> <span class="n">t0</span><span class="p">,</span> <span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">)</span>
+
+<span class="p">}}</span> <span class="c1">// namespace binlog::detail</span>
+</pre></div>
+
+
+<p>Please note the parentheses around the type name: they are to prevent the preprocessor splitting the template specialization.
+This approach makes it possible to have any number of type, value or template template arguments,
+and specialize the loggable class template as needed. Now, we can log the instance of a <code>CustomTemplate</code> template instance,
+as long as its third template argument is <code>int</code>. Using <code>typename C</code> in the template declaration would be also an option to enable any combination.
+If you can think of a better interface, suggestions are welcome.</p>
+<p><em>Implementation details:</em> The metadata of a loggable structure is never transmitted dynamically
+and there is no static or one time initialization. The necessary information (class and field names)
+is encoded in an ELF section, available for the Reader to decode it later.
+You don't pay for what you don't use: section data is emitted for a type only if it gets logged.</p>
+<h2 id="logging-third-party-structures"><a class="toclink" href="#logging-third-party-structures">Logging Third-Party Structures</a></h2>
+<p>Some common third party structures are also supported, if the necessary file is included.
+If you miss something, just tell us. The following files must not be included before <code>Binlog.H</code>.</p>
+<ul>
+<li><strong>#include &lt;binlog/make_loggable/BoostPointers.H&gt;</strong>: <code>boost::shared_ptr</code>, <code>boost::scoped_ptr</code>, <code>boost::intrusive_ptr</code>, <code>boost::weak_ptr</code>.
+    Make sure (especially in case of <code>intrusive_ptr</code>), that the managed pointer is valid, if it isn't a <code>nullptr</code>.</li>
+<li><strong>#include &lt;binlog/make_loggable/BoostVariant.H&gt;</strong>: <code>boost::variant</code>, every possible type must be loggable.</li>
+<li><strong>#include &lt;binlog/make_loggable/BoostOptional.H&gt;</strong>: <code>boost::optional</code>, the optional type must be loggable.</li>
+<li><strong>#include &lt;binlog/make_loggable/BoostFilesystem.H&gt;</strong>: <code>boost::filesystem::path</code></li>
+</ul>
+<h2 id="performance"><a class="toclink" href="#performance">Performance</a></h2>
+<p>We are proud to have a <strong>high throughput</strong> pipeline (possible because of lockfree memory queues and binary backend),
+<strong>low latency</strong> calls (it takes less than 30 machine instruction to log a simple event with arguments)
+and practically <strong>no jitter</strong> when running in a tight loop (logging mechanism uses no system calls).</p>
+<p>Thanks to asynchronous logging, binlog calls create <strong>no synchronization points</strong>.</p>
+<p>The performance metrics are <a href="http://stashblue.ms.com:11990/atlassian-stash/projects/MSTK_BINLOG/repos/binlog/browse/test/perf/Perftest.C">measured</a> and you are welcome to reproduce the tests.
+Our record is <strong>~20ns</strong> per message on a 3.47GHz Intel X5690 machine.</p>
+<h2 id="control-flow-tracking"><a class="toclink" href="#control-flow-tracking">Control Flow tracking</a></h2>
+<p>It's easy to track the execution of functions by placing guards at the beginning of each:</p>
+<div class="codehilite"><pre><span class="kt">int</span> <span class="n">sum_int</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">binlog</span><span class="o">::</span><span class="n">FunctionGuard</span> <span class="n">guard</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+  <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">calc</span><span class="p">()</span>
+<span class="p">{</span>
+  <span class="n">binlog</span><span class="o">::</span><span class="n">FunctionGuard</span> <span class="n">guard</span><span class="p">;</span>
+  <span class="k">return</span> <span class="n">sum_int</span><span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="mi">456</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>This results are the following when <code>calc</code> is called:</p>
+<div class="codehilite"><pre><span class="n">DEBG</span> <span class="o">...</span> <span class="n">calc</span> <span class="n">Enter</span> <span class="n">function</span>
+<span class="n">DEBG</span> <span class="o">...</span> <span class="n">sum_int</span> <span class="n">Enter</span> <span class="n">function</span><span class="p">,</span> <span class="n">arguments:</span> <span class="p">(</span><span class="mi">123</span><span class="p">,</span> <span class="mi">456</span><span class="p">)</span>
+<span class="n">DEBG</span> <span class="o">...</span> <span class="n">sum_int</span> <span class="n">Leave</span> <span class="n">function</span>
+<span class="n">DEBG</span> <span class="o">...</span> <span class="n">calc</span> <span class="n">Leave</span> <span class="n">function</span>
+</pre></div>
+
+
+<p>If you want only enter or leave events, use <code>binlog::EnterFunctionGuard</code> and <code>binlog::LeaveFunctionGuard</code>
+respectively.</p>
+<h3 id="named-threads"><a class="toclink" href="#named-threads">Named threads</a></h3>
+<p>Tired of keeping track of 0x7FAE75CCF740, 0x7FAE74CCF750 and 7FAE7C5CF740? Why not main, producer, consumer, processor?
+It's easy to name your threads:</p>
+<div class="codehilite"><pre><span class="n">binlog</span><span class="o">::</span><span class="n">setThreadName</span><span class="p">(</span><span class="s">&quot;main&quot;</span><span class="p">);</span>
+</pre></div>
+
+
+<p>The internals do <strong>not</strong> use <code>pthread_setname_np</code> (because that would change the name of the core files).
+The maximum recognized name length is 31. Characters after the 31th will be discarded.</p>
+<h2 id="data-flow-tracking"><a class="toclink" href="#data-flow-tracking">Data Flow tracking</a></h2>
+<p>Understanding how data propagates through a system is hard. Everybody knows the pain of going through
+huge logfiles, searching for thread ids and message chunks. Such methods are tedious and prone to error.
+Binlog makes it possible to track multiple data flows and thus group your relevant events together,
+and only a little help what it needs. This feature generalizes the idea of transactional logging.</p>
+<p>Assume an application processes market orders, it is administered through a management interface (e.g: net admin)
+and provides a status web page through HTTP. Every order, admin command and http request has a more or less
+unique identifier. Each order is processed my multiple pooled threads, for performance reasons.</p>
+<p>Using the Binlog terminology, this system consists of:</p>
+<ul>
+<li><strong>Flows</strong>: order, admin_command, http_request</li>
+<li><strong>Flow instances</strong>: Each distinct order, admin command and http request is a different flow instance</li>
+<li>And each flow instance has a <strong>Flow instance id</strong>. Instance id can be natural or a sequence.</li>
+</ul>
+<p>These notions fit naturally in the logging machanism:</p>
+<div class="codehilite"><pre><span class="n">BINLOG_INFO</span><span class="p">(</span><span class="s">&quot;Order received, id: {0:order} on port {1}&quot;</span><span class="p">,</span> <span class="n">order</span><span class="p">.</span><span class="n">id</span><span class="p">,</span> <span class="n">port</span><span class="p">);</span>
+<span class="c1">//                                  ^^^^^ Flow name      ^^^^^^^^ Flow instance id</span>
+</pre></div>
+
+
+<p>A <em>named placeholder</em> is used here to create a semantic hint to the reader about the field contents.
+(Using named placeholders cause no runtime overhead) By adding that named placeholder, the event source
+is now part of the "order" flow, and every event emitted will be part of the flow instance denoted by <code>order.id</code>.</p>
+<ul>
+<li><strong>Flow source</strong>: Any source with at least one named placehoder</li>
+<li><strong>Flow event</strong>: Every event emitted by a flow source</li>
+</ul>
+<p>Using this little additional information, the Reader is now able to group events of the same flow instance together:</p>
+<div class="codehilite"><pre><span class="nv">$ </span>./logfile.log --flow            <span class="c"># list available flows</span>
+<span class="nv">$ </span>./logfile.log --flow order      <span class="c"># list available flow instances of the `order` flow</span>
+<span class="nv">$ </span>./logfile.log --flow order:66   <span class="c"># show events only of this flow instance</span>
+<span class="nv">$ </span>./logfile.log --groupby order   <span class="c"># show the whole log, but group relevant events in the `order` flow together</span>
+</pre></div>
+
+
+<p>Do you really need to annotate every single event? <strong>Absolutely not.</strong> Each time a thread emits a flow event,
+the thread becomes the <em>part of that flow instance</em>, and every subsequent event emitted by the same thread will belong
+to that flow instance, until it starts processing a different instance of the same flow or you tell them explicitly
+to leave it. This means: each time a thread starts processing an order/command/request/etc, log its id in a named
+placeholder, and you will be good.</p>
+<p>A thread can process any number of flow instances of different flows at the same time. Please note: altough
+we speak of a thread entering or leaving a flow, it's only for the better understanding. There is no thread
+local or any runtime matching between flows and threads. Only the static hints are there.</p>
+<h3 id="explicit-flow-boundaries"><a class="toclink" href="#explicit-flow-boundaries">Explicit Flow boundaries</a></h3>
+<p>Because of the heuristic above, some unrelated messages could be put next to a group if a thread logs them
+between processing the actual flow instances. To solve this, one can mark flow boundaries explicitly:</p>
+<div class="codehilite"><pre><span class="n">BINLOG_BEGIN_FLOW</span><span class="p">(</span><span class="s">&quot;{0:order}&quot;</span><span class="p">,</span> <span class="n">order</span><span class="p">.</span><span class="n">id</span><span class="p">);</span> <span class="c1">// Provided only for the sake of symmetry</span>
+<span class="n">BINLOG_END_FLOW</span><span class="p">(</span><span class="s">&quot;{0:order}&quot;</span><span class="p">,</span> <span class="n">order</span><span class="p">.</span><span class="n">id</span><span class="p">);</span>
+</pre></div>
+
+
+<p>The control events generated by these sources do not show up in the Reader listings by default.
+The format string is up to you, but a named placeholder is required to make it work as intended.
+Altough it might work, it's not supported to specify multiple flows in these macros.</p>
+<p><code>BINLOG_BEGIN_FLOW</code> makes the thread part of the specified flow instance. It's done implicitly anyway,
+so this macro needed only if you don't want to see a log event with the flow instance id at that point.
+<code>BINLOG_END_FLOW</code> makes the thread leave the flow instance, thus it results in better grouping.</p>
+<h1 id="tools"><a class="toclink" href="#tools">Tools</a></h1>
+<p>Using Binlog is probably not as intuitive as working with a simpler log library with a text backend.
+This section describes a few tools which help things go smoother.</p>
+<h2 id="logchecker"><a class="toclink" href="#logchecker">Logchecker</a></h2>
+<p>The <em>printf</em> like placeholder based format string approach used by the <code>BINLOG_*</code> log macros is sensitive
+to the argument count mismatch. The <a href="http://stashblue.ms.com:11990/atlassian-stash/projects/MSTK_BINLOG/repos/binlog/browse/test/integration/WrongWriter.C">WrongWriter</a> (bad)example file shows such issues,
+e.g: invalid argument index in placeholder or unused argument.</p>
+<p>Such invalid log calls do not corrupt the resulting log file by any means, but might cause
+unnecessary copying (if too many arguments are provided), or produce <code>N/A</code> fields in the
+log listing (if placeholder refers to an unknown argument).</p>
+<p>The <strong>Logchecker</strong> tool makes identifying such offending calls possible. The usage is the following:</p>
+<div class="codehilite"><pre><span class="nv">$ </span>Logchecker /path/to/ELF <span class="c"># ELF: any executable or dynamically shared object</span>
+</pre></div>
+
+
+<p>Logchecker will pinpoint every invalid call and provide colored code listing.
+It's recommended to integrate this tool into your build process (e.g: as a train post build script),
+and scan every newly built executable and library (described in the <a href="IntegratorsHandbook.html#logchecker" title="How to automate Logckecker">Integrators Handbook</a>).</p>
+<h2 id="using-the-reader"><a class="toclink" href="#using-the-reader">Using the Reader</a></h2>
+<p>It's not much of fun reading binary log files using a hexeditor. (I had to do it multiple times, believe me)
+The <strong>Reader</strong> program transforms the binary logfiles to a human readable text representation.
+Every time a log file is <em>executed</em>, the Reader runs in the background.</p>
+<div class="codehilite"><pre><span class="nv">$ </span>./path/to/logfile.log <span class="c"># is equivalent to</span>
+<span class="nv">$ </span>Reader ./path/to/logfile.log
+</pre></div>
+
+
+<p>Arguments passed to the logfile are also passed to the reader.
+The text representation will appear on <code>stdout</code>.
+The Reader has its own decent documentation, see <a href="Reader.html">Reader --help</a> for
+allowed options, special format string placeholders and more.</p>
+<p>When reading online log files (log files in use) <code>less F</code>
+is commonly utilized. The Reader has something similar, the <code>--tail</code> mode;
+it displays already available log messages and waits for more to come.
+Because the logfile cannot be executed while it's being written, the
+explicit syntax has to be used:</p>
+<div class="codehilite"><pre><span class="c"># $ ./logfile.log --tail gives &quot;Text file busy&quot;, use instead:</span>
+<span class="nv">$ </span>head -n1 ./logfile.log <span class="c"># get path to the Reader</span>
+<span class="nv">$ </span>/path/to/Reader logfile.log --tail
+</pre></div>
+
+
+<p>Thanks to the user specfied <em>Reader format string</em>
+(<strong>Note: </strong> this one is not the format string of the log macro.
+It's the format string the Reader will use to represent messages)
+it's possible to utilize the unix pipeline and do some simple data mining.</p>
+<p>Example: Get the top 3 event producers;</p>
+<div class="codehilite"><pre><span class="nv">$ </span>./logfile.log <span class="s2">&quot;%F (%L)&quot;</span> | sort | uniq -c | sort -r | head -n 3
+</pre></div>
+
+
+<p>This almost can make it to a new level how we view our logfiles.
+To get true data mining capabilities and unleash the full power of
+binary logfiles, check out the <a href="#reader-api">Reader API</a></p>
+<h2 id="crash-recovery"><a class="toclink" href="#crash-recovery">Crash recovery</a></h2>
+<p>Because of asynchronous logging, it's possible when the application crashes,
+the most interesting log messages will be still in the buffers, not yet persisted.
+Reclamation of such messages is possible if a coredump remains after the crash.
+The process requires a recent <code>gdb</code> with python support:</p>
+<div class="codehilite"><pre><span class="nv">$ </span><span class="nb">export </span><span class="nv">GDB_PATH</span><span class="o">=</span>/ms/dist/mstk/PROJ/rhdevtoolset/3.1-rhel6  <span class="c"># or 2.1-rhel5</span>
+<span class="nv">$ $GDB_PATH</span>/bin/gdb --data-directory<span class="o">=</span><span class="nv">$GDB_PATH</span>/share/gdb <span class="se">\</span>
+                    /path/to/binary                      <span class="se">\</span>
+                    /path/to/coredump.core
+<span class="o">(</span>gdb<span class="o">)</span> <span class="nb">source</span> /ms/dist/mstk/PROJ/binlog/latest/python/binlog/binlog.py
+<span class="o">(</span>gdb<span class="o">)</span> binlog-recovery /path/to/logfile.log
+</pre></div>
+
+
+<p>This appends the messages stuck in the memory to the given logfile. Using <code>alias</code>, <code>.gdbinit</code>, <code>gdb --batch</code>
+and a gdb batch script makes easy to automate the whole procedure.</p>
+<h1 id="severity-guide"><a class="toclink" href="#severity-guide">Severity Guide</a></h1>
+<p>In an ideal world, a single glance at the severities should tell you a lot about application health.
+Unfortunately, different developers treat severities differently, and this results in a useless mix
+of critical debug logs and ignorable errors. The following listing establishes a common association
+between severities and event types.</p>
+<ul>
+<li>
+<p><span class="label" style="background:#aaa">Trace</span> Use it for logging large amount of data:
+   input and output. This severity is expected to be compile-time turned off for production builds.</p>
+</li>
+<li>
+<p><span class="label label-default">Debug</span> Use it for extensive logging: log the
+   state of your objects, log function calls or heap allocations: anything you want.
+   This severity is expected to be compile-time turned off for production builds.</p>
+</li>
+<li>
+<p><span class="label label-primary">Info</span> Use it for logging the expected but important
+   transitions: thread start, incoming request, outgoing response, user input or
+   netadmin command execution. This severity should be your primary.</p>
+</li>
+<li>
+<p><span class="label label-warning">Warning</span> Use it for recoverable mistakes, when
+   the application knows what to do, but user attention is recommended. For example: console
+   switch is ignored, invalid netadmin command, malformed request received, memory usage of
+   object is greater than expected, a UDP packet is lost, etc.
+   Events of this severity are similar to the warnings of a compiler.</p>
+</li>
+<li>
+<p><span class="label label-danger">Error</span> Events of this severity signal something went wrong.
+   Incorrect combination of switches, an unauthorized netadmin command, a malicious request might
+   trigger such events. The Error log <em>requires</em> developer/operator attention.
+   Events of this severity are similar to the error messages of a compiler.</p>
+</li>
+<li>
+<p><span class="label" style="background:#f00">Critical</span> This severity cover the
+   should not happen cases. The system will go down to avoid inconsistent state, or it is
+   already at failure and will stop now. Critical events require immediate operator attention.
+   Nothing lighter will qualify to this kind of severity.</p>
+</li>
+</ul>
+<p>Please follow the above guide when creating new program and update old code upon change. Please think
+of the inexperienced colleagues without application specific experience: Don't frighten them with
+unnecessary critical events and point out the important ones.</p>
+<h1 id="limitations"><a class="toclink" href="#limitations">Limitations</a></h1>
+<p>Every magic comes with a price; this also applies to high performance and relative ease of use.
+We regret to have the following limitations but believe having them serves a greater purpose:</p>
+<ul>
+<li>Binlog is <strong>Linux only</strong>. It's mainly because of the fundamental <em>ELF</em> dependency and partly because of OS specific tunings.
+   The Windows port is currently low priority.</li>
+<li>Binlog is <strong>GCC &gt;= 4.8 only</strong>. Older GCC versions are not tested. For Binlog clients, <strong>C++11</strong> is <strong>required</strong>.</li>
+<li>Binlog employs asynchronous logging. When your program crashes, the last (and most interesting) messages might be still in the buffers.
+   However, if you have a coredump, no message is lost. See <a href="#crash-recovery">Crash Recovery</a>.</li>
+<li>Binlog events can have arguments up to 29. This limit is imposed by GCCs <a href="https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html">Extended ASM</a> block.</li>
+<li>Binlog uses the <code>TSC</code> directly. The host should have <code>tsc</code> and <code>constant_tsc</code> in <code>/proc/cpuinfo</code>
+   to get accurate timestamps.</li>
+</ul>
+<h1 id="reader-api"><a class="toclink" href="#reader-api">Reader API</a></h1>
+<p>The <strong>Reader API</strong> is intended to be used by advanced users of the library
+who want to process their logfiles programmatically.
+Understanding this API is optional for regular users, common usecases are
+covered by the <a href="#using-the-reader"><strong>Reader</strong></a> program.</p>
+<p>This section describes the basic building blocks of the API and provides
+some tips on extension.</p>
+<h2 id="concepts"><a class="toclink" href="#concepts">Concepts</a></h2>
+<p>The Reader library provides a layered way to parse binary log files.
+Each layer reads a specific type of entries and produces others. Entry
+objects are thin wrappers around such structures while <code>*Stream</code> objects
+make up the layering. This design results in an easy to compose interface:</p>
+<div class="codehilite"><pre><span class="n">FileInputStream</span> <span class="n">logfile</span><span class="p">(</span><span class="n">path_to_logfile</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+<span class="n">EntryStream</span> <span class="n">entries</span><span class="p">(</span><span class="n">logfile</span><span class="p">);</span>
+<span class="n">EventStream</span> <span class="n">events</span><span class="p">(</span><span class="n">entries</span><span class="p">);</span>
+<span class="n">SortedEventStream</span> <span class="n">sortedEvents</span><span class="p">(</span><span class="n">events</span><span class="p">);</span>
+
+<span class="n">sortedEvents</span><span class="p">.</span><span class="n">consume</span><span class="p">([</span><span class="o">&amp;</span><span class="p">](</span><span class="n">Event</span><span class="o">&amp;</span> <span class="n">event</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="n">processEvent</span><span class="p">(</span><span class="n">event</span><span class="p">);</span>
+<span class="p">});</span>
+</pre></div>
+
+
+<p>The <a href="http://stashblue.ms.com:11990/atlassian-stash/projects/MSTK_BINLOG/repos/binlog/browse/lib/binlog/reader/EntryStream.H">EntryStream</a> reads bytes and produces <a href="http://stashblue.ms.com:11990/atlassian-stash/projects/MSTK_BINLOG/repos/binlog/browse/lib/binlog/reader/entry/Entry.H">Entries</a>.
+The <a href="http://stashblue.ms.com:11990/atlassian-stash/projects/MSTK_BINLOG/repos/binlog/browse/lib/binlog/reader/EventStream.H">EventStream</a> is an <a href="http://stashblue.ms.com:11990/atlassian-stash/projects/MSTK_BINLOG/repos/binlog/browse/lib/binlog/reader/EntryProcessor.H">EntryProcessor</a>,
+it reads entries and produces <a href="http://stashblue.ms.com:11990/atlassian-stash/projects/MSTK_BINLOG/repos/binlog/browse/lib/binlog/reader/entry/Event.H">Events</a>. The <a href="http://stashblue.ms.com:11990/atlassian-stash/projects/MSTK_BINLOG/repos/binlog/browse/lib/binlog/reader/SortedEventStream.H">SortedEventStream</a>
+decorator reads and produces Events, but sorts them by timestamp.
+Events received by the callback are valid only until it returns. Do not store the events
+outside the callback, their underlying memory will be reused.</p>
+<p>Using these pieces, a program which reads a log file and feeds its content to a relational
+database can be trivially created. More sophisticated usecases (e.g: a log based monitoring system)
+might require the implementation of a custom stream. EntryProcessor is a good place to start looking,
+it's designed to be subclassed.</p>
+<p>Public headers are in the <code>binlog/reader</code> directory, e.g: <code>#include &lt;binlog/reader/EventStream.H&gt;</code>.</p>
+<h1 id="faq"><a class="toclink" href="#faq">FAQ</a></h1>
+<ul>
+<li><strong>Is there a Windows port?</strong> No, there isn't, sorry. It might be possible to create one, but currently it's a low priority.</li>
+<li><strong>Is it possible to log directly to plaintext?</strong> It is. See <a href="IntegratorsHandbook.html#stream-sink">Stream Sink</a></li>
+<li><strong>Is there any event source limit per application?</strong> No sensible limit, it's bounded by the 64 bit address space, which is huge.</li>
+<li><strong>How much smaller are the binary log files?</strong> It depends on the length of your format strings, but they are definitely smaller,
+   faster to create and parse.</li>
+</ul>
+<h2 id="compile-errors"><a class="toclink" href="#compile-errors">Compile errors</a></h2>
+<p><em>(These aren't really frequently asked questions, I just made them up.)</em></p>
+<p><strong>Unsupported argument type</strong></p>
+<div class="codehilite"><pre>//binlog/detail/Arguments.H: In instantiation of <span class="s1">&#39;struct binlog::detail::LoggableDescriptor&lt;CustomType&gt;&#39;</span>:
+/path/to/your/Writer.C:123:3:   required from here
+//binlog/trunk/src/lib/binlog/detail/Arguments.H:81:3: error: static assertion failed: Logging this <span class="nb">type </span>is not supported
+   static_assert<span class="o">(</span>sizeof<span class="o">(</span>NotLoggable<span class="o">)</span> <span class="o">==</span> 0, <span class="s2">&quot;Logging this type is not supported&quot;</span><span class="o">)</span>;
+   ^
+</pre></div>
+
+
+<p>This friendly message tells you that you are trying to use an unsupported type
+as log message argument (referred as <code>NotLoggable</code>, in this case: <code>CustomType</code>). The issue is in <code>Writer.C</code>, line 123.</p>
+<p><strong>No category defined</strong></p>
+<div class="codehilite"><pre>Application.C:123: undefined reference to <span class="sb">`</span>g_binlog_main_config<span class="s1">&#39;</span>
+<span class="s1">Application.C:123: undefined reference to `g_binlog_main_elfConfig&#39;</span>
+/ms/dist/mstk/PROJ/rhdevtoolset/3.1-rhel6/.exec/@sys/bin/gcc/x86_64-redhat-linux/4.8.2/ld: Application.o<span class="o">(</span>.ms.log.message+0x0<span class="o">)</span>: unresolvable R_X86_64_16 relocation against symbol <span class="sb">`</span><span class="nv">$mslog</span>.category<span class="nv">$main</span><span class="err">&#39;</span>
+/ms/dist/mstk/PROJ/rhdevtoolset/3.1-rhel6/.exec/@sys/bin/gcc/x86_64-redhat-linux/4.8.2/ld: final link failed: Nonrepresentable section on output
+collect2: error: ld returned 1 <span class="nb">exit </span>status
+</pre></div>
+
+
+<p>Another kind message warns you, there is a problem with your category definition.
+Here, the offending category is the default one, <em>"main"</em>, called from <em>Application.C</em> line 123.
+Make sure you have a <code>Log.C</code> or similar file containing <code>BINLOG_INIT</code>.</p>
+<p><strong>Invalid custom category</strong></p>
+<div class="codehilite"><pre>Application.C:55:3: error: <span class="s1">&#39;g_binlog_mycategory_config&#39;</span> was not declared in this scope
+</pre></div>
+
+
+<p>Probably you are missing a <code>BINLOG_DECLARE_SUBCATEGORY(mycategory)</code> from a <code>Log.H</code> file.
+Also, don't forget the add <code>BINLOG_DEFINE_SUBCATEGORY(mycategory)</code> to the corresponding <code>Log.C</code> file.</p>
+      
+      <hr/>
+      <footer class="text-center text-muted">
+      	Feedback and help: <a href="mailto:mstkhelp"/>mstkhelp</a> |
+      	Generated: 2016. 05. 05.
+      </footer>
+      <hr/>
+    </div>
+  </body>
+</html>
