@@ -19,16 +19,16 @@ uint minDepth_recur(const BinTreeNode* root) {
   uint ret = UNSIGNED_MAX;
 
   function<void(const BinTreeNode*,uint)> solve =
-    [&](const BinTreeNode* curr_root, uint curr_depth) {
+    [&](const BinTreeNode* currRoot, uint curr_depth) {
     ++curr_depth;
-    if (!curr_root->left && !curr_root->right) {
+    if (!currRoot->left && !currRoot->right) {
       ret = min(curr_depth, ret);
     }
-    if (curr_root->left) {
-      solve(curr_root->left, curr_depth);
+    if (currRoot->left) {
+      solve(currRoot->left, curr_depth);
     }
-    if (curr_root->right) {
-      solve(curr_root->right, curr_depth);
+    if (currRoot->right) {
+      solve(currRoot->right, curr_depth);
     }
   };
 
@@ -40,12 +40,12 @@ uint minDepth_recur(const BinTreeNode* root) {
    doesn't work
 uint minDepth_recur2(const BinTreeNode* root) {
   function<uint(const BinTreeNode*)> solve =
-    [&](const BinTreeNode* curr_root) -> uint {
-    if (!curr_root)
+    [&](const BinTreeNode* currRoot) -> uint {
+    if (!currRoot)
       return 0;
 
-    uint lheight = curr_root->left ? solve(curr_root->left) : UNSIGNED_MAX;
-    uint rheight = curr_root->right ? solve(curr_root->right) : UNSIGNED_MAX;
+    uint lheight = currRoot->left ? solve(currRoot->left) : UNSIGNED_MAX;
+    uint rheight = currRoot->right ? solve(currRoot->right) : UNSIGNED_MAX;
     return min(lheight, rheight)+1;
   };
 
@@ -60,16 +60,16 @@ uint maxDepth_recur(const BinTreeNode* root) {
   uint ret = 0;
 
   function<void(const BinTreeNode*,uint)> solve =
-    [&](const BinTreeNode* curr_root, uint curr_depth) {
+    [&](const BinTreeNode* currRoot, uint curr_depth) {
     ++curr_depth;
-    if (!curr_root->left && !curr_root->right) {
+    if (!currRoot->left && !currRoot->right) {
       ret = max(curr_depth, ret);
     }
-    if (curr_root->left) {
-      solve(curr_root->left, curr_depth);
+    if (currRoot->left) {
+      solve(currRoot->left, curr_depth);
     }
-    if (curr_root->right) {
-      solve(curr_root->right, curr_depth);
+    if (currRoot->right) {
+      solve(currRoot->right, curr_depth);
     }
   };
 

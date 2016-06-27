@@ -33,11 +33,11 @@ uint maxHeight_recur(const BinTreeNode* root) {
     return 0;
 
   function<uint(const BinTreeNode*)> solve =
-    [&](const BinTreeNode* curr_root) -> uint {
-    if (!curr_root)
+    [&](const BinTreeNode* currRoot) -> uint {
+    if (!currRoot)
       return 0;
 
-    return 1 + max(solve(curr_root->left), solve(curr_root->right));
+    return 1 + max(solve(currRoot->left), solve(currRoot->right));
   };
 
   return solve(root);
@@ -143,11 +143,11 @@ void delTree_recur(BinTreeNode** root) {
     if (!currroot_p) {
       return; //throw exception();
     } else if (*currroot_p) {
-      BinTreeNode* curr_root = *currroot_p;
-      solve(&(curr_root->left));
-      solve(&(curr_root->right));
-      delete curr_root;
-      curr_root = nullptr;
+      BinTreeNode* currRoot = *currroot_p;
+      solve(&(currRoot->left));
+      solve(&(currRoot->right));
+      delete currRoot;
+      currRoot = nullptr;
     }
   };
 

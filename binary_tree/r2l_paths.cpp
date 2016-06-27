@@ -1,29 +1,36 @@
 #include <iostream>
+#include <vector>
 #include <functional>
 
 #include "bintree_node.h"
 
 using namespace std;
 
-/*
-Mirror of a tree is another binary tree with
-left and right children of all non-leaf nodes interchanged.
- */
-void mirror(BinTreeNode* root) {
-  function<void(BinTreeNode*)> solve =
-    [&](BinTreeNode* currRoot) { // postorder
-    if (!currRoot)
+vector<string> allR2LPaths(const BinTreeNode* root) {
+  vector<string> ret;
+
+  function<void(const BinTreeNode*,const string&)> solve =
+    [&](const BinTreeNode* currRoot, const string& currPath) {
+    if (!currRoot) {
       return;
+    }
 
-    solve(currRoot->left);
-    solve(currRoot->right);
+    string newPath = currPath;
+    if (!newPath.empty()) {
+      newPath += "->";
+    }
+    newPath += to_string(currRoot->value);
 
-    BinTreeNode* tmp = currRoot->left;
-    currRoot->left = currRoot->right;
-    currRoot->right = tmp;
+    if (isLeaf(currRoot)) {
+      ret.push_back(newPath);
+    } else {
+      solve(currRoot->left, newPath);
+      solve(currRoot->right, newPath);
+    }
   };
 
-  return solve(root);
+  solve(root, "");
+  return ret;
 }
 
 int main(int argc, const char** argv) {
@@ -41,11 +48,10 @@ int main(int argc, const char** argv) {
   root->right->right->right->right = new BinTreeNode(-1);
   root->right->right->right->right->left = new BinTreeNode(10);
 
-  cout << "Original binary tree:" << endl;
-  prettyPrint(root);
-  cout << "Mirror tree:" << endl;
-  mirror(root);
-  prettyPrint(root);
+  vector<string> res = allR2LPaths(root);
+  for (const auto& s : res) {
+    cout << s << endl;
+  }
 
   return 0;
 }

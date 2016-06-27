@@ -1,3 +1,6 @@
+/*
+Check a binary tree is height balanced or not
+ */
 #include <iostream>
 #include <functional>
 
@@ -5,25 +8,28 @@
 
 using namespace std;
 
-/*
-Mirror of a tree is another binary tree with
-left and right children of all non-leaf nodes interchanged.
- */
-void mirror(BinTreeNode* root) {
-  function<void(BinTreeNode*)> solve =
-    [&](BinTreeNode* currRoot) { // postorder
+bool checkHeightBalanced(const BinTreeNode* root) {
+  function<int(const BinTreeNode*)> solve =
+    [&](const BinTreeNode* currRoot) {
     if (!currRoot)
-      return;
+      return 0;
 
-    solve(currRoot->left);
-    solve(currRoot->right);
+    int left = solve(currRoot->left);
+    if (left == -1)
+      return -1;
 
-    BinTreeNode* tmp = currRoot->left;
-    currRoot->left = currRoot->right;
-    currRoot->right = tmp;
+    int right = solve(currRoot->right);
+    if (right == -1)
+      return -1;
+
+    if (abs(left-right) > 1) {
+      return -1;
+    } else {
+      return 1+max(left, right);
+    }
   };
 
-  return solve(root);
+  return solve(root) != -1;
 }
 
 int main(int argc, const char** argv) {
@@ -41,11 +47,7 @@ int main(int argc, const char** argv) {
   root->right->right->right->right = new BinTreeNode(-1);
   root->right->right->right->right->left = new BinTreeNode(10);
 
-  cout << "Original binary tree:" << endl;
-  prettyPrint(root);
-  cout << "Mirror tree:" << endl;
-  mirror(root);
-  prettyPrint(root);
+  cout << (checkHeightBalanced(root) ? "Balanced" : "Not balanced") << endl;
 
   return 0;
 }

@@ -16,13 +16,13 @@ uint countLeaves_recur(const BinTreeNode* root) {
   uint ret = 0;
 
   function<uint(const BinTreeNode*)> solve =
-    [&](const BinTreeNode* curr_root) -> uint {
-    if (!curr_root) {
+    [&](const BinTreeNode* currRoot) -> uint {
+    if (!currRoot) {
       return 0;
-    } else if (isLeaf(curr_root)) {
+    } else if (isLeaf(currRoot)) {
       return 1;
     } else {
-      return solve(curr_root->left)+solve(curr_root->right);
+      return solve(currRoot->left)+solve(currRoot->right);
     }
   };
 

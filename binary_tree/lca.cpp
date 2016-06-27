@@ -18,20 +18,20 @@ const BinTreeNode* LCA(const BinTreeNode* root, const int v1, const int v2) {
   vector<const BinTreeNode*> to_ext;
 
   function<bool(const BinTreeNode*)> solve = // backtracking
-    [&](const BinTreeNode* curr_root) {
-    if (!curr_root) {
+    [&](const BinTreeNode* currRoot) {
+    if (!currRoot) {
       return false;
     }
 
-    to_ext.push_back(curr_root);
+    to_ext.push_back(currRoot);
 
-    if (curr_root->value == target ||
-        solve(curr_root->left) ||
-        solve(curr_root->right)) {
+    if (currRoot->value == target ||
+        solve(currRoot->left) ||
+        solve(currRoot->right)) {
       return true;
     }
 
-    to_ext.pop_back(curr_root);
+    to_ext.pop_back(currRoot);
     return false;
   };
 

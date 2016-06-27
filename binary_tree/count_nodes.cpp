@@ -39,11 +39,11 @@ uint countNodes_iter(const BinTreeNode* root) {
 
 uint countNodes_recur(const BinTreeNode* root) {
   function<uint(const BinTreeNode*)> solve =
-    [&](const BinTreeNode* curr_root) -> uint {
-    if (!curr_root)
+    [&](const BinTreeNode* currRoot) -> uint {
+    if (!currRoot)
       return 0;
 
-    return 1+solve(curr_root->left)+solve(curr_root->right);
+    return 1+solve(currRoot->left)+solve(currRoot->right);
   };
 
   return solve(root);
