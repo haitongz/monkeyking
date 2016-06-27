@@ -8,7 +8,7 @@ Say you have an array for which the ith element is the price of a given stock on
 If you were only permitted to complete at most one transaction (ie, buy one and sell one share of the stock),
 design an algorithm to find the maximum profit.
  */
-double maxProfit_1Trans(const double prices[], const uint n) {
+double maxProfit_1Tx(const double prices[], const uint n) {
   if (n < 2) {
 #ifdef _DEBUG_
     cerr << "Too few days!" << endl;
@@ -38,7 +38,7 @@ Design an algorithm to find the maximum profit. You may complete as many transac
 (ie, buy one and sell one share of the stock multiple times).
 However, you may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
  */
-double maxProfit_anyTrans(const double prices[], const uint n) {
+double maxProfit_anyTx(const double prices[], const uint n) {
   if (n < 2) {
 #ifdef _DEBUG_
     cerr << "Too few days!" << endl;
@@ -86,7 +86,7 @@ double maxProfit3(const vector<double>& prices) {
   return dp[0];
 }
 */
-double maxProfit_2Trans(const double prices[], const uint n) {
+double maxProfit_2Tx(const double prices[], const uint n) {
   if (n < 2)
     return 0.0; //throw excpetion();
 
@@ -110,7 +110,7 @@ Say you have an array for which the ith element is the price of a given stock on
 
 Design an algorithm to find the maximum profit. You may complete at most k transactions.
  */
-double maxProfit_kTrans(const double prices[], const uint n, uint k) {
+double maxProfit_kTx(const double prices[], const uint n, uint k) {
   if (n < 2 || k < 1)
     return 0.0;
   if (k > n)
@@ -148,8 +148,8 @@ Input:  px[] = {10, 22, 5, 75, 65, 80}
 Output: 87
 Trader earns 87 as sum of 12 and 75
 Buy at price 10, sell at 22, buy at 5 and sell at 80
-  */
-double maxProfit_2TransADay(const double px[], const uint n) {
+ */
+double maxProfit_2TxADay(const double px[], const uint n) {
   double profit[n];
   for (auto& i : profit)
     i = 0;
@@ -293,14 +293,14 @@ int main(int argc, char** argv) {
 
   double prices[] = {10.00,11.50,9.78,15.10,12.48,10.00,13.99,11.72,19.00,18.59};
   uint n = sizeof(prices)/sizeof(prices[0]);
-  cout << "Max profit with 1 transaction: " << maxProfit_1Trans(prices, n) << endl;
-  cout << "Max profit with 1 transaction: " << maxProfit_kTrans(prices, n, 1) << endl;
-  cout << "Max profit with any transactions: " << maxProfit_anyTrans(prices, n) << endl;
-  cout << "Max profit with 2 transactions: " << maxProfit_2Trans(prices, n) << endl;
-  cout << "Max profit with 2 transactions: " << maxProfit4_kTrans(prices, n, 2) << endl;
+  cout << "Max profit with 1 transaction: " << maxProfit_1Tx(prices, n) << endl;
+  cout << "Max profit with 1 transaction: " << maxProfit_kTx(prices, n, 1) << endl;
+  cout << "Max profit with any transactions: " << maxProfit_anyTx(prices, n) << endl;
+  cout << "Max profit with 2 transactions: " << maxProfit_2Tx(prices, n) << endl;
+  cout << "Max profit with 2 transactions: " << maxProfit4_kTx(prices, n, 2) << endl;
   double px[] = {10, 22, 5, 75, 65, 80};
   n = sizeof(px)/sizeof(px[0]);
-  cout << "Max profit with at most 2 transactions a day: " << maxProfit_2TransADay(px, n) << endl;
+  cout << "Max profit with at most 2 transactions a day: " << maxProfit_2TxADay(px, n) << endl;
 
   return 0;
 }

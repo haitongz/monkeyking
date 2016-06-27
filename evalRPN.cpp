@@ -17,7 +17,7 @@ Some examples:
  */
 int evaluate(const string tokens[], const uint n) {
   if (!n) {
-    cerr << "Wrong array size!" << endl;
+    cerr << "Invalid argument!" << endl;
     exit(1);
   }
 

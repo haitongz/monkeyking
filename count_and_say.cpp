@@ -8,29 +8,26 @@ The count-and-say sequence is the sequence of integers beginning as follows:
 Given an integer n, generate the nth sequence.
  */
 #include <iostream>
-#include "../strings/itoa.h"
 
 using namespace std;
 
-string countAndSay(const uint32_t n) {
+string countAndSay(const uint n) {
   if (n < 1)
     return "";
 
   string prev = "1";
-  for (uint32_t i = 2; i <= n; ++i) { // need to generate all previous numbers to get Nth
+  for (uint i = 2; i <= n; ++i) { // need to generate all previous numbers to get Nth
     char curr = prev[0];
-    uint16_t cnt = 1;
+    uint cnt = 1;
     string tmp;
     prev.push_back('#');
-    const uint32_t len = prev.length();
+    const uint len = prev.length();
 
-    for (uint32_t j = 1; j < len; ++j) {
+    for (uint j = 1; j < len; ++j) {
       if (prev[j] == curr) {
         ++cnt;
       } else {
-        char buf[8]; // enough for uint16_t
-        itoa(buf, cnt);
-        tmp += string(buf);
+        tmp += to_string(cnt);
         tmp.push_back(curr);
         curr = prev[j];
         cnt = 1;
@@ -44,7 +41,9 @@ string countAndSay(const uint32_t n) {
 }
 
 int main(int argc, char** argv) {
-  uint32_t n = 10;
-  for (uint32_t i = 1; i < n+1; ++i)
+  uint n = 10;
+  for (uint i = 1; i < n+1; ++i)
     cout << countAndSay(i) << endl;
+
+  return 0;
 }

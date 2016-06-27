@@ -3,6 +3,7 @@
 #include <set>
 #include <algorithm>
 #include <functional>
+#include <cstring>
 
 using namespace std;
 
@@ -14,26 +15,62 @@ ABC, ACB, BAC, BCA, CAB, CBA
  */
 set<string> stringPermus_recur(string s) {
   const uint len = s.length();
-  if (!len)
-    return {};
+  if (len <= 1)
+    return {s};
 
   set<string> ret;
 
-  function<void(const uint,const uint)> solve =
-    [&](const uint start, const uint end) {
-    if (start == end) {
+  function<void(const uint)> solve =
+    [&](const uint idx) {
+    if (idx == len-1) {
       ret.insert(s);
       return;
     }
 
-    for (uint i = start; i < end+1; ++i) { // backtracking
-      swap(s[start], s[i]);
-      solve(start+1, end);
-      swap(s[start], s[i]);
+    for (uint i = idx; i < len; ++i) { // backtracking
+      swap(s[idx], s[i]);
+      solve(idx+1);
+      swap(s[idx], s[i]);
     }
   };
 
-  solve(0, len-1);
+  solve(0);
+  return ret;
+}
+
+/*
+Given a string of length n, print all permutation of the given string.
+Repetition of characters is allowed. Print these permutations in lexicographically sorted order.
+ */
+vector<string> repeatingPermus_recur(string s) {
+  const uint len = s.length();
+  if (!len)
+    return {};
+
+  // Sort the input string so that we get all output strings in lexicographically sorted order
+  sort(s.begin(), s.end());
+
+  // Create a temp array that will be used by allLexicographicRecur()
+  char mem[len+1];
+  mem[len] = '\0';
+  vector<string> ret;
+
+  function<void(const uint)> solve =
+    [&](const uint index) {
+    if (index == len) {
+      ret.push_back(mem);
+      return;
+    }
+
+    // One by one fix all characters at the given index and recur for the subsequent indexes
+    for (uint i = 0; i < len; ++i) {
+      // Fix the ith character at index and if this is not the last index then recursively call for higher indexes
+      mem[index] = s[i];
+      solve(index+1);
+    }
+  };
+
+  solve(0);
   return ret;
 }
 
@@ -151,13 +188,54 @@ vector<vector<int>> uniquePermus(vector<int>& nums) {
   return ret;
 }
 
+/*
+Implement function strstrp(string a, string b) returns index where any permutation of b is a substring of a.
+ strstrp("hello", "ell") returns 0
+ strstrp("hello", "lle") returns 1
+ strstrp("hello", "wor") returns -1
+ */
+int strstrp(const string& a, const string& b) {
+  const uint aLen = a.length(), bLen = b.length();
+  if (!aLen || !bLen)
+    return -1;
+
+  int maxIdx = -1;
+
+  for (uint i = 0; i < bLen; ++i) {
+    string substr = b.substr(0, i+1);
+    set<string> permus = stringPermus_recur(substr);
+
+    bool allSub = true;
+
+    for (auto& s : permus) {
+      const char* p = strstr(a.c_str(), s.c_str());
+      if (!p) {
+        allSub = false;
+        break;
+      }
+    }
+
+    if (allSub) {
+      maxIdx = max(maxIdx, (int)i);
+    }
+  }
+
+  return maxIdx;
+}
+
 int main(int argc, char** argv) {
-  string s = "ABC";
+  string s = "lel"; //"ABC";
   cout << "All permutations of " << s << " are: ";
   set<string> permus = stringPermus_recur(s);
   for (const auto& i : permus) {
     cout << i << " ";
   }
+  cout << endl;
+
+  s = "ABC";
+  vector<string> ps = repeatingPermus_recur(s);
+  for (auto& i : ps)
+    cout << i << " ";
   cout << endl;
 
   uint n = 3;
@@ -184,6 +262,10 @@ int main(int argc, char** argv) {
       cout << j << " ";
     cout << endl;
   }
+
+  cout << "strstrp: " << strstrp("hello", "ell") << endl;
+  cout << "strstrp: " << strstrp("hello", "lle") << endl;
+  cout << "strstrp: " << strstrp("hello", "wor") << endl;
 
   return 0;
 }

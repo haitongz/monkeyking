@@ -48,14 +48,14 @@ uint minBusFare(const vector<uint>& days) {
   function<pair<int,uint>(const uint)> window =
     [&](const uint idx) -> pair<int,uint> {
     int i = idx-1;
-    uint len = 1;
+    uint cnt = 1;
 
     while (i >= 0 && days[idx]-days[i] < 7) {
-      ++len;
+      ++cnt;
       --i;
     }
 
-    return {i, len}; // i can be -1
+    return {i,cnt}; // i can be -1
   };
 
   uint ret = 0;
@@ -69,7 +69,7 @@ uint minBusFare(const vector<uint>& days) {
     uint len = win.second; // number of days in same week
     int next = idx-1;
 
-    if (len <= 3) { // not worth buying a weekly pass
+    if (len < 4) { // not worth buying a weekly pass
       ret += DAILY;
     } else if (len == 7) { // optimization: no left-side window can be bigger
       ret += WEEKLY;
