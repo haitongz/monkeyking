@@ -103,6 +103,15 @@ grep 'Message Received in ACDC Service' *log* | cut -d" " -f8 | cut -d"." -f1 | 
 
 
 
+for i in `find . -iname "*.cxx"`; do cp "$i" "${i%.cxx}.cpp"; done
+
+
+
+
+
+
+
+
 /ms/dist/mstk/PROJ/rhdevtoolset/4.1-rhel6/bin/g++ -g -O0 -o t -std=c++11
 
 
